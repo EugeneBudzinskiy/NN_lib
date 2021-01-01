@@ -84,8 +84,8 @@ class NeuralNetwork:
             size_weights += last_layer_node_count * output_layer_node_count  # Increase size of 'weights'
             size_biases += output_layer_node_count  # Increase size of 'biases'
 
-            self.weights = np.zeros(size_weights)  # Init 'NumPy' array of weights in NN
-            self.biases = np.zeros(size_biases)  # Init 'NumPy' array of biases in NN
+            self.weights = np.zeros(size_weights)  # Init NumPy array of weights in NN
+            self.biases = np.zeros(size_biases)  # Init NumPy array of biases in NN
 
             self.__compile_flag = True  # When process end, set compile flag to True
         else:
