@@ -21,7 +21,7 @@ class NeuralNetwork:
         self.weights = None  # NumPy array with all weights of NN
         self.biases = None  # NumPy array with all biases of NN
 
-        self.functions = list()  # List with pair of '(func, dunc_derivative)'
+        self.functions = list()  # List with pair of '(func, func_derivative)'
 
     def add_layer(self, node_count: int, activation_func: str):
         # Get all name, for easy access

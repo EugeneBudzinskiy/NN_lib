@@ -25,7 +25,6 @@ class Func:
     def get(self, func_name: str):
         if func_name in self.__functions:
             return self.__functions[func_name]
-
         raise NotImplementedError(
             f"The activation function '{func_name}' doesn't exist"  # TODO MB Rewrite Error
         )
