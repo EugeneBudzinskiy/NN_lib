@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Func:
     __instance = None
 
@@ -39,16 +42,19 @@ class Func:
 
     @staticmethod
     def relu(x):
+        x[x < 0] = 0
         return x
 
     @staticmethod
     def relu_der(x):
+        x[x < 0] = 0
+        x[x > 0] = 1
         return x
 
     @staticmethod
     def sigmoid(x):
-        return x
+        return 1 / (1 + np.exp(-x))
 
-    @staticmethod
-    def sigmoid_der(x):
-        return x
+    def sigmoid_der(self, x):
+        z = self.sigmoid(x)
+        return z * (1 - z)

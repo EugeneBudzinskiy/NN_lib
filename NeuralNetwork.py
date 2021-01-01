@@ -49,9 +49,16 @@ class NeuralNetwork:
         for key, value in self.__structure.items():
             print(f'{key:18}: {str(value[0]):6} {value[-1]}')
 
+    def __check_not_compiled_error(self):
+        if not self.__compile_flag:  # If not compiled, raise Error
+            raise NotImplementedError("NN doesnt compile yet")  # TODO MB Replace
+
+    def __check_already_compiled_error(self):
+        if self.__compile_flag:  # If already compiled, raise Error
+            raise NotImplementedError("NN already compile yet")  # TODO MB Replace
+
     def compile(self):  # Compile process of NN
-        if self.__compile_flag:  # If already compile, raise Error
-            raise NotImplementedError("NN already compile")  # TODO MB Replace
+        self.__check_already_compiled_error()  # Check if NN already compile
 
         # Get all name, for easy access
         input_l_n = self.__layer_names['input_layer_name']
@@ -90,3 +97,6 @@ class NeuralNetwork:
             self.__compile_flag = True  # When process end, set compile flag to True
         else:
             raise NotImplementedError("NN not compilable")  # TODO MB later rewrite by own Exception
+
+    def predict(self, data_x):
+        self.__check_not_compiled_error()  # Check if NN not compiled yet
