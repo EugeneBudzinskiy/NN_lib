@@ -17,8 +17,8 @@ class NeuralNetwork:
         self.__compile_flag = False  # Simple flag for tracking compile status
 
         self.variables = None  # NumPy array with all variables of NN (weights and biases)
-
-        self.functions = list()  # List with pair of '(func, func_derivative)'
+        self.functions = tuple()  # Tuple with pair of '(func, func_derivative)'
+        self.layers_sizes = tuple()  # Tuple with node count for each layer
 
     def add_layer(self, node_count: int, activation_func: str = ''):
         if self.__input_layer_name in self.__structure:  # Check if 'Input Layer' added to 'structure'
@@ -52,32 +52,37 @@ class NeuralNetwork:
     def compile(self):  # Compile process of NN
         self.__check_already_compiled_error()  # Check if NN already compile
 
-        if self.__input_layer_name in self.__structure \
-                and self.__output_layer_name in self.__structure:  # Check how right the structure of NN
-            size_weights = 0  # Number of all 'weights' of NN
-            size_biases = 0  # Number of all 'biases' of NN
+        # Check how "right" the structure of NN
+        if self.__input_layer_name in self.__structure and self.__output_layer_name in self.__structure:
+            current_functions = list()
+            current_layers_sizes = list()
 
+            size_variables = 0  # Number of all 'weights' and 'biases' of NN
             last_layer_node_count = self.__structure[self.__input_layer_name][0]  # Get number of nodes in 'Input Layer'
+            current_layers_sizes.append(last_layer_node_count)
 
             for i in range(self.__hidden_layer_count):  # Run throw all 'Hidden layer' of NN
                 current_hid_name = f'{self.__hidden_layer_name}_{i + 1}'  # Create name of current 'Hidden Layer'
                 current_layer_data = self.__structure[current_hid_name]  # Get data from current 'Hidden Layer'
                 current_layer_node_count = current_layer_data[0]  # Get number of nodes in current 'Hidden Layer'
-                self.functions.append(self.__func.get(current_layer_data[-1]))  # Get name of 'activation function'
 
-                size_weights += last_layer_node_count * current_layer_node_count  # Increase size of 'weights'
-                size_biases += current_layer_node_count  # Increase size of 'biases'
+                current_layers_sizes.append(current_layer_node_count)
+                current_functions.append(self.__func.get(current_layer_data[-1]))  # Get name of 'activation function'
 
+                size_variables += (last_layer_node_count + 1) * current_layer_node_count  # Increase size of 'variables'
                 last_layer_node_count = current_layer_node_count  # Update 'new' node count of last layer
 
             output_layer_data = self.__structure[self.__output_layer_name]  # Get data from 'Output Layer'
             output_layer_node_count = output_layer_data[0]  # Get number of nodes in 'Output Layer'
-            self.functions.append(self.__func.get(output_layer_data[-1]))  # Get name of 'activation function'
 
-            size_weights += last_layer_node_count * output_layer_node_count  # Increase size of 'weights'
-            size_biases += output_layer_node_count  # Increase size of 'biases'
+            current_layers_sizes.append(output_layer_node_count)
+            current_functions.append(self.__func.get(output_layer_data[-1]))  # Get name of 'activation function'
 
-            self.variables = np.zeros(10)
+            self.layers_sizes = tuple(current_layers_sizes)
+            self.functions = tuple(current_functions)
+
+            size_variables += (last_layer_node_count + 1) * output_layer_node_count  # Increase size of 'variables'
+            self.variables = np.zeros(size_variables)
 
             self.__compile_flag = True  # When process end, set compile flag to True
         else:
@@ -85,3 +90,23 @@ class NeuralNetwork:
 
     def predict(self, data_x):
         self.__check_not_compiled_error()  # Check if NN not compiled yet
+
+        current_data = data_x
+        position = 0
+
+        for i in range(self.__hidden_layer_count + 1):
+            last_layer_size = self.layers_sizes[i]
+            next_layer_size = self.layers_sizes[i + 1]
+
+            end_weights = position + last_layer_size * next_layer_size
+            end_biases = end_weights + next_layer_size
+
+            weights = self.variables[position:end_weights].reshape(last_layer_size, next_layer_size)
+            biases = self.variables[end_weights:end_biases]
+
+            activation_func = self.functions[i][0]
+            current_data = activation_func(np.dot(current_data, weights) + biases)
+
+            position = end_biases
+
+        return current_data

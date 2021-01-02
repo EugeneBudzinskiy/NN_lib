@@ -1,3 +1,5 @@
+import numpy as np
+
 from NeuralNetwork import NeuralNetwork
 
 
@@ -12,7 +14,10 @@ def main():
     nn.show_structure()
     nn.compile()
 
-    print(nn.functions)
+    data = np.array([.1])
+
+    answer = nn.predict(data)
+    print(answer)
 
 
 if __name__ == '__main__':
