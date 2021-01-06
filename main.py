@@ -1,23 +1,18 @@
-import numpy as np
-
-from NeuralNetwork import NeuralNetwork
+from NN_Constructor import Constructor
+from Functions import Func
 
 
 def main():
-    nn = NeuralNetwork()
+    f = Func()
 
-    nn.add_layer(2)
-    nn.add_layer(4, 'relu')
-    nn.add_layer(8, 'relu')
-    nn.add_layer(16, 'relu')
+    constructor = Constructor()
 
-    nn.show_structure()
-    nn.compile()
+    constructor.add_input(1)
+    constructor.add_layer(2, f.relu)
+    constructor.add_layer(3, f.relu)
+    constructor.add_layer(4, f.relu)
 
-    data = np.random.random(2)
-
-    answer = nn.predict(data)
-    print(answer)
+    constructor.show_structure()
 
 
 if __name__ == '__main__':

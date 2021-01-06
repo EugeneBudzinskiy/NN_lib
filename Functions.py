@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Funcs:
+class Func:
     __instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -9,45 +9,7 @@ class Funcs:
             cls.__instance = object.__new__(cls)
         return cls.__instance
 
-    def __init__(self):
-        self.__activation_functions = {
-            'linear': (
-                self.linear,
-                self.linear_der
-            ),
-            'relu': (
-                self.relu,
-                self.relu_der
-            ),
-            'sigmoid': (
-                self.sigmoid,
-                self.sigmoid_der
-            )
-        }
-
-        self.__loss_functions = {
-            'mse': (
-                self.mse,
-                self.mse_der
-            )
-        }
-
-    """ FUNCTION GETTERS """
-    def get_activation_function(self, act_func_name: str):
-        if act_func_name in self.__activation_functions:
-            return self.__activation_functions[act_func_name]
-        raise NotImplementedError(
-            f"The activation function '{act_func_name}' doesn't exist"  # TODO MB Rewrite Error
-        )
-
-    def get_loss_function(self, loss_func_name: str):
-        if loss_func_name in self.__loss_functions:
-            return self.__loss_functions[loss_func_name]
-        raise NotImplementedError(
-            f"The activation function '{loss_func_name}' doesn't exist"  # TODO MB Rewrite Error
-        )
-
-    """ ACTIVATION FUNCTION """
+    """ ACTIVATION FUNCTIONS """
     @staticmethod
     def linear(x):
         return x
@@ -75,7 +37,7 @@ class Funcs:
         z = self.sigmoid(x)
         return z * (1 - z)
 
-    """ LOSS FUNCTION """
+    """ LOSS FUNCTIONS """
     @staticmethod
     def mse(y, y_pred):
         return np.mean((y - y_pred) ** 2) / 2
@@ -83,3 +45,8 @@ class Funcs:
     @staticmethod
     def mse_der(y, y_pred):
         return np.mean(y - y_pred)
+
+    """ OPTIMIZER FUNCTIONS """
+    @staticmethod
+    def adam(x):
+        return x
