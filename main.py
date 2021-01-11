@@ -4,7 +4,6 @@ from Functions import Func
 
 def main():
     f = Func()
-
     constructor = Constructor()
 
     constructor.add_input(1)
