@@ -1,15 +1,40 @@
-from Errors import InputLayerNotDefined
+import numpy as np
+from abc import ABC, abstractmethod
+
 from NeuralNetwork import NeuralNetwork
+from Functions import Func
+from Errors import InputLayerNotDefined
+from Errors import WrongStructure
 
 
-class Constructor:
+class AbstractConstructor(ABC):
+    @abstractmethod
+    def show_structure(self):
+        pass
+
+    @abstractmethod
+    def add_input(self, node_count):
+        pass
+
+    @abstractmethod
+    def add_layer(self, node_count, activation_func):
+        pass
+
+    @abstractmethod
+    def compile(self, loss_function, optimizer) -> NeuralNetwork:
+        pass
+
+
+class Constructor(AbstractConstructor):
     def __init__(self):
+        self.__f = Func()
         self.__structure = dict()
         self.__hidden_layer_counter = 0
 
         self.__input_layer_name = 'input_layer'
         self.__hidden_layer_name = 'hidden_layer'
         self.__output_layer_name = 'output_layer'
+        self.__empty_activation_name = '...'
 
         self.__input_init_flag = False
         self.__output_init_flag = False
@@ -21,7 +46,7 @@ class Constructor:
             print(f'{key:18}: {str(value[0]):6} {func_name}')
 
     def add_input(self, node_count: int):
-        self.__structure[self.__input_layer_name] = (node_count, '...')
+        self.__structure[self.__input_layer_name] = (node_count, self.__empty_activation_name)
         self.__input_init_flag = True
 
     def add_layer(self, node_count: int, activation_func):
@@ -39,5 +64,80 @@ class Constructor:
         else:
             raise InputLayerNotDefined
 
+    def __parse_nn_structure(self):
+        node_count_list = list()
+        act_function_list = list()
+        act_function_der_list = list()
+
+        for value in self.__structure.values():
+            node_count, act_function = value
+            node_count_list.append(node_count)
+
+            if act_function == self.__empty_activation_name:
+                act_function_list.append(None)
+                act_function_der_list.append(None)
+            else:
+                act_function_list.append(act_function)
+                act_function_der = self.__f.get_act_func_der(act_function)
+                act_function_der_list.append(act_function_der)
+
+        return tuple(node_count_list), tuple(act_function_list), tuple(act_function_der_list)
+
+    @staticmethod
+    def __init_var_map(node_count: tuple, layer_count: int):
+        var_map = list()
+        position = 0
+
+        for i in range(layer_count - 1):
+            prev_nc = node_count[i]
+            next_nc = node_count[i + 1]
+
+            weights_size = prev_nc * next_nc
+            biases_size = next_nc
+
+            start = position
+            end_weights = start + weights_size
+            end_biases = end_weights + biases_size
+
+            var_map.append((start, end_weights, end_biases))
+            position = end_biases
+
+        return tuple(var_map), position
+
+    @staticmethod
+    def __init_variables(variables: np.ndarray, var_map: tuple):
+        for el in var_map:
+            start, end, _ = el
+            w_size = end - start
+            current_weight = np.random.randn(w_size)
+            variables[start:end] = current_weight
+
+    def __reset_all(self):
+        self.__structure = dict()
+        self.__hidden_layer_counter = 0
+        self.__input_init_flag = False
+        self.__output_init_flag = False
+
     def compile(self, loss_function, optimizer) -> NeuralNetwork:
-        pass
+        if not self.__input_init_flag or not self.__output_init_flag:
+            raise WrongStructure
+        else:
+            node_count, activation_func, activation_func_der = self.__parse_nn_structure()
+            layer_count = len(node_count)
+
+            var_map, var_size = self.__init_var_map(node_count=node_count, layer_count=layer_count)
+            variables = np.zeros(var_size)
+            self.__init_variables(variables, var_map)
+
+            loss_func_der = self.__f.get_loss_func_der(loss_function)
+            loss_funcs = (loss_function, loss_func_der)
+
+            self.__reset_all()
+            return NeuralNetwork(variables=variables,
+                                 var_map=var_map,
+                                 node_count=node_count,
+                                 activation_func=activation_func,
+                                 activation_func_der=activation_func_der,
+                                 loss_funcs=loss_funcs,
+                                 optimizer=optimizer,
+                                 layer_count=layer_count)

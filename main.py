@@ -4,14 +4,18 @@ from Functions import Func
 
 def main():
     f = Func()
-    constructor = Constructor()
+    c = Constructor()
 
-    constructor.add_input(1)
-    constructor.add_layer(2, f.relu)
-    constructor.add_layer(3, f.relu)
-    constructor.add_layer(4, f.relu)
+    c.add_input(1)
+    c.add_layer(2, f.relu)
+    c.add_layer(3, f.relu)
+    c.add_layer(4, f.relu)
 
-    constructor.show_structure()
+    loss_func = f.mse
+    optimizer = f.adam
+    nn = c.compile(loss_func, optimizer)
+
+    nn.predict(1)
 
 
 if __name__ == '__main__':

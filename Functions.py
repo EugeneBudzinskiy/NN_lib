@@ -9,6 +9,22 @@ class Func:
             cls.__instance = object.__new__(cls)
         return cls.__instance
 
+    def __init__(self):
+        self.__act_func_der_dict = {
+            self.sigmoid: self.sigmoid_der,
+            self.relu: self.relu_der,
+            self.linear: self.linear_der
+        }
+        self.__loss_func_der_dict = {
+            self.mse: self.mse_der
+        }
+
+    def get_act_func_der(self, act_function):
+        return self.__act_func_der_dict[act_function]
+
+    def get_loss_func_der(self, loss_function):
+        return self.__loss_func_der_dict[loss_function]
+
     """ ACTIVATION FUNCTIONS """
     @staticmethod
     def linear(x):
