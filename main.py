@@ -13,9 +13,7 @@ def main():
 
     loss_func = f.mse
     optimizer = f.adam
-    nn = c.compile(loss_func, optimizer)
-
-    nn.predict(1)
+    nn = c.compile(loss_function=loss_func, optimizer=optimizer)
 
 
 if __name__ == '__main__':

@@ -49,7 +49,7 @@ class Constructor(AbstractConstructor):
         self.__structure[self.__input_layer_name] = (node_count, self.__empty_activation_name)
         self.__input_init_flag = True
 
-    def add_layer(self, node_count: int, activation_func):
+    def add_layer(self, node_count: int, activation_func: id):
         if self.__input_init_flag:
             if self.__output_init_flag:
                 self.__hidden_layer_counter += 1
@@ -118,7 +118,7 @@ class Constructor(AbstractConstructor):
         self.__input_init_flag = False
         self.__output_init_flag = False
 
-    def compile(self, loss_function, optimizer) -> NeuralNetwork:
+    def compile(self, loss_function: id, optimizer: id) -> NeuralNetwork:
         if not self.__input_init_flag or not self.__output_init_flag:
             raise WrongStructure
         else:
