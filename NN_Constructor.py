@@ -73,10 +73,7 @@ class Constructor(AbstractConstructor):
             node_count, act_function = value
             node_count_list.append(node_count)
 
-            if act_function == self.__empty_activation_name:
-                act_function_list.append(None)
-                act_function_der_list.append(None)
-            else:
+            if act_function != self.__empty_activation_name:
                 act_function_list.append(act_function)
                 act_function_der = self.__f.get_act_func_der(act_function)
                 act_function_der_list.append(act_function_der)
@@ -109,7 +106,7 @@ class Constructor(AbstractConstructor):
         for el in var_map:
             start, end, _ = el
             w_size = end - start
-            current_weight = np.random.randn(w_size)
+            current_weight = np.random.randn(w_size)  # TODO Maybe, change init of weights >:)
             variables[start:end] = current_weight
 
     def __reset_all(self):
@@ -118,9 +115,10 @@ class Constructor(AbstractConstructor):
         self.__input_init_flag = False
         self.__output_init_flag = False
 
-    def compile(self, loss_function: id, optimizer: id) -> NeuralNetwork:
+    def compile(self, loss_func: id, optimizer: id) -> NeuralNetwork:
         if not self.__input_init_flag or not self.__output_init_flag:
             raise WrongStructure
+
         else:
             node_count, activation_func, activation_func_der = self.__parse_nn_structure()
             layer_count = len(node_count)
@@ -129,15 +127,15 @@ class Constructor(AbstractConstructor):
             variables = np.zeros(var_size)
             self.__init_variables(variables, var_map)
 
-            loss_func_der = self.__f.get_loss_func_der(loss_function)
-            loss_funcs = (loss_function, loss_func_der)
-
+            loss_func_der = self.__f.get_loss_func_der(loss_func)
             self.__reset_all()
+
             return NeuralNetwork(variables=variables,
                                  var_map=var_map,
                                  node_count=node_count,
                                  activation_func=activation_func,
                                  activation_func_der=activation_func_der,
-                                 loss_funcs=loss_funcs,
+                                 loss_func=loss_func,
+                                 loss_func_der=loss_func_der,
                                  optimizer=optimizer,
                                  layer_count=layer_count)
