@@ -1,5 +1,3 @@
-import numpy as np
-
 from NN_Constructor import Constructor
 from Functions import Func
 
@@ -15,6 +13,7 @@ def main():
     loss_func = f.mse
     optimizer = f.adam
     nn = c.compile(loss_func=loss_func, optimizer=optimizer)
+    print(nn.learning_rate)
 
 
 if __name__ == '__main__':

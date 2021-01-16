@@ -68,6 +68,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
         return result[-1]
 
     def learn(self, batch_data: np.ndarray, batch_target: np.ndarray):
+        batch_size = batch_data.shape[0]
         z_array, a_array = self.feedforward(batch_data)
 
         pos, w_end, b_end = self.var_map[-1]
@@ -102,7 +103,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
             delta = np.dot(delta, next_weight.T) * func_der(cur_z)
 
             d_bias = np.mean(delta, axis=0)
-            d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos)
+            d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos) / batch_size
 
             gradient[pos:w_end] = d_weight
             gradient[w_end:b_end] = d_bias
