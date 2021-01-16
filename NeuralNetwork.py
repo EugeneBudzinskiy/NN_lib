@@ -102,8 +102,8 @@ class NeuralNetwork(AbstractNeuralNetwork):
             func_der = self.activation_func_der[-i]
             delta = np.dot(delta, next_weight.T) * func_der(cur_z)
 
-            d_bias = np.mean(delta, axis=0)
-            d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos) / batch_size
+            d_bias = np.mean(delta, axis=0)  # TODO Maybe, replace by sum
+            d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos)
 
             gradient[pos:w_end] = d_weight
             gradient[w_end:b_end] = d_bias
