@@ -99,15 +99,17 @@ class Constructor(AbstractConstructor):
             var_map.append((start, end_weights, end_biases))
             position = end_biases
 
-        return tuple(var_map), position
+        return tuple(var_map)
 
     @staticmethod
-    def __init_variables(variables: np.ndarray, var_map: tuple):
+    def __init_variables(var_map: tuple):
+        variables = np.zeros(var_map[-1][-1])
         for el in var_map:
             start, end, _ = el
             w_size = end - start
             current_weight = np.random.randn(w_size)  # TODO Maybe, change init of weights >:)
             variables[start:end] = current_weight
+        return variables
 
     def __reset_all(self):
         self.__structure = dict()
@@ -122,14 +124,12 @@ class Constructor(AbstractConstructor):
         else:
             node_count, activation_func, activation_func_der = self.__parse_nn_structure()
             layer_count = len(node_count)
+            var_map = self.__init_var_map(node_count=node_count, layer_count=layer_count)
 
-            var_map, var_size = self.__init_var_map(node_count=node_count, layer_count=layer_count)
-            variables = np.zeros(var_size)
-            self.__init_variables(variables, var_map)
-
+            variables = self.__init_variables(var_map)
             loss_func_der = self.__f.get_loss_func_der(loss_func)
-            self.__reset_all()
 
+            self.__reset_all()
             return NeuralNetwork(variables=variables,
                                  var_map=var_map,
                                  node_count=node_count,
