@@ -51,7 +51,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
             prev_node, next_node = self.node_count[i], self.node_count[i + 1]
             s_pos, w_end, b_end = self.var_map[i]
 
-            c_weight = self.variables[s_pos:w_end].reshape(prev_node, next_node)
+            c_weight = self.variables[s_pos:w_end].reshape((prev_node, next_node))
             c_bias = self.variables[w_end:b_end]
             activation_func = self.activation_func[i]
 
@@ -81,7 +81,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
         delta = self.loss_der(cur_a, batch_target) * func_der(cur_z)
 
         d_bias = np.sum(delta, axis=0)
-        d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos)
+        d_weight = np.dot(prev_cur_a.T, delta).reshape((w_end - pos))
 
         gradient[pos:w_end] = d_weight
         gradient[w_end:b_end] = d_bias
@@ -93,7 +93,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
             next_pos, next_w_end, _ = self.var_map[-(i - 1)]
             pos, w_end, b_end = self.var_map[-i]
 
-            next_weight = self.variables[next_pos:next_w_end].reshape(next_node, next_next_node)
+            next_weight = self.variables[next_pos:next_w_end].reshape((next_node, next_next_node))
 
             cur_z = z_array[-i]
             prev_cur_a = a_array[-(i + 1)]
@@ -102,7 +102,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
             delta = np.dot(delta, next_weight.T) * func_der(cur_z)
 
             d_bias = np.sum(delta, axis=0)
-            d_weight = np.dot(prev_cur_a.T, delta).reshape(w_end - pos)
+            d_weight = np.dot(prev_cur_a.T, delta).reshape((w_end - pos))
 
             gradient[pos:w_end] = d_weight
             gradient[w_end:b_end] = d_bias
