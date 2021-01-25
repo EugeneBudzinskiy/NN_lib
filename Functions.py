@@ -55,6 +55,18 @@ class Func:
         z = self.sigmoid(x)
         return z * (1 - z)
 
+    @staticmethod
+    def softmax(x):
+        z = np.exp(x)
+        return z / np.sum(z)
+
+    @staticmethod
+    def softmax_der(x):
+        shape = x.shape
+        s = x.reshape(-1, 1)
+        d = np.diagflat(s) - np.dot(s, s.T)
+        return d.diagonal().reshape(shape)
+
     """ LOSS FUNCTIONS """
     @staticmethod
     def mse(y, y_pred):
