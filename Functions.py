@@ -11,9 +11,10 @@ class Func:
 
     def __init__(self):
         self.__act_func_der_dict = {
+            self.linear: self.linear_der,
             self.sigmoid: self.sigmoid_der,
             self.relu: self.relu_der,
-            self.linear: self.linear_der
+            self.softmax: self.softmax_der
         }
         self.__loss_func_der_dict = {
             self.mse: self.mse_der
