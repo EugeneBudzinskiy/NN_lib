@@ -76,8 +76,6 @@ class NeuralNetwork(AbstractNeuralNetwork):
         cur_z = z_array[-1]
         prev_a, cur_a = a_array[-2], a_array[-1]
 
-        print(self.loss(cur_a, batch_target))
-
         delta = self.loss_der(cur_a, batch_target) * self.activation_func_der[-1](cur_z)
 
         d_bias = np.mean(delta, axis=0)
