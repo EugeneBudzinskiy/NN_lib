@@ -37,7 +37,7 @@ class NeuralNetwork(AbstractNeuralNetwork):
         self.optimizer = optimizer
         self.layer_count = layer_count
 
-        self.learning_rate = 0.05
+        self.learning_rate = 1
 
     def feedforward(self, batch_data: np.ndarray):
         data = batch_data.copy()
@@ -74,14 +74,14 @@ class NeuralNetwork(AbstractNeuralNetwork):
         gradient = np.zeros(b_end)
 
         cur_z = z_array[-1]
-        cur_a = a_array[-1]
-        prev_cur_a = a_array[-2]
+        prev_a, cur_a = a_array[-2], a_array[-1]
 
-        func_der = self.activation_func_der[-1]
-        delta = self.loss_der(cur_a, batch_target) * func_der(cur_z)
+        print(self.loss(cur_a, batch_target))
 
-        d_bias = np.sum(delta, axis=0)
-        d_weight = np.dot(prev_cur_a.T, delta).reshape((w_end - pos))
+        delta = self.loss_der(cur_a, batch_target) * self.activation_func_der[-1](cur_z)
+
+        d_bias = np.mean(delta, axis=0)
+        d_weight = np.dot(prev_a.T, delta).reshape((w_end - pos))
 
         gradient[pos:w_end] = d_weight
         gradient[w_end:b_end] = d_bias
@@ -98,10 +98,9 @@ class NeuralNetwork(AbstractNeuralNetwork):
             cur_z = z_array[-i]
             prev_cur_a = a_array[-(i + 1)]
 
-            func_der = self.activation_func_der[-i]
-            delta = np.dot(delta, next_weight.T) * func_der(cur_z)
+            delta = np.dot(delta, next_weight.T) * self.activation_func_der[-i](cur_z)
 
-            d_bias = np.sum(delta, axis=0)
+            d_bias = np.mean(delta, axis=0)
             d_weight = np.dot(prev_cur_a.T, delta).reshape((w_end - pos))
 
             gradient[pos:w_end] = d_weight

@@ -28,22 +28,24 @@ class Func:
     """ ACTIVATION FUNCTIONS """
     @staticmethod
     def linear(x):
-        return x
+        return x.copy()
 
     @staticmethod
     def linear_der(x):
-        return x
+        return 1
 
     @staticmethod
     def relu(x):
-        x[x < 0] = 0
-        return x
+        z = x.copy()
+        z[z < 0] = 0
+        return z
 
     @staticmethod
     def relu_der(x):
-        x[x < 0] = 0
-        x[x > 0] = 1
-        return x
+        z = x.copy()
+        z[z < 0] = 0
+        z[z > 0] = 1
+        return z
 
     @staticmethod
     def sigmoid(x):
@@ -56,11 +58,11 @@ class Func:
     """ LOSS FUNCTIONS """
     @staticmethod
     def mse(y, y_pred):
-        return np.mean((y - y_pred) ** 2) / 2
+        return np.mean(np.square(y - y_pred))
 
     @staticmethod
     def mse_der(y, y_pred):
-        return np.mean(y - y_pred)
+        return 2 * (y - y_pred)
 
     """ OPTIMIZER FUNCTIONS """
     @staticmethod

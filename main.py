@@ -8,18 +8,19 @@ def main():
     f = Func()
     c = Constructor()
 
-    c.add_input(784)
-    c.add_layer(300, f.sigmoid)
-    c.add_layer(10, f.sigmoid)
+    c.add_input(2)
+    c.add_layer(3, f.sigmoid)
+    c.add_layer(3, f.sigmoid)
 
     loss_func = f.mse
     optimizer = f.adam
     nn = c.compile(loss_func=loss_func, optimizer=optimizer)
 
-    data = np.random.random((2, 784))
-    result = nn.predict(data)
+    data = np.array([[1, 0]])
+    target = np.array([[0, 1, 0]])
 
-    print(result)
+    for _ in range(1000):
+        nn.learn(data, target)
 
 
 if __name__ == '__main__':
