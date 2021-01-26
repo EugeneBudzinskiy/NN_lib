@@ -1,5 +1,3 @@
-import numpy as np
-
 from NN_Constructor import Constructor
 from Functions import Functions
 

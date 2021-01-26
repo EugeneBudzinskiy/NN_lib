@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABC
 from abc import abstractmethod
 
@@ -10,22 +11,22 @@ class Losses(metaclass=SingletonMeta):
 
 
 class AbstractLoss(ABC):
+    @staticmethod
     @abstractmethod
-    def loss(self):
+    def loss(y_target, y_predicted):
         pass
 
+    @staticmethod
     @abstractmethod
-    def derivative(self):
+    def derivative(y_target, y_predicted):
         pass
 
 
 class MSE(AbstractLoss):
-    def __init__(self):
-        pass
+    @staticmethod
+    def loss(y_target, y_predicted):
+        return np.mean(np.square(y_target - y_predicted))
 
-    def loss(self):
-        pass
-
-    def derivative(self):
-        pass
-
+    @staticmethod
+    def derivative(y_target, y_predicted):
+        return - 2 * (y_target - y_predicted)

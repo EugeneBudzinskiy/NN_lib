@@ -8,4 +8,4 @@ class Functions(metaclass=SingletonMeta):
     def __init__(self):
         self.activations = Activations()
         self.losses = Losses()
-        self.optimizer = Optimizers()
+        self.optimizers = Optimizers()
