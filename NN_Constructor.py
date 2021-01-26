@@ -1,8 +1,9 @@
 import numpy as np
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 from NeuralNetwork import NeuralNetwork
-from Functions import Func
+from Functions import Functions
 from Errors import InputLayerNotDefined
 from Errors import WrongStructure
 
@@ -27,7 +28,7 @@ class AbstractConstructor(ABC):
 
 class Constructor(AbstractConstructor):
     def __init__(self):
-        self.__f = Func()
+        self.__f = Functions()
         self.__structure = dict()
         self.__hidden_layer_counter = 0
 
