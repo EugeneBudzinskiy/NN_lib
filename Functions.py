@@ -64,7 +64,7 @@ class Func:
     @staticmethod
     def softmax_der(x):
         shape = x.shape
-        s = x.reshape(-1, 1)
+        s = x.reshape((-1, 1))
         d = np.diagflat(s) - np.dot(s, s.T)
         return d.diagonal().reshape(shape)
 
@@ -75,7 +75,7 @@ class Func:
 
     @staticmethod
     def mse_der(y, y_pred):
-        return 2 * (y - y_pred)
+        return -2 * (y - y_pred)
 
     """ OPTIMIZER FUNCTIONS """
     @staticmethod
