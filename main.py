@@ -1,10 +1,8 @@
-from NN_Constructor import Constructor
-from Functions import Functions
+from NNLibrary import NNLib
 
 
 def main():
-    f = Functions()
-    c = Constructor()
+    nnl = NNLib()
 
 
 if __name__ == '__main__':

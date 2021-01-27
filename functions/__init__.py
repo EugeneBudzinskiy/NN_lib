@@ -1,7 +1,7 @@
 from SingletonMeta import SingletonMeta
-from Activations import Activations
-from Losses import Losses
-from Optimizers import Optimizers
+from functions.Activations import Activations
+from functions.Losses import Losses
+from functions.Optimizers import Optimizers
 
 
 class Functions(metaclass=SingletonMeta):
