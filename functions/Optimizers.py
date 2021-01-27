@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-from SingletonMeta import SingletonMeta
+from singleton import SingletonMeta
 
 
 class Optimizers(metaclass=SingletonMeta):

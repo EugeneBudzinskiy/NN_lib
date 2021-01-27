@@ -1,15 +1,14 @@
-import numpy as np
 from abc import ABC
 from abc import abstractmethod
 
-from NeuralNetwork import NeuralNetwork
-from Layers import Layer
-from Layers import InputLayer
-from Layers import ActivationLayer
+from nn import NeuralNetwork
+from layers import Layer
+from layers import InputLayer
+from layers import ActivationLayer
 
-from Errors import InputLayerNotDefined
-from Errors import InputLayerAlreadyDefined
-from Errors import IsNotALayer
+from errors import InputLayerNotDefined
+from errors import InputLayerAlreadyDefined
+from errors import IsNotALayer
 
 
 class AbstractConstructor(ABC):

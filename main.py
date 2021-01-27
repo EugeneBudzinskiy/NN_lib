@@ -1,4 +1,4 @@
-from NNLibrary import NNLib
+from __init__ import NNLib
 
 
 def main():

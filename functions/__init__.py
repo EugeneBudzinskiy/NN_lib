@@ -1,4 +1,4 @@
-from SingletonMeta import SingletonMeta
+from singleton import SingletonMeta
 from functions.Activations import Activations
 from functions.Losses import Losses
 from functions.Optimizers import Optimizers
