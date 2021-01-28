@@ -16,6 +16,12 @@ class WrongStructure(Exception):
         super(WrongStructure, self).__init__(self.text)
 
 
+class WrongStructureElement(Exception):
+    def __init__(self, variable_name):
+        self.text = f'Element of the structure `{type(variable_name)}` is not Layer type'
+        super(WrongStructureElement, self).__init__(self.text)
+
+
 class IsNotALayer(Exception):
     def __init__(self, variable_name):
         self.text = f'`{type(variable_name)}` is not Layer type'

@@ -16,7 +16,7 @@ class Optimizer(ABC):
 
 
 class SGD(Optimizer):
-    def __init__(self, learning_rate: int = 0.0001):
+    def __init__(self, learning_rate: float = 0.0001):
         self.learning_rate = learning_rate
 
     def optimize(self, training_variables, gradient_vector):

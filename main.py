@@ -1,3 +1,5 @@
+import numpy as np
+
 from nnlibrary import NNLib
 
 
@@ -6,7 +8,18 @@ def main():
 
     nnl.constructor.add(nnl.layers.Input(node_count=3))
     nnl.constructor.add(nnl.layers.Dense(node_count=5, activation=nnl.activation.Sigmoid))
-    nnl.constructor.show_structure()
+    nnl.constructor.add(nnl.layers.Dense(node_count=6, activation=nnl.activation.Sigmoid))
+    nnl.constructor.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.Sigmoid))
+
+    loss = nnl.losses.MSE
+    optimizer = nnl.optimizers.SGD(learning_rate=0.0001)
+
+    model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
+
+    data = np.array([1, -1, 1])
+    result = model.predict(data)
+
+    print(result)
 
 
 if __name__ == '__main__':

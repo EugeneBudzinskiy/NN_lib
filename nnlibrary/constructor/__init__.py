@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABC
 from abc import abstractmethod
 
@@ -5,8 +6,9 @@ from nnlibrary.nn import NeuralNetwork
 from nnlibrary.layers.LayerTypes import Layer
 from nnlibrary.layers.LayerTypes import InputLayer
 from nnlibrary.layers.LayerTypes import ActivationLayer
-from nnlibrary.losses import Loss
 from nnlibrary.optimizers import Optimizer
+from nnlibrary.structure import Structure
+from nnlibrary.losses import Loss
 
 from nnlibrary.errors import InputLayerNotDefined
 from nnlibrary.errors import InputLayerAlreadyDefined
@@ -23,7 +25,7 @@ class AbstractConstructor(ABC):
         pass
 
     @abstractmethod
-    def compile(self, loss, optimizer) -> NeuralNetwork:
+    def compile(self, loss: Loss, optimizer: Optimizer) -> NeuralNetwork:
         pass
 
 
@@ -57,4 +59,22 @@ class Constructor(AbstractConstructor):
             raise IsNotALayer(layer)
 
     def compile(self, loss: Loss, optimizer: Optimizer) -> NeuralNetwork:
-        pass
+        tuple_structure = tuple(self.structure)
+        self.structure = list()
+
+        compiled_structure = Structure(tuple_structure)
+        self.weight_initialization(compiled_structure)
+
+        return NeuralNetwork(structure=compiled_structure, loss=loss, optimizer=optimizer)
+
+    @staticmethod
+    def weight_initialization(structure: Structure):
+        for i in range(structure.layer_count - 1):
+            weight_start, weight_end, _ = structure.variables_map[i]
+
+            previous_node = structure.node_counts[i]
+            next_node = structure.node_counts[i + 1]
+
+            coefficient = np.sqrt(2 / (previous_node + next_node))
+
+            structure.variables[weight_start:weight_end] = coefficient * np.random.rand(weight_end - weight_start)
