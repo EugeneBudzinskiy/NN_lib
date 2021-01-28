@@ -18,6 +18,6 @@ class WrongStructure(Exception):
 
 class IsNotALayer(Exception):
     def __init__(self, variable_name):
-        self.text = f'`{variable_name}` is not Layer type'
+        self.text = f'`{type(variable_name)}` is not Layer type'
         super(IsNotALayer, self).__init__(self.text)
 

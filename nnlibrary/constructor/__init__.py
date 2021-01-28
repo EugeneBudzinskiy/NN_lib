@@ -1,14 +1,16 @@
 from abc import ABC
 from abc import abstractmethod
 
-from nn import NeuralNetwork
-from layers import Layer
-from layers import InputLayer
-from layers import ActivationLayer
+from nnlibrary.nn import NeuralNetwork
+from nnlibrary.layers.LayerTypes import Layer
+from nnlibrary.layers.LayerTypes import InputLayer
+from nnlibrary.layers.LayerTypes import ActivationLayer
+from nnlibrary.losses import Loss
+from nnlibrary.optimizers import Optimizer
 
-from errors import InputLayerNotDefined
-from errors import InputLayerAlreadyDefined
-from errors import IsNotALayer
+from nnlibrary.errors import InputLayerNotDefined
+from nnlibrary.errors import InputLayerAlreadyDefined
+from nnlibrary.errors import IsNotALayer
 
 
 class AbstractConstructor(ABC):
@@ -27,33 +29,25 @@ class AbstractConstructor(ABC):
 
 class Constructor(AbstractConstructor):
     def __init__(self):
-        self.flag_input_init = False
-        self.flag_output_init = False
-
         self.structure = list()
 
     def show_structure(self):
         for el in self.structure:
-            print(el)
+            name = el.__class__.__name__
+            node_count = el.get_node_count()
+            print(f'{name} : {node_count}')
 
     def add(self, layer: Layer):
         if isinstance(layer, Layer):
-
             if isinstance(layer, InputLayer):
-
-                if self.flag_input_init:
+                if len(self.structure):
                     raise InputLayerAlreadyDefined
-
                 else:
                     self.structure.append(layer)
-                    self.flag_input_init = True
 
             elif isinstance(layer, ActivationLayer):
-
-                if self.flag_input_init:
-                    self.flag_output_init = True
+                if len(self.structure):
                     self.structure.append(layer)
-
                 else:
                     raise InputLayerNotDefined
 
@@ -62,5 +56,5 @@ class Constructor(AbstractConstructor):
         else:
             raise IsNotALayer(layer)
 
-    def compile(self, loss, optimizer) -> NeuralNetwork:
+    def compile(self, loss: Loss, optimizer: Optimizer) -> NeuralNetwork:
         pass

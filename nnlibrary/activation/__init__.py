@@ -2,7 +2,7 @@ import numpy as np
 from abc import ABC
 from abc import abstractmethod
 
-from singleton import SingletonMeta
+from nnlibrary.singleton import SingletonMeta
 
 
 class Activations(metaclass=SingletonMeta):

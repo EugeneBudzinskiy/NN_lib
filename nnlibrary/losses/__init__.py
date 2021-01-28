@@ -2,7 +2,7 @@ import numpy as np
 from abc import ABC
 from abc import abstractmethod
 
-from singleton import SingletonMeta
+from nnlibrary.singleton import SingletonMeta
 
 
 class Losses(metaclass=SingletonMeta):
@@ -10,7 +10,7 @@ class Losses(metaclass=SingletonMeta):
         self.MSE = MSE()
 
 
-class AbstractLoss(ABC):
+class Loss(ABC):
     @staticmethod
     @abstractmethod
     def loss(y_target, y_predicted):
@@ -22,7 +22,7 @@ class AbstractLoss(ABC):
         pass
 
 
-class MSE(AbstractLoss):
+class MSE(Loss):
     @staticmethod
     def loss(y_target, y_predicted):
         return np.mean(np.square(y_target - y_predicted))

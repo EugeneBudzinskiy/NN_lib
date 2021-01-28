@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-from singleton import SingletonMeta
+from nnlibrary.singleton import SingletonMeta
 
 
 class Optimizers(metaclass=SingletonMeta):
@@ -9,13 +9,13 @@ class Optimizers(metaclass=SingletonMeta):
         self.SGD = SGD
 
 
-class AbstractOptimizer(ABC):
+class Optimizer(ABC):
     @abstractmethod
     def optimize(self, training_variables, gradient_vector):
         pass
 
 
-class SGD(AbstractOptimizer):
+class SGD(Optimizer):
     def __init__(self, learning_rate: int = 0.0001):
         self.learning_rate = learning_rate
 

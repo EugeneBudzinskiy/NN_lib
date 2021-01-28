@@ -1,4 +1,4 @@
-from functions.Activations import AbstractActivation
+from nnlibrary.activation import AbstractActivation
 
 
 class Layer:
