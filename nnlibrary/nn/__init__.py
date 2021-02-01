@@ -2,79 +2,95 @@ import numpy as np
 
 from nnlibrary.nn.AbstractNeuralNetwork import AbstractNeuralNetwork
 from nnlibrary.optimizers import Optimizer
-from nnlibrary.structure import Structure
 from nnlibrary.losses import Loss
 
 
 class NeuralNetwork(AbstractNeuralNetwork):
-    def __init__(self, structure: Structure, loss: Loss, optimizer: Optimizer):
+    def __init__(self, structure: tuple, loss: Loss, optimizer: Optimizer):
         self.structure = structure
         self.loss = loss
         self.optimizer = optimizer
 
+        self.variable_map = self._init_variable_map()
+
+    def _init_variable_map(self):
+        buffer = list()
+        position = 0
+        for layer in self.structure[1:]:
+            prev_node, next_node = layer.weight.shape
+            weight_end = position + prev_node * next_node
+            bias_end = weight_end + int(layer.bias_flag) * next_node
+            buffer.append((position, weight_end, bias_end))
+            position = bias_end
+
+        return tuple(buffer)
+
+    def _apply_gradient(self, gradient_vector: np.ndarray):
+        for i in range(1, len(self.structure)):
+            position, weight_end, bias_end = self.variable_map[i - 1]
+            self.structure[i].weight = gradient_vector[position:weight_end].reshape(self.structure[i].weight.shape)
+            if self.structure[i].bias_flag:
+                self.structure[i].bias = gradient_vector[weight_end:bias_end].reshape(self.structure[i].bias.shape)
+
     def feedforward(self, batch_data: np.ndarray):
         data = batch_data.copy()
 
-        z_array = list()
-        a_array = list()
+        non_activated = list()
+        activated = list()
 
-        a_array.append(data.copy())
+        for current_layer in self.structure[1:]:
+            non_activated_data = np.dot(data, current_layer.weight) + current_layer.bias
+            non_activated.append(non_activated_data)
 
-        for i in range(self.structure.layer_count - 1):
-            prev_node, next_node = self.structure.node_counts[i], self.structure.node_counts[i + 1]
-            s_pos, w_end, b_end = self.structure.variables_map[i]
+            data = current_layer.activation.activation(non_activated_data)
+            activated.append(data)
 
-            c_weight = self.structure.variables[s_pos:w_end].reshape((prev_node, next_node))
-            c_bias = self.structure.variables[w_end:b_end]
-            activation_func = self.structure.activations_function[i]
-
-            z = np.dot(data, c_weight) + c_bias
-            z_array.append(z.copy())
-
-            data = activation_func(z)
-            a_array.append(data.copy())
-
-        return tuple(z_array), tuple(a_array)
+        return tuple(non_activated), tuple(activated)
 
     def predict(self, batch_data: np.ndarray):
-        _, result = self.feedforward(batch_data)
-        return result[-1]
+        data = batch_data.copy()
+        for current_layer in self.structure[1:]:
+            data = current_layer.activation.activation(np.dot(data, current_layer.weight) + current_layer.bias)
+
+        return data
 
     def learn(self, batch_data: np.ndarray, batch_target: np.ndarray):
-        z_array, a_array = self.feedforward(batch_data)
+        non_activated, activated = self.feedforward(batch_data)
 
-        pos, w_end, b_end = self.structure.variables_map[-1]
-        gradient = np.zeros(b_end)
+        position, weight_end, bias_end = self.variable_map[-1]
+        gradient = np.zeros(bias_end)
 
-        cur_z = z_array[-1]
-        prev_a, cur_a = a_array[-2], a_array[-1]
+        non_activated_data = non_activated[-1]
+        prev_activated_data, activated_data = activated[-2], activated[-1]
 
-        delta = self.loss.derivative(cur_a, batch_target) * self.structure.activations_derivative[-1](cur_z)
+        delta = self.loss.derivative(
+            activated_data, batch_target
+        ) * self.structure[-1].activation.derivative(non_activated_data)
 
         d_bias = np.mean(delta, axis=0)
-        d_weight = np.dot(prev_a.T, delta).reshape((w_end - pos))
+        d_weight = np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
 
-        gradient[pos:w_end] = d_weight
-        gradient[w_end:b_end] = d_bias
+        gradient[position:weight_end] = d_weight
+        if self.structure[-1].bias_flag:
+            gradient[weight_end:bias_end] = d_bias
 
-        for i in range(2, self.structure.layer_count):
-            next_node = self.structure.node_counts[-i]
-            next_next_node = self.structure.node_counts[-(i - 1)]
+        for i in range(2, len(self.structure) - 1):
+            next_position, next_weight_end, _ = self.variable_map[-(i - 1)]
+            position, weight_end, bias_end = self.variable_map[-i]
 
-            next_pos, next_w_end, _ = self.structure.variables_map[-(i - 1)]
-            pos, w_end, b_end = self.structure.variables_map[-i]
+            next_weight = self.structure[-(i - 1)].weight
 
-            next_weight = self.structure.variables[next_pos:next_w_end].reshape((next_node, next_next_node))
+            non_activated_data = non_activated[-i]
+            prev_activated_data = activated[-(i + 1)]
 
-            cur_z = z_array[-i]
-            prev_cur_a = a_array[-(i + 1)]
-
-            delta = np.dot(delta, next_weight.T) * self.structure.activations_derivative[-i](cur_z)
+            delta = np.dot(delta, next_weight.T) * self.structure[-i].activation.derivative(non_activated_data)
 
             d_bias = np.mean(delta, axis=0)
-            d_weight = np.dot(prev_cur_a.T, delta).reshape((w_end - pos))
+            d_weight = np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
 
-            gradient[pos:w_end] = d_weight
-            gradient[w_end:b_end] = d_bias
+            gradient[position:weight_end] = d_weight
+            if self.structure[-i].bias_flag:
+                gradient[weight_end:bias_end] = d_bias
 
-        self.optimizer.optimize(training_variables=self.structure.variables, gradient_vector=gradient)
+        optimized_gradient = self.optimizer.optimize(gradient_vector=gradient)
+        self._apply_gradient(gradient_vector=optimized_gradient)

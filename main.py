@@ -12,14 +12,23 @@ def main():
     nnl.constructor.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.Sigmoid))
 
     loss = nnl.losses.MSE
-    optimizer = nnl.optimizers.SGD(learning_rate=0.0001)
+    optimizer = nnl.optimizers.SGD(learning_rate=0.1)
 
     model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
 
-    data = np.array([1, -1, 1])
-    result = model.predict(data)
+    data = np.array([
+        [1, -1, 1]
+    ])
 
-    print(result)
+    target = np.array([
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ])
+
+    result = model.predict(data)
+    # print(result)
+
+    for _ in range(1000):
+        model.learn(data, target)
 
 
 if __name__ == '__main__':

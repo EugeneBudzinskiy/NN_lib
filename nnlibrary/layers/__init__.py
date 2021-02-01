@@ -15,5 +15,5 @@ class Input(InputLayer):
 
 
 class Dense(ActivationLayer):
-    def __init__(self, node_count: int, activation: AbstractActivation):
-        super(Dense, self).__init__(node_count, activation)
+    def __init__(self, node_count: int, activation: AbstractActivation, bias_flag: bool = True):
+        super(Dense, self).__init__(node_count=node_count, activation=activation, bias_flag=bias_flag)
