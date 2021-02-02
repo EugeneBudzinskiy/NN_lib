@@ -18,20 +18,18 @@ def main():
 
     data = np.array([
         [1, -1, 1],
+        [1, -1, -1],
         [1, -1, -1]
     ])
 
     target = np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1]
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1],
+        [2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1]
     ])
 
-    result = model.predict(data)
-    print(result)
-
-    for _ in range(1000):
-        model.learn(data, target)
-
+    acc = model.test_accuracy(data, target)
+    print(acc)
 
 if __name__ == '__main__':
     main()

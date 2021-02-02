@@ -54,8 +54,6 @@ class NeuralNetwork(AbstractNeuralNetwork):
         non_activated_data = non_activated[-1]
         prev_activated_data, activated_data = activated[-2], activated[-1]
 
-        print(self.loss.loss(batch_target, activated_data))
-
         delta = self.loss.derivative(activated_data, batch_target) * \
             self.structure[-1].activation.derivative(non_activated_data)
 
@@ -86,3 +84,38 @@ class NeuralNetwork(AbstractNeuralNetwork):
                 gradient[weight_end:bias_end] = d_bias
 
         self.optimizer.optimize(trainable_variables=self.storage.variables, gradient_vector=gradient)
+
+    def train(self,
+              data: np.ndarray,
+              target: np.ndarray,
+              epoch: int = 1,
+              batch_size: int = 32,
+              stochastic: bool = True):
+
+        data_len = len(target)
+        pass_number = data_len // batch_size
+
+        for eph in range(epoch):
+            print(f'Epoch {eph + 1}: ')
+            for i in range(pass_number):
+                if stochastic:
+                    indexes = np.random.choice(data_len, batch_size)
+                else:
+                    indexes = np.arange(start=i * batch_size, stop=(i + 1) * batch_size)
+
+                self.learn(batch_data=data[indexes], batch_target=target[indexes])
+
+    def test_accuracy(self, data: np.ndarray, target: np.ndarray, batch_size: int = 1):
+        data_len = len(target)
+        pass_number = data_len // batch_size
+
+        wrong_counter = 0
+
+        for i in range(pass_number):
+            result = self.predict(data[i * batch_size:(i + 1) * batch_size])
+            current_target = target[i * batch_size:(i + 1) * batch_size]
+
+            wrong_counter += np.count_nonzero(np.argmax(result, axis=1) - np.argmax(current_target, axis=1))
+
+        return 1 - wrong_counter / (pass_number * batch_size)
+
