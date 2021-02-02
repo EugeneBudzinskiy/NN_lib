@@ -45,7 +45,6 @@ class NeuralNetwork(AbstractNeuralNetwork):
         return data
 
     def learn(self, batch_data: np.ndarray, batch_target: np.ndarray):
-        scale_factor = 1 / len(batch_data)
         non_activated, activated = self.feedforward(batch_data)
 
         position, weight_end, bias_end = self.storage.map[-1]
@@ -57,8 +56,8 @@ class NeuralNetwork(AbstractNeuralNetwork):
         delta = self.loss.derivative(activated_data, batch_target) * \
             self.structure[-1].activation.derivative(non_activated_data)
 
-        d_bias = np.mean(delta, axis=0)
-        d_weight = scale_factor * np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
+        d_bias = np.sum(delta, axis=0)
+        d_weight = np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
 
         gradient[position:weight_end] = d_weight
         if self.structure[-1].bias_flag:
@@ -76,8 +75,8 @@ class NeuralNetwork(AbstractNeuralNetwork):
 
             delta = np.dot(delta, next_weight.T) * self.structure[-i].activation.derivative(non_activated_data)
 
-            d_bias = np.mean(delta, axis=0)
-            d_weight = scale_factor * np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
+            d_bias = np.sum(delta, axis=0)
+            d_weight = np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
 
             gradient[position:weight_end] = d_weight
             if self.structure[-i].bias_flag:
