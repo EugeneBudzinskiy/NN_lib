@@ -47,7 +47,6 @@ class Constructor(AbstractConstructor):
 
             elif isinstance(layer, ActivationLayer):
                 if len(self.structure) > 0:
-                    layer.layer_initialization(self.structure[-1])
                     self.structure.append(layer)
                 else:
                     raise InputLayerNotDefined

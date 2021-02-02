@@ -17,15 +17,17 @@ def main():
     model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
 
     data = np.array([
-        [1, -1, 1]
+        [1, -1, 1],
+        [1, -1, -1]
     ])
 
     target = np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1]
     ])
 
     result = model.predict(data)
-    # print(result)
+    print(result)
 
     for _ in range(1000):
         model.learn(data, target)

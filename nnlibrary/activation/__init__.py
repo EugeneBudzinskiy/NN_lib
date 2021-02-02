@@ -16,7 +16,7 @@ class Activations(metaclass=SingletonMeta):
 class AbstractActivation(ABC, metaclass=SingletonMeta):
     @staticmethod
     @abstractmethod
-    def activation(x):
+    def activate(x):
         pass
 
     @staticmethod
@@ -27,18 +27,18 @@ class AbstractActivation(ABC, metaclass=SingletonMeta):
 
 class Sigmoid(AbstractActivation):
     @staticmethod
-    def activation(x):
+    def activate(x):
         return 1 / (1 + np.exp(-x))
 
     @staticmethod
     def derivative(x):
-        e = Sigmoid.activation(x)
+        e = Sigmoid.activate(x)
         return e * (1 - e)
 
 
 class ReLU(AbstractActivation):
     @staticmethod
-    def activation(x):
+    def activate(x):
         x[x < 0] = 0
         return x
 
@@ -51,17 +51,17 @@ class ReLU(AbstractActivation):
 
 class TanH(AbstractActivation):
     @staticmethod
-    def activation(x):
+    def activate(x):
         return np.tanh(x)
 
     @staticmethod
     def derivative(x):
-        return 1 - np.square(TanH.activation(x))
+        return 1 - np.square(TanH.activate(x))
 
 
 class Linear(AbstractActivation):
     @staticmethod
-    def activation(x):
+    def activate(x):
         return x
 
     @staticmethod

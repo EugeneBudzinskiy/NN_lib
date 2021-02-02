@@ -12,7 +12,7 @@ class Optimizers(metaclass=SingletonMeta):
 
 class Optimizer(ABC):
     @abstractmethod
-    def optimize(self, gradient_vector) -> ndarray:
+    def optimize(self, trainable_variables: ndarray, gradient_vector: ndarray):
         pass
 
 
@@ -20,5 +20,5 @@ class SGD(Optimizer):
     def __init__(self, learning_rate: float = 0.0001):
         self.learning_rate = learning_rate
 
-    def optimize(self, gradient_vector):
-        return self.learning_rate * gradient_vector
+    def optimize(self, trainable_variables: ndarray, gradient_vector: ndarray):
+        trainable_variables += self.learning_rate * gradient_vector
