@@ -13,7 +13,6 @@ class Activations(metaclass=SingletonMeta):
         self.ReLU = ReLU()
         self.TanH = TanH()
         self.Exponential = Exponential()
-        self.Softmax = Softmax()
 
 
 class AbstractActivation(ABC, metaclass=SingletonMeta):
@@ -95,14 +94,3 @@ class Exponential(AbstractActivation):
     @staticmethod
     def derivative(x):
         return Exponential.activate(x)
-
-
-class Softmax(AbstractActivation):
-    @staticmethod
-    def activate(x):
-        e = np.exp(x - np.max(x, axis=1).reshape((-1, 1)))
-        return e / np.sum(e, axis=1).reshape((-1, 1))
-
-    @staticmethod
-    def derivative(x):
-        return 0
