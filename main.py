@@ -12,7 +12,7 @@ def main():
     nnl.constructor.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.Sigmoid))
 
     loss = nnl.losses.MSE
-    optimizer = nnl.optimizers.SGD(learning_rate=0.01)
+    optimizer = nnl.optimizers.Adam(learning_rate=0.1)
 
     model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
 
@@ -28,8 +28,11 @@ def main():
         [1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, -.1]
     ])
 
-    acc = model.test_accuracy(data, target)
-    print(acc)
+    # acc = model.test_accuracy(data, target)
+    # print(acc)
+
+    for _ in range(1000):
+        model.learn(data, target)
 
 
 if __name__ == '__main__':

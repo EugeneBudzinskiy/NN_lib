@@ -53,6 +53,8 @@ class NeuralNetwork(AbstractNeuralNetwork):
         non_activated_data = non_activated[-1]
         prev_activated_data, activated_data = activated[-2], activated[-1]
 
+        print(self.loss.loss(batch_target, activated_data))
+
         delta = \
             self.loss.derivative(activated_data, batch_target) * \
             self.structure[-1].activation.derivative(non_activated_data)
