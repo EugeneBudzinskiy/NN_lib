@@ -7,10 +7,13 @@ from nnlibrary.singleton import SingletonMeta
 
 class Activations(metaclass=SingletonMeta):
     def __init__(self):
+        self.Linear = Linear()
         self.Sigmoid = Sigmoid()
+        self.HardSigmoid = HardSigmoid()
         self.ReLU = ReLU()
         self.TanH = TanH()
-        self.Linear = Linear()
+        self.Exponential = Exponential()
+        self.Softmax = Softmax()
 
 
 class AbstractActivation(ABC, metaclass=SingletonMeta):
@@ -25,10 +28,35 @@ class AbstractActivation(ABC, metaclass=SingletonMeta):
         pass
 
 
+class Linear(AbstractActivation):
+    @staticmethod
+    def activate(x):
+        return x
+
+    @staticmethod
+    def derivative(x):
+        return 1
+
+
 class Sigmoid(AbstractActivation):
     @staticmethod
     def activate(x):
         return 1 / (1 + np.exp(-x))
+
+    @staticmethod
+    def derivative(x):
+        e = Sigmoid.activate(x)
+        return e * (1 - e)
+
+
+class HardSigmoid(AbstractActivation):
+    @staticmethod
+    def activate(x):
+        x[(x >= -2.5) * (x <= 2.5)] *= 0.2
+        x[(x >= -2.5) * (x <= 2.5)] += 0.5
+        x[x < -2.5] = 0
+        x[x > 2.5] = 1
+        return x
 
     @staticmethod
     def derivative(x):
@@ -59,11 +87,22 @@ class TanH(AbstractActivation):
         return 1 - np.square(TanH.activate(x))
 
 
-class Linear(AbstractActivation):
+class Exponential(AbstractActivation):
     @staticmethod
     def activate(x):
-        return x
+        return np.exp(x)
 
     @staticmethod
     def derivative(x):
-        return 1
+        return Exponential.activate(x)
+
+
+class Softmax(AbstractActivation):
+    @staticmethod
+    def activate(x):
+        e = np.exp(x - np.max(x, axis=1).reshape((-1, 1)))
+        return e / np.sum(e, axis=1).reshape((-1, 1))
+
+    @staticmethod
+    def derivative(x):
+        return 0

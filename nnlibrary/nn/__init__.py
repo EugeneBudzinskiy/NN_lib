@@ -1,6 +1,7 @@
 import numpy as np
 
 from nnlibrary.nn.AbstractNeuralNetwork import AbstractNeuralNetwork
+from nnlibrary.activation import Softmax
 from nnlibrary.nn.VariableStorage import VariableStorage
 from nnlibrary.optimizers import Optimizer
 from nnlibrary.losses import Loss
@@ -53,8 +54,11 @@ class NeuralNetwork(AbstractNeuralNetwork):
         non_activated_data = non_activated[-1]
         prev_activated_data, activated_data = activated[-2], activated[-1]
 
-        delta = self.loss.derivative(activated_data, batch_target) * \
-            self.structure[-1].activation.derivative(non_activated_data)
+        if isinstance(self.structure[-1].activation, Softmax):
+            delta = batch_target - activated_data
+        else:
+            delta = self.loss.derivative(activated_data, batch_target) * \
+                    self.structure[-1].activation.derivative(non_activated_data)
 
         d_bias = np.sum(delta, axis=0)
         d_weight = np.dot(prev_activated_data.T, delta).reshape((weight_end - position))
@@ -107,7 +111,6 @@ class NeuralNetwork(AbstractNeuralNetwork):
     def test_accuracy(self, data: np.ndarray, target: np.ndarray, batch_size: int = 1):
         data_len = len(target)
         pass_number = data_len // batch_size
-
         wrong_counter = 0
 
         for i in range(pass_number):
