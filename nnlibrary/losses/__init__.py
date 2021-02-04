@@ -13,20 +13,20 @@ class Losses(metaclass=SingletonMeta):
 class Loss(ABC):
     @staticmethod
     @abstractmethod
-    def loss(y_target, y_predicted):
+    def loss(y_predicted, y_target):
         pass
 
     @staticmethod
     @abstractmethod
-    def derivative(y_target, y_predicted):
+    def derivative(y_predicted, y_target):
         pass
 
 
 class MSE(Loss):
     @staticmethod
-    def loss(y_target, y_predicted):
+    def loss(y_predicted, y_target):
         return np.mean(np.square(y_target - y_predicted))
 
     @staticmethod
-    def derivative(y_target, y_predicted):
-        return - 2 * (y_target - y_predicted)
+    def derivative(y_predicted, y_target):
+        return - 2 * (y_target - y_predicted) / len(y_target)
