@@ -30,7 +30,7 @@ class AbstractActivation(ABC, metaclass=SingletonMeta):
 class Linear(AbstractActivation):
     @staticmethod
     def activate(x):
-        return x
+        return x.copy()
 
     @staticmethod
     def derivative(x):
@@ -51,29 +51,35 @@ class Sigmoid(AbstractActivation):
 class HardSigmoid(AbstractActivation):
     @staticmethod
     def activate(x):
-        x[(x >= -2.5) * (x <= 2.5)] *= 0.2
-        x[(x >= -2.5) * (x <= 2.5)] += 0.5
-        x[x < -2.5] = 0
-        x[x > 2.5] = 1
-        return x
+        z = x.copy()
+        z[(z >= -2.5) * (z <= 2.5)] *= 0.2
+        z[(z >= -2.5) * (z <= 2.5)] += 0.5
+        z[z < -2.5] = 0
+        z[z > 2.5] = 1
+        return z
 
     @staticmethod
     def derivative(x):
-        e = Sigmoid.activate(x)
-        return e * (1 - e)
+        z = x.copy()
+        z[(z >= -2.5) * (z <= 2.5)] = 0.2
+        z[z > 2.5] = 0
+        z[z < -2.5] = 0
+        return z
 
 
 class ReLU(AbstractActivation):
     @staticmethod
     def activate(x):
-        x[x < 0] = 0
-        return x
+        z = x.copy()
+        z[z < 0] = 0
+        return z
 
     @staticmethod
     def derivative(x):
-        x[x < 0] = 0
-        x[x > 0] = 1
-        return x
+        z = x.copy()
+        z[z < 0] = 0
+        z[z > 0] = 1
+        return z
 
 
 class TanH(AbstractActivation):
