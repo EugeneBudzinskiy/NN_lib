@@ -23,7 +23,7 @@ class SGD(Optimizer):
         self.learning_rate = learning_rate
 
     def optimize(self, trainable_variables: ndarray, gradient_vector: ndarray):
-        trainable_variables += self.learning_rate * gradient_vector
+        trainable_variables -= self.learning_rate * gradient_vector
 
 
 class Adam(Optimizer):
@@ -54,5 +54,5 @@ class Adam(Optimizer):
         dash_v_t = self.v_t / (1 - self.powered_beta_1)
         dash_s_t = self.s_t / (1 - self.powered_beta_2)
 
-        trainable_variables += self.learning_rate * dash_v_t / (sqrt(dash_s_t) + self.epsilon)
+        trainable_variables -= self.learning_rate * dash_v_t / (sqrt(dash_s_t) + self.epsilon)
 

@@ -53,10 +53,10 @@ class NeuralNetwork(AbstractNeuralNetwork):
         non_activated_data = non_activated[-1]
         prev_activated_data, activated_data = activated[-2], activated[-1]
 
-        print(self.loss.loss(batch_target, activated_data))
+        print(self.loss.loss(y_predicted=activated_data, y_target=batch_target))
 
         delta = \
-            self.loss.derivative(activated_data, batch_target) * \
+            self.loss.derivative(y_predicted=activated_data, y_target=batch_target) * \
             self.structure[-1].activation.derivative(non_activated_data)
 
         d_bias = np.sum(delta, axis=0)

@@ -34,7 +34,7 @@ class Linear(AbstractActivation):
 
     @staticmethod
     def derivative(x):
-        return 1
+        return np.ones_like(x)
 
 
 class Sigmoid(AbstractActivation):
