@@ -1,5 +1,3 @@
-import numpy as np
-
 from nnlibrary import NNLib
 
 
@@ -15,24 +13,6 @@ def main():
     optimizer = nnl.optimizers.Adam(learning_rate=0.1)
 
     model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
-
-    data = np.array([
-        [1, -1, 1],
-        [1, -1, -1],
-        [1, -1, -1]
-    ])
-
-    target = np.array([
-        [1, .1, .1, .1, .1, .1, .1, .1, .1, .1, 1., .1, .1, .1, .1],
-        [1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, -.1, -.1],
-        [1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, .1, -.1]
-    ])
-
-    # acc = model.test_accuracy(data, target)
-    # print(acc)
-
-    for _ in range(1000):
-        model.learn(data, target)
 
 
 if __name__ == '__main__':

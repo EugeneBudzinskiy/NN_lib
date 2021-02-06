@@ -1,9 +1,9 @@
 import numpy as np
 
+from nnlibrary.losses import Loss
 from nnlibrary.nn.AbstractNeuralNetwork import AbstractNeuralNetwork
 from nnlibrary.nn.VariableStorage import VariableStorage
 from nnlibrary.optimizers import Optimizer
-from nnlibrary.losses import Loss
 
 
 class NeuralNetwork(AbstractNeuralNetwork):
@@ -52,8 +52,6 @@ class NeuralNetwork(AbstractNeuralNetwork):
 
         non_activated_data = non_activated[-1]
         prev_activated_data, activated_data = activated[-2], activated[-1]
-
-        print(self.loss.loss(y_predicted=activated_data, y_target=batch_target))
 
         delta = \
             self.loss.derivative(y_predicted=activated_data, y_target=batch_target) * \
@@ -119,4 +117,3 @@ class NeuralNetwork(AbstractNeuralNetwork):
             wrong_counter += np.count_nonzero(np.argmax(result, axis=1) - np.argmax(current_target, axis=1))
 
         return 1 - wrong_counter / (pass_number * batch_size)
-

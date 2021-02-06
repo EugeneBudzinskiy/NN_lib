@@ -1,16 +1,15 @@
 from abc import ABC
 from abc import abstractmethod
 
-from nnlibrary.nn import NeuralNetwork
-from nnlibrary.layers.LayerTypes import Layer
-from nnlibrary.layers.LayerTypes import InputLayer
-from nnlibrary.layers.LayerTypes import ActivationLayer
-from nnlibrary.optimizers import Optimizer
-from nnlibrary.losses import Loss
-
-from nnlibrary.errors import InputLayerNotDefined
 from nnlibrary.errors import InputLayerAlreadyDefined
+from nnlibrary.errors import InputLayerNotDefined
 from nnlibrary.errors import IsNotALayer
+from nnlibrary.layers.LayerTypes import ActivationLayer
+from nnlibrary.layers.LayerTypes import InputLayer
+from nnlibrary.layers.LayerTypes import Layer
+from nnlibrary.losses import Loss
+from nnlibrary.nn import NeuralNetwork
+from nnlibrary.optimizers import Optimizer
 
 
 class AbstractConstructor(ABC):

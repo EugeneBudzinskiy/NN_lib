@@ -1,6 +1,7 @@
-import numpy as np
 from abc import ABC
 from abc import abstractmethod
+
+import numpy as np
 
 from nnlibrary.singleton import SingletonMeta
 

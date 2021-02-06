@@ -1,7 +1,8 @@
-from numpy import ndarray
-from numpy import sqrt
 from abc import ABC
 from abc import abstractmethod
+
+from numpy import ndarray
+from numpy import sqrt
 
 from nnlibrary.singleton import SingletonMeta
 
