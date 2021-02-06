@@ -10,6 +10,7 @@ class Optimizers(metaclass=SingletonMeta):
     def __init__(self):
         self.SGD = SGD
         self.Adam = Adam
+        self.RMSprop = RMSprop
 
 
 class Optimizer(ABC):
@@ -19,11 +20,17 @@ class Optimizer(ABC):
 
 
 class SGD(Optimizer):
-    def __init__(self, learning_rate: float = 0.0001):
+    def __init__(self, learning_rate: float = 0.0001, momentum: float = 0.0):
         self.learning_rate = learning_rate
+        self.momentum = momentum
+        self.velocity = 0
 
     def optimize(self, trainable_variables: ndarray, gradient_vector: ndarray):
-        trainable_variables -= self.learning_rate * gradient_vector
+        if self.momentum:
+            self.velocity = self.momentum * self.velocity - self.learning_rate * gradient_vector
+            trainable_variables += self.velocity
+        else:
+            trainable_variables -= self.learning_rate * gradient_vector
 
 
 class Adam(Optimizer):
@@ -56,3 +63,23 @@ class Adam(Optimizer):
 
         trainable_variables -= self.learning_rate * dash_v_t / (sqrt(dash_s_t) + self.epsilon)
 
+
+class RMSprop(Optimizer):
+    def __init__(self, learning_rate: float = 0.0001, beta: float = 0.9, momentum: float = 0.0, epsilon: float = 1e-7):
+        self.learning_rate = learning_rate
+        self.beta = beta
+        self.epsilon = epsilon
+        self.momentum = momentum
+
+        self.previous = 0
+        self.velocity = 0
+
+    def optimize(self, trainable_variables: ndarray, gradient_vector: ndarray):
+        if self.momentum:
+            self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
+            self.previous = self.momentum * self.previous - \
+                self.learning_rate * gradient_vector / (sqrt(self.velocity) + self.epsilon)
+            trainable_variables += self.previous
+        else:
+            self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
+            trainable_variables -= self.learning_rate * gradient_vector / (sqrt(self.velocity) + self.epsilon)
