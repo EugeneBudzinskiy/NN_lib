@@ -26,7 +26,7 @@ class Loss(ABC):
 class MSE(Loss):
     @staticmethod
     def loss(y_predicted, y_target):
-        return np.mean(np.square(y_target - y_predicted))
+        return np.mean(np.square(y_target - y_predicted), axis=0)
 
     @staticmethod
     def derivative(y_predicted, y_target):
