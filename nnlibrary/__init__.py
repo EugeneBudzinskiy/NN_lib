@@ -1,3 +1,5 @@
+from nnlibrary import nn
+
 from nnlibrary import activation
 from nnlibrary.losses import Losses
 from nnlibrary.optimizers import Optimizers

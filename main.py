@@ -15,9 +15,7 @@ def main():
     # optimizer = nnl.optimizers.Adam(learning_rate=0.1)
     #
     # model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
-
-    res = nnl.activation.relu(np.array([-2]))
-    print(res)
+    model = nnl.nn.Sequential()
 
 
 if __name__ == '__main__':
