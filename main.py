@@ -16,6 +16,15 @@ def main():
     #
     # model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
     model = nnl.nn.Sequential()
+    # model.add(nnl.layers.Input(node_count=3))
+    # model.add(nnl.layers.Dense(node_count=4, activation=nnl.activation.relu, bias_flag=False))
+    # model.add("hello")
+
+    model.add(nnl.layers.Input(node_count=3))
+    model.add(nnl.layers.Dense(node_count=5, activation=nnl.activation.sigmoid))
+    model.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.sigmoid))
+    res = model.show_structure()
+    print(res)
 
 
 if __name__ == '__main__':
