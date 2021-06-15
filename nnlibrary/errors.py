@@ -12,14 +12,31 @@ class InputLayerAlreadyDefined(Exception):
 
 class WrongStructure(Exception):
     def __init__(self):
-        self.text = 'Neural Network has wrong structure'
+        self.text = 'Model has wrong structure'
         super(WrongStructure, self).__init__(self.text)
 
 
 class NothingToPop(Exception):
     def __init__(self):
-        self.text = 'Neural Network has no layer`s to pop'
+        self.text = 'Model has no layer`s to pop'
         super(NothingToPop, self).__init__(self.text)
+
+
+class AlreadyCompiled(Exception):
+    def __init__(self):
+        self.text = 'Model was already been compiled'
+        super(AlreadyCompiled, self).__init__(self.text)
+
+
+class NotCompiled(Exception):
+    def __init__(self):
+        self.text = 'Model has`t been compiled'
+        super(NotCompiled, self).__init__(self.text)
+
+
+class TryModifyCompiledNN(Exception):
+    def __init__(self):
+        self.text = 'Try to modify already compiled Model'
 
 
 class WrongLayerIndex(Exception):

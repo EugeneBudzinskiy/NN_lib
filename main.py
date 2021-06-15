@@ -23,8 +23,12 @@ def main():
     model.add(nnl.layers.Input(node_count=3))
     model.add(nnl.layers.Dense(node_count=5, activation=nnl.activation.sigmoid))
     model.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.sigmoid))
-    res = model.show_structure()
-    print(res)
+
+    model.compile()
+
+    print(np.std(model.weights[0][0]))
+    print(np.mean(model.weights[0][0]))
+    print(model.weights[1])
 
 
 if __name__ == '__main__':
