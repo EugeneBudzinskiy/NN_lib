@@ -1,4 +1,4 @@
-from nnlibrary.layers.layer_types import InputLayer
+from nnlibrary.layers.layer_types import ActivationLayer
 from nnlibrary.layers.layer_types import Layer
 from nnlibrary.errors import InputLayerAlreadyDefined
 from nnlibrary.errors import IsNotALayer
@@ -10,20 +10,31 @@ from nnlibrary.errors import WrongStructure
 
 class Sequential:
     def __init__(self):
-        self.input_layer = None
-        self.layers = list()
-        self.weight = list()
-        self.bias = list()
+        self._is_compiled = False
+
+        self._input_layer = None
+        self._layers = list()
+
+        self._weight = list()
+        self._bias = list()
+
+    @property
+    def layers(self):
+        return self._layers
+
+    @property
+    def weights(self):
+        return self._weight, self._bias
 
     def add(self, layer):
         if isinstance(layer, Layer):
-            if isinstance(layer, InputLayer):
-                if self.input_layer is None:
-                    self.input_layer = layer
+            if isinstance(layer, ActivationLayer):
+                self._layers.append(layer)
+            else:
+                if self._input_layer is None:
+                    self._input_layer = layer
                 else:
                     raise InputLayerAlreadyDefined
-            else:
-                self.layers.append(layer)
         else:
             raise IsNotALayer(layer)
 

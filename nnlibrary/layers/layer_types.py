@@ -7,9 +7,9 @@ class Layer:
         return self._node_count
 
 
-class InputLayer(Layer):
+class Input(Layer):
     def __init__(self, node_count: int):
-        super(InputLayer, self).__init__(node_count=node_count)
+        super(Input, self).__init__(node_count=node_count)
 
 
 class ActivationLayer(Layer):
@@ -17,7 +17,7 @@ class ActivationLayer(Layer):
         super(ActivationLayer, self).__init__(node_count=node_count)
         self._activation = activation
         self._bias_flag = bias_flag
-        self.trainable = trainable
+        self._trainable = trainable
 
     @property
     def activation(self):
@@ -27,10 +27,13 @@ class ActivationLayer(Layer):
     def bias_flag(self):
         return self._bias_flag
 
+    @property
+    def trainable(self):
+        return self._trainable
 
-class Input(InputLayer):
-    def __init__(self, node_count: int):
-        super(Input, self).__init__(node_count=node_count)
+    @trainable.setter
+    def trainable(self, value):
+        self._trainable = value
 
 
 class Dense(ActivationLayer):
