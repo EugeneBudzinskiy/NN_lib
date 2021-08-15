@@ -4,6 +4,8 @@ from abc import abstractmethod
 from numpy import ndarray
 from numpy import sqrt
 
+from nnlibrary import errors
+
 
 class Optimizer(ABC):
     @abstractmethod
@@ -92,9 +94,14 @@ optimizer_dict = {
 }
 
 
-def get_optimizer(name: str):
-    if type(name) == str:
+def get_optimizer(name):
+    if isinstance(name, Optimizer):
+        return name
+    elif type(name) == str:
         low_name = name.lower()
-        return optimizer_dict[low_name] if low_name in optimizer_dict else None
+        if low_name in optimizer_dict:
+            return optimizer_dict[low_name]()
+        else:
+            raise errors.WrongOptimizer(name)
     else:
         raise ValueError(f'Optimizer name should be `str` type, instead has `{type(name).__name__}` type')

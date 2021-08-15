@@ -1,5 +1,7 @@
 import time
+
 import numpy as np
+
 import nnlibrary as nnl
 
 
@@ -12,6 +14,14 @@ class Sequential:
         self._variables = None
         self._optimizer = None
         self._loss = None
+
+    # @property
+    # def optimizer(self):
+    #     return self._optimizer
+    #
+    # @property
+    # def loss(self):
+    #     return self._loss
 
     @property
     def layers(self):
@@ -123,20 +133,10 @@ class Sequential:
                 elif loss is None:
                     raise nnl.errors.LossNotSpecify
                 else:
-
-                    optimizer_class = nnl.optimizers.get_optimizer(optimizer)
-                    if optimizer_class is None:
-                        raise nnl.errors.WrongOptimizer(optimizer)
-                    else:
-                        self._optimizer = optimizer_class()
-
-                    loss_func = nnl.losses.get_loss(loss)
-                    if loss_func is None:
-                        raise nnl.errors.WrongLoss(loss)
-                    else:
-                        self._loss = loss_func
-
+                    self._optimizer = nnl.optimizers.get_optimizer(optimizer)
+                    self._loss = nnl.losses.get_loss(loss)
                     self._variables = np.zeros(self._get_variables_count())
+
                     weight_pointer_start = 0
                     prev_node_count = self._input_layer.node_count
 
@@ -168,10 +168,7 @@ class Sequential:
                 steps: int = None):
 
         if self._is_compiled:
-            global_time_start = t = time.clock()
-            if verbose == 1:
-                print('Prediction process started...')
-                nnl.print_progress_bar(0, steps, time.clock() - global_time_start)
+            global_time_start = time.clock()
 
             if steps is None:
                 steps = 0
@@ -196,15 +193,20 @@ class Sequential:
                     piece_result = self.predict_on_batch(x[start_cut:stop_cut])
                     result.put(range(start_cut * output_size, stop_cut * output_size), piece_result)
 
-                    t_end = time.clock()
-                    if verbose == 1 and t_end - t > 0.1:
-                        t = t_end
-                        nnl.print_progress_bar(i, steps, t - global_time_start)
+                    if verbose == 1:
+                        nnl.progress_bar(
+                            iteration=i + 1,
+                            total=steps,
+                            time_passed=time.clock() - global_time_start
+                        )
             else:
                 result = self.predict_on_batch(x)
-
-            if verbose == 1:
-                nnl.print_progress_bar(steps, steps, time.clock() - global_time_start)
+                if verbose == 1:
+                    nnl.progress_bar(
+                        iteration=1,
+                        total=1,
+                        time_passed=time.clock() - global_time_start
+                    )
 
             return result
         else:
@@ -252,6 +254,64 @@ class Sequential:
         else:
             raise nnl.errors.NotCompiled
 
+    def _back_propagation_single(self, layer_number: int, delta, non_activated, gradient):
+        weight_size = self._layers[layer_number].node_count * self._layers[layer_number - 1].node_count
+        bias_size = self._layers[layer_number].node_count
+
+        weight_begin = self._get_variables_count(stop=layer_number)
+        weight_end = weight_begin + weight_size
+
+        d_bias = np.sum(delta, axis=0)
+        d_weight = np.dot(non_activated[layer_number - 1].T, delta).reshape(weight_size)
+
+        gradient.put(indices=range(weight_begin, weight_end), values=d_weight)
+        if self._layers[layer_number].bias_flag:
+            gradient.put(indices=range(weight_end, weight_end + bias_size), values=d_bias)
+
+        next_weight = self._get_weight(layer_number=layer_number)
+        delta = np.dot(delta, next_weight.T) * \
+            nnl.diff(self._layers[layer_number - 1].activation, non_activated[layer_number - 1])
+
+        return delta
+
+    def _back_propagation(self, data, target, loss_sum: float, gradient):
+        non_activated, activated = self._feedforward(data)
+        loss_wrapper = self._loss_wrapper(target)
+        loss_sum += loss_wrapper(activated[-1])
+
+        delta = nnl.diff(loss_wrapper, activated[-1]) * \
+            nnl.diff(self._layers[-1].activation, non_activated[-1])
+
+        for i in range(len(self._layers) - 1, 0, -1):
+            delta = self._back_propagation_single(
+                layer_number=i,
+                delta=delta,
+                non_activated=non_activated,
+                gradient=gradient
+            )
+
+        weight_size = self._input_layer.node_count * self._layers[0].node_count
+        bias_size = self._input_layer.node_count
+
+        d_bias = np.sum(delta, axis=0)
+        d_weight = np.dot(data.T, delta).reshape(weight_size)
+
+        gradient.put(indices=range(0, weight_size), values=d_weight)
+        if self._layers[0].bias_flag:
+            gradient.put(indices=range(weight_size, weight_size + bias_size), values=d_bias)
+
+        return loss_sum
+
+    @staticmethod
+    def _unison_shuffled(a, b):
+        x, y = a.copy(), b.copy()
+        z = np.c_[x.reshape(len(x), -1), y.reshape(len(y), -1)]
+        new_x = z[:, :x.size // len(x)].reshape(x.shape)
+        new_y = z[:, x.size // len(y):].reshape(y.shape)
+
+        np.random.shuffle(z)
+        return new_x, new_y
+
     def fit(self,
             x: np.ndarray = None,
             y: np.ndarray = None,
@@ -261,64 +321,43 @@ class Sequential:
             shuffle: bool = True):
 
         if self._is_compiled:
+            x_cp, y_cp = self._unison_shuffled(x, y) if shuffle else (x.copy(), y.copy())
+            in_s = y_cp.shape[0]
+
             if batch_size is None:
                 batch_size = 32
 
-            in_s = y.shape[0]
             iterations = in_s // batch_size if in_s % batch_size == 0 else in_s // batch_size + 1
             gradient = np.zeros_like(self._variables)
+
+            pfx = 'Epoch {}/{} ||| Progress:'
+            sfx = '[Loss = {:0.4f}]'
 
             for epoch in range(epochs):
                 epoch_time = time.clock()
                 loss_sum = 0
 
-                pfx = f'Epoch {epoch + 1}/{epochs} & Progress:'
-                sfx = f'Loss = {loss_sum}'
-                if verbose == 1:
-                    nnl.print_progress_bar(0, iterations, time.clock() - epoch_time, prefix=pfx, suffix=sfx)
-
                 for k in range(iterations):
-                    data = x[batch_size * k:batch_size * (k + 1)]
-                    target = y[batch_size * k:batch_size * (k + 1)]
+                    data = x_cp[batch_size * k:batch_size * (k + 1)]
+                    target = y_cp[batch_size * k:batch_size * (k + 1)]
 
-                    non_activated, activated = self._feedforward(data)
-                    loss_wrapper = self._loss_wrapper(target)
-                    loss_sum += loss_wrapper(activated[-1])
-
-                    delta = nnl.diff(loss_wrapper, activated[-1]) * \
-                        nnl.diff(self._layers[-1].activation, non_activated[-1])
-
-                    for i in range(len(self._layers) - 1, 0, -1):
-                        weight_size = self._layers[i].node_count * self._layers[i - 1].node_count
-                        bias_size = self._layers[i].node_count
-
-                        weight_begin = self._get_variables_count(stop=i)
-                        weight_end = weight_begin + weight_size
-
-                        d_bias = np.sum(delta, axis=0)
-                        d_weight = np.dot(non_activated[i - 1].T, delta).reshape(weight_size)
-
-                        gradient.put(indices=range(weight_begin, weight_end), values=d_weight)
-                        if self._layers[i].bias_flag:
-                            gradient.put(indices=range(weight_end, weight_end + bias_size), values=d_bias)
-
-                        next_weight = self._get_weight(layer_number=i)
-                        delta = np.dot(delta, next_weight.T) * \
-                            nnl.diff(self._layers[i - 1].activation, non_activated[i - 1])
-
-                    weight_size = self._input_layer.node_count * self._layers[0].node_count
-                    bias_size = self._input_layer.node_count
-
-                    d_bias = np.sum(delta, axis=0)
-                    d_weight = np.dot(data.T, delta).reshape(weight_size)
-
-                    gradient.put(indices=range(0, weight_size), values=d_weight)
-                    if self._layers[0].bias_flag:
-                        gradient.put(indices=range(weight_size, weight_size + bias_size), values=d_bias)
+                    loss_sum = self._back_propagation(
+                        data=data,
+                        target=target,
+                        loss_sum=loss_sum,
+                        gradient=gradient
+                    )
 
                     if verbose == 1:
-                        sfx = 'Loss = {:0.4f}'.format(round(loss_sum / (k + 1), 4))
-                        nnl.print_progress_bar(k + 1, iterations, time.clock() - epoch_time, prefix=pfx, suffix=sfx)
+                        nnl.progress_bar(
+                            iteration=k + 1,
+                            total=iterations,
+                            time_passed=time.clock() - epoch_time,
+                            prefix=pfx.format(epoch + 1, epochs),
+                            suffix=sfx.format(round(loss_sum / (k + 1), 4))
+                        )
+                    elif verbose == 2:
+                        pass
 
                 self._optimizer.optimize(trainable_variables=self._variables, gradient_vector=gradient)
         else:

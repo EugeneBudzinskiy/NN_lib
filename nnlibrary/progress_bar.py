@@ -16,15 +16,15 @@
 import math
 
 
-def print_progress_bar(iteration: int,
-                       total: int,
-                       time_passed: float,
-                       prefix: str = 'Progress:',
-                       suffix: str = '',
-                       decimals: int = 1,
-                       length: int = 50,
-                       fill: str = '#',
-                       print_end: str = "\r"):
+def progress_bar(iteration: int,
+                 total: int,
+                 time_passed: float,
+                 prefix: str = 'Progress:',
+                 suffix: str = '',
+                 decimals: int = 1,
+                 length: int = 50,
+                 fill: str = '#',
+                 print_end: str = "\r"):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -38,6 +38,7 @@ def print_progress_bar(iteration: int,
         fill        - Optional  : bar fill character (Str)
         print_end   - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
+
     percent = ("{0:5." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = int(length * iteration // total)
     bar = fill * filled_length + '-' * (length - filled_length)
@@ -50,6 +51,3 @@ def print_progress_bar(iteration: int,
     # Print New Line on Complete
     if iteration == total:
         print()
-
-
-# TODO Make different progress bar`s (like new function or smth)
