@@ -61,3 +61,33 @@ class IsNotALayer(Exception):
     def __init__(self, variable_name):
         self.text = f'`{variable_name}` need to be `Layer` type, but instead is `{type(variable_name).__name__}` type'
         super(IsNotALayer, self).__init__(self.text)
+
+
+class WrongInputShape(Exception):
+    def __init__(self, shape_a, shape_b):
+        self.text = f'Input data should have shape {shape_a}, but instead it has shape {shape_b}'
+        super(WrongInputShape, self).__init__(self.text)
+
+
+class OptimizerNotSpecify(Exception):
+    def __init__(self):
+        self.text = f'Neural Network should has Optimizer'
+        super(OptimizerNotSpecify, self).__init__(self.text)
+
+
+class LossNotSpecify(Exception):
+    def __init__(self):
+        self.text = f'Neural Network should has Loss function'
+        super(LossNotSpecify, self).__init__(self.text)
+
+
+class WrongOptimizer(Exception):
+    def __init__(self, name):
+        self.text = f'Optimizer with name `{name}` was not found in library'
+        super(WrongOptimizer, self).__init__(self.text)
+
+
+class WrongLoss(Exception):
+    def __init__(self, name):
+        self.text = f'Loss function with name `{name}` was not found in library'
+        super(WrongLoss, self).__init__(self.text)

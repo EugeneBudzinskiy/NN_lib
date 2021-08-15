@@ -1,34 +1,24 @@
 import numpy as np
-
 import nnlibrary as nnl
+
+np.random.seed(13)
 
 
 def main():
-    # nnl = NNLib()
-
-    # nnl.constructor.add(nnl.layers.Input(node_count=3))
-    # nnl.constructor.add(nnl.layers.Dense(node_count=5, activation=nnl.activation.HardSigmoid))
-    # nnl.constructor.add(nnl.layers.Dense(node_count=6, activation=nnl.activation.Sigmoid))
-    # nnl.constructor.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.Sigmoid))
-    #
-    # loss = nnl.losses.MSE
-    # optimizer = nnl.optimizers.Adam(learning_rate=0.1)
-    #
-    # model = nnl.constructor.compile(loss=loss, optimizer=optimizer)
     model = nnl.nn.Sequential()
-    # model.add(nnl.layers.Input(node_count=3))
-    # model.add(nnl.layers.Dense(node_count=4, activation=nnl.activation.relu, bias_flag=False))
-    # model.add("hello")
 
-    model.add(nnl.layers.Input(node_count=3))
-    model.add(nnl.layers.Dense(node_count=5, activation=nnl.activation.sigmoid))
-    model.add(nnl.layers.Dense(node_count=15, activation=nnl.activation.sigmoid))
+    model.add(nnl.layers.Input(node_count=100))
+    model.add(nnl.layers.Dense(node_count=80, activation=nnl.activation.sigmoid))
+    model.add(nnl.layers.Dense(node_count=60, activation=nnl.activation.sigmoid))
+    model.add(nnl.layers.Dense(node_count=30, activation=nnl.activation.sigmoid))
 
-    model.compile()
+    model.compile(optimizer='RMSprop', loss='MSE')
 
-    print(np.std(model.weights[0][0]))
-    print(np.mean(model.weights[0][0]))
-    print(model.weights[1])
+    a = np.random.random((5000, 100))
+    b = np.random.random((5000, 30))
+
+    res = model.predict(a)
+    model.fit(a, b, batch_size=2, epochs=5)
 
 
 if __name__ == '__main__':

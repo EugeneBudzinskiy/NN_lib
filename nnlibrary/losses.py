@@ -1,24 +1,22 @@
-from abc import ABC
-from abc import abstractmethod
+from nnlibrary.errors import WrongLoss
 
-import numpy as np
-
-from nnlibrary.singleton import SingletonMeta
+from numpy import mean
+from numpy import square
 
 
-class Losses(metaclass=SingletonMeta):
-    def __init__(self):
-        self.MSE = MSE()
+def mse(y_predicted, y_target):
+    return mean(square(y_target - y_predicted))
 
 
-class Loss(ABC):
-    @staticmethod
-    @abstractmethod
-    def loss(y_predicted, y_target):
-        pass
+loss_dict = {
+    'mse': mse
+}
 
 
-class MSE(Loss):
-    @staticmethod
-    def loss(y_predicted, y_target):
-        return np.mean(np.square(y_target - y_predicted))
+def get_loss(name: str):
+    if type(name) == str:
+        low_name = name.lower()
+        return loss_dict[low_name] if low_name in loss_dict else None
+    else:
+        raise ValueError(f'Loss function name should be `str` type, instead has `{type(name).__name__}` type')
+

@@ -4,15 +4,6 @@ from abc import abstractmethod
 from numpy import ndarray
 from numpy import sqrt
 
-from nnlibrary.singleton import SingletonMeta
-
-
-class Optimizers(metaclass=SingletonMeta):
-    def __init__(self):
-        self.SGD = SGD
-        self.Adam = Adam
-        self.RMSprop = RMSprop
-
 
 class Optimizer(ABC):
     @abstractmethod
@@ -21,7 +12,10 @@ class Optimizer(ABC):
 
 
 class SGD(Optimizer):
-    def __init__(self, learning_rate: float = 0.0001, momentum: float = 0.0):
+    def __init__(self,
+                 learning_rate: float = 0.0001,
+                 momentum: float = 0.0):
+
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.velocity = 0
@@ -66,7 +60,12 @@ class Adam(Optimizer):
 
 
 class RMSprop(Optimizer):
-    def __init__(self, learning_rate: float = 0.0001, beta: float = 0.9, momentum: float = 0.0, epsilon: float = 1e-7):
+    def __init__(self,
+                 learning_rate: float = 0.0001,
+                 beta: float = 0.9,
+                 momentum: float = 0.0,
+                 epsilon: float = 1e-7):
+
         self.learning_rate = learning_rate
         self.beta = beta
         self.epsilon = epsilon
@@ -84,3 +83,18 @@ class RMSprop(Optimizer):
         else:
             self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
             trainable_variables -= self.learning_rate * gradient_vector / (sqrt(self.velocity) + self.epsilon)
+
+
+optimizer_dict = {
+    'sgd': SGD,
+    'adam': Adam,
+    'rmsprop': RMSprop
+}
+
+
+def get_optimizer(name: str):
+    if type(name) == str:
+        low_name = name.lower()
+        return optimizer_dict[low_name] if low_name in optimizer_dict else None
+    else:
+        raise ValueError(f'Optimizer name should be `str` type, instead has `{type(name).__name__}` type')
