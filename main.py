@@ -17,12 +17,12 @@ def main():
     loss = 'MSE'
     model.compile(optimizer=optimizer, loss=loss)
 
-    count = 3000
+    count = 1000
     a = np.random.random((count, 100))
     b = np.random.random((count, 300))
 
-    res = model.predict(a, verbose=1, steps=1)
-    # model.fit(a, b, epochs=5, verbose=1)
+    # res = model.predict(a, verbose=1, steps=1)
+    model.fit(a, b, epochs=5, verbose=0)
 
 
 if __name__ == '__main__':

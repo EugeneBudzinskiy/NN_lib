@@ -15,14 +15,6 @@ class Sequential:
         self._optimizer = None
         self._loss = None
 
-    # @property
-    # def optimizer(self):
-    #     return self._optimizer
-    #
-    # @property
-    # def loss(self):
-    #     return self._loss
-
     @property
     def layers(self):
         return self._layers
@@ -356,18 +348,16 @@ class Sequential:
                             prefix=pfx.format(epoch + 1, epochs),
                             suffix=sfx.format(round(loss_sum / (k + 1), 4))
                         )
-                    elif verbose == 2:
-                        pass
 
                 self._optimizer.optimize(trainable_variables=self._variables, gradient_vector=gradient)
         else:
             raise nnl.errors.NotCompiled
 
-    def load_weights(self):
-        pass
+    def load_weights(self, file_name: str = "weights"):
+        self._variables = np.loadtxt(file_name + '.csv', delimiter=',')
 
-    def save_weights(self):
-        pass
+    def save_weights(self, file_name: str = "weights"):
+        np.savetxt(file_name + '.csv', self._variables, delimiter=',')
 
     def save_model(self):
         pass
