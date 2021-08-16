@@ -2,7 +2,7 @@ import numpy as np
 
 import nnlibrary as nnl
 
-np.random.seed(13)
+# np.random.seed(13)
 
 
 def main():
@@ -23,6 +23,10 @@ def main():
 
     # res = model.predict(a, verbose=1, steps=1)
     model.fit(a, b, epochs=5, verbose=0)
+
+    h = model.get_history()
+    for el in h:
+        print(el, "\n")
 
 
 if __name__ == '__main__':

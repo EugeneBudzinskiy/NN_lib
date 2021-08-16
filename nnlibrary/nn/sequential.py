@@ -15,6 +15,8 @@ class Sequential:
         self._optimizer = None
         self._loss = None
 
+        self._array_loss = None
+
     @property
     def layers(self):
         return self._layers
@@ -128,6 +130,8 @@ class Sequential:
                     self._optimizer = nnl.optimizers.get_optimizer(optimizer)
                     self._loss = nnl.losses.get_loss(loss)
                     self._variables = np.zeros(self._get_variables_count())
+
+                    self._array_loss = []
 
                     weight_pointer_start = 0
                     prev_node_count = self._input_layer.node_count
@@ -266,10 +270,12 @@ class Sequential:
 
         return delta
 
-    def _back_propagation(self, data, target, loss_sum: float, gradient):
+    def _back_propagation(self, data, target, loss_sum: float, gradient, loss_collector: list):
         non_activated, activated = self._feedforward(data)
         loss_wrapper = self._loss_wrapper(target)
-        loss_sum += loss_wrapper(activated[-1])
+        loss = loss_wrapper(activated[-1])
+        loss_collector.append(loss)
+        loss_sum += loss
 
         delta = nnl.diff(loss_wrapper, activated[-1]) * \
             nnl.diff(self._layers[-1].activation, non_activated[-1])
@@ -329,6 +335,8 @@ class Sequential:
                 epoch_time = time.clock()
                 loss_sum = 0
 
+                self._array_loss.append([])
+
                 for k in range(iterations):
                     data = x_cp[batch_size * k:batch_size * (k + 1)]
                     target = y_cp[batch_size * k:batch_size * (k + 1)]
@@ -337,7 +345,8 @@ class Sequential:
                         data=data,
                         target=target,
                         loss_sum=loss_sum,
-                        gradient=gradient
+                        gradient=gradient,
+                        loss_collector=self._array_loss[epoch]
                     )
 
                     if verbose == 1:
@@ -352,6 +361,9 @@ class Sequential:
                 self._optimizer.optimize(trainable_variables=self._variables, gradient_vector=gradient)
         else:
             raise nnl.errors.NotCompiled
+
+    def get_history(self):
+        return self._array_loss
 
     def load_weights(self, file_name: str = "weights"):
         self._variables = np.loadtxt(file_name + '.csv', delimiter=',')
