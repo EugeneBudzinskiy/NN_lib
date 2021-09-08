@@ -260,9 +260,9 @@ class Sequential:
         d_bias = np.sum(delta, axis=0)
         d_weight = np.dot(non_activated[layer_number - 1].T, delta).reshape(weight_size)
 
-        gradient.put(indices=range(weight_begin, weight_end), values=d_weight)
+        gradient[range(weight_begin, weight_end)] = d_weight
         if self._layers[layer_number].bias_flag:
-            gradient.put(indices=range(weight_end, weight_end + bias_size), values=d_bias)
+            gradient[range(weight_end, weight_end + bias_size)] = d_bias
 
         next_weight = self._get_weight(layer_number=layer_number)
         delta = np.dot(delta, next_weight.T) * \
@@ -289,14 +289,14 @@ class Sequential:
             )
 
         weight_size = self._input_layer.node_count * self._layers[0].node_count
-        bias_size = self._input_layer.node_count
+        bias_size = self._layers[0].node_count
 
         d_bias = np.sum(delta, axis=0)
         d_weight = np.dot(data.T, delta).reshape(weight_size)
 
-        gradient.put(indices=range(0, weight_size), values=d_weight)
+        gradient[range(0, weight_size)] = d_weight
         if self._layers[0].bias_flag:
-            gradient.put(indices=range(weight_size, weight_size + bias_size), values=d_bias)
+            gradient[range(weight_size, weight_size + bias_size)] = d_bias
 
         return loss_sum
 
@@ -358,7 +358,7 @@ class Sequential:
                             suffix=sfx.format(round(loss_sum / (k + 1), 4))
                         )
 
-                self._optimizer.optimize(trainable_variables=self._variables, gradient_vector=gradient)
+                    self._optimizer.optimize(trainable_variables=self._variables, gradient_vector=gradient)
         else:
             raise nnl.errors.NotCompiled
 
