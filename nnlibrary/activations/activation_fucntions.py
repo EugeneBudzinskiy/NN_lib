@@ -1,8 +1,15 @@
-from activation_tools import Activation
+from abc import ABC
+from abc import abstractmethod
 
 from numpy import ndarray
 from numpy import exp
 from numpy import tanh
+
+
+class Activation(ABC):
+    @abstractmethod
+    def __call__(self, x: ndarray):
+        pass
 
 
 class Linear(Activation):
