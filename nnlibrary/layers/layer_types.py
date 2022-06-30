@@ -1,5 +1,5 @@
-from layer_tools import Layer
-from layer_tools import ActivationLayer
+from nnlibrary.layers.layer_tools import Layer
+from nnlibrary.layers.layer_tools import ActivationLayer
 
 
 class Input(Layer):

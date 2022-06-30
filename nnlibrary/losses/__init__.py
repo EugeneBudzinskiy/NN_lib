@@ -1,3 +1,3 @@
-from loss_functions import Loss
+from nnlibrary.losses.loss_functions import Loss
 
-from loss_functions import MSE
+from nnlibrary.losses.loss_functions import MSE

@@ -2,12 +2,16 @@ import time
 
 import numpy as np
 
-import nnlibrary as nnl
+from nnlibrary import errors
+from nnlibrary import layers
+from nnlibrary import differentiators
 
 
 class Sequential:
     def __init__(self):
         self.is_compiled = False
+        self.diff = differentiators.SimpleDifferentiator()
+
         self.input_layer = None
         self.layers = list()
 
@@ -22,37 +26,37 @@ class Sequential:
 
     def add(self, layer):
         if self.is_compiled:
-            raise nnl.errors.TryModifyCompiledNN
+            raise errors.TryModifyCompiledNN
 
-        if not isinstance(layer, nnl.layers.Layer):
-            raise nnl.errors.IsNotALayer(layer)
+        if not isinstance(layer, layers.Layer):
+            raise errors.IsNotALayer(layer)
 
-        if isinstance(layer, nnl.layers.ActivationLayer):
+        if isinstance(layer, layers.ActivationLayer):
             self.layers.append(layer)
         else:
             if self.input_layer is None:
                 self.input_layer = layer
             else:
-                raise nnl.errors.InputLayerAlreadyDefined
+                raise errors.InputLayerAlreadyDefined
 
     def pop(self):
         if self.is_compiled:
-            raise nnl.errors.TryModifyCompiledNN
+            raise errors.TryModifyCompiledNN
 
         if len(self.layers) == 0:
-            raise nnl.errors.NothingToPop
+            raise errors.NothingToPop
 
         self.layers.pop()
 
     def get_layer(self, index: int = None):
         if not self.is_compiled:
-            raise nnl.errors.NotCompiled
+            raise errors.NotCompiled
 
         if index is None:
-            raise nnl.errors.ProvideLayerIndex
+            raise errors.ProvideLayerIndex
 
         if len(self.layers) <= index:
-            raise nnl.errors.WrongLayerIndex
+            raise errors.WrongLayerIndex
 
         return self.layers[index]
 
@@ -91,38 +95,38 @@ class Sequential:
 
     def compile(self, optimizer=None, loss=None):
         if self.is_compiled:
-            raise nnl.errors.AlreadyCompiled
+            raise errors.AlreadyCompiled
 
         if len(self.layers) == 0:
-            raise nnl.errors.WrongStructure
+            raise errors.WrongStructure
 
         if optimizer is None:
-            raise nnl.errors.OptimizerNotSpecify
+            raise errors.OptimizerNotSpecify
 
         if loss is None:
-            raise nnl.errors.LossNotSpecify
+            raise errors.LossNotSpecify
 
         if self.input_layer is None:
-            raise nnl.errors.InputLayerNotDefined
+            raise errors.InputLayerNotDefined
 
         self.layer_count = len(self.layers)
 
-        self.loss = nnl.losses.get_loss(loss)
-        self.optimizer = nnl.optimizers.get_optimizer(optimizer)
+        self.loss = loss
+        self.optimizer = optimizer
 
         self.weight_initialization()
         self.is_compiled = True
 
     def get_weight(self, layer_number):
         if not self.is_compiled:
-            raise nnl.errors.NotCompiled
+            raise errors.NotCompiled
 
         w_start, w_end, _, w_shape = self.variables_map[layer_number]
         return self.variables[w_start:w_end].reshape(w_shape)
 
     def get_bias(self, layer_number):
         if not self.is_compiled:
-            raise nnl.errors.NotCompiled
+            raise errors.NotCompiled
 
         _, b_start, b_end, _ = self.variables_map[layer_number]
         return self.variables[b_start:b_end]
@@ -157,25 +161,25 @@ class Sequential:
         return a_list.pop(), z_list, a_list
 
     def loss_wrapper(self, target):
-        return lambda x: self.loss(y_predicted=x, y_target=target, for_training=True)
+        return lambda x: self.loss(y_predicted=x, y_target=target)
 
     def back_propagation(self, x, y, batch_size):
         output, z_list, a_list = self.feedforward(x=x)
         loss = self.loss_wrapper(target=y)
 
-        delta = nnl.diff(loss, output) * nnl.diff(self.get_activation(-1), z_list[-1])
+        delta = self.diff(loss, output) * self.diff(self.get_activation(-1), z_list[-1])
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = np.sum(delta, axis=0) if self.get_bias_flag(-1) else np.zeros(self.layers[-1].node_count)
         gradient = np.concatenate((d_weight, d_bias), axis=None)
 
         for i in range(self.layer_count - 2, -1, -1):
-            delta = np.dot(delta, self.get_weight(i + 1).T) * nnl.diff(self.get_activation(i), z_list[i])
+            delta = np.dot(delta, self.get_weight(i + 1).T) * self.diff(self.get_activation(i), z_list[i])
             d_weight = np.dot(a_list[i].T, delta)
             d_bias = np.sum(delta, axis=0) if self.get_bias_flag(i) else np.zeros(self.layers[i].node_count)
             gradient = np.concatenate((d_weight, d_bias, gradient), axis=None)
 
         gradient /= batch_size
-        self.optimizer.optimize(trainable_variables=self.variables, gradient_vector=gradient)
+        self.optimizer(trainable_variables=self.variables, gradient_vector=gradient)
 
     def fit(self,
             x: np.ndarray,
@@ -185,7 +189,7 @@ class Sequential:
             shuffle: bool = True):
 
         if not self.is_compiled:
-            raise nnl.errors.NotCompiled
+            raise errors.NotCompiled
 
         if batch_size is None:
             batch_size = 32
@@ -197,8 +201,9 @@ class Sequential:
 
     @staticmethod
     def fit_progress_bar(i, total, epoch, epochs, time_start):
-        prefix = 'Progress' if epochs == 1 else f'Epoch {epoch + 1}/{epochs} ||| Progress:'
-        nnl.progress_bar(iteration=i + 1, time_passed=time.time() - time_start, total=total, prefix=prefix)
+        # prefix = 'Progress' if epochs == 1 else f'Epoch {epoch + 1}/{epochs} ||| Progress:'
+        # progress_bars(iteration=i + 1, time_passed=time.time() - time_start, total=total, prefix=prefix)
+        pass
 
     def static_fit(self,
                    x: np.ndarray,

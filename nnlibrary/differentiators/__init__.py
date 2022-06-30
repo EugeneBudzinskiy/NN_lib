@@ -1,2 +1,2 @@
-from differentiator_functions import Differentiator
-from differentiator_functions import SimpleDifferentiator
+from nnlibrary.differentiators.differentiator_functions import Differentiator
+from nnlibrary.differentiators.differentiator_functions import SimpleDifferentiator
