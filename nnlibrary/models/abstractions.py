@@ -3,11 +3,16 @@ from abc import abstractmethod
 
 from numpy import ndarray
 
+from nnlibrary.layers import AbstractLayer
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.losses import AbstractLoss
 
 
 class AbstractModel(ABC):
+    @abstractmethod
+    def add(self, layer: AbstractLayer):
+        pass
+
     @abstractmethod
     def compile(self,
                 optimizer: AbstractOptimizer = None,

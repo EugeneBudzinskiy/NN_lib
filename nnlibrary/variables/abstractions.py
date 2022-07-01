@@ -3,13 +3,12 @@ from abc import abstractmethod
 
 from numpy import ndarray
 
+from nnlibrary.layer_structures import AbstractLayerStructure
+
 
 class AbstractTrainableVariables(ABC):
-    def __init__(self):
-        pass
-
     @abstractmethod
-    def init_variables(self):
+    def init_variables(self, layer_structure: AbstractLayerStructure):
         pass
 
     @abstractmethod

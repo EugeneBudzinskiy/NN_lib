@@ -1,13 +1,60 @@
 import time
 
 import numpy as np
+from numpy import ndarray
 
 from nnlibrary import errors
-from nnlibrary import layers
 from nnlibrary import differentiators
+from nnlibrary import layers
+
+from nnlibrary.differentiators import SimpleDifferentiator
+from nnlibrary.models import AbstractModel
+from nnlibrary.layers import AbstractLayer
+from nnlibrary.layer_structures import LayerStructure
+from nnlibrary.optimizers import AbstractOptimizer
+from nnlibrary.losses import AbstractLoss
+from nnlibrary.variables import TrainableVariables
 
 
-class Sequential:
+class Sequential(AbstractModel):
+    def __init__(self):
+        self.is_compiled = False
+
+        self.diff = SimpleDifferentiator()
+        self.layer_structure = LayerStructure()
+        self.trainable_variables = TrainableVariables()
+
+        self.optimizer = None
+        self.loss = None
+
+    def add(self, layer: AbstractLayer):
+        self.layer_structure.add_layer(layer=layer)
+
+    def compile(self,
+                optimizer: AbstractOptimizer = None,
+                loss: AbstractLoss = None):
+
+        self.optimizer = optimizer
+        self.loss = loss
+
+        self.trainable_variables.init_variables(
+            layer_structure=self.layer_structure
+        )
+        self.is_compiled = True
+
+    def predict(self, x: ndarray):
+        pass
+
+    def fit(self,
+            x: ndarray,
+            y: ndarray,
+            epoch_number: int = 1,
+            batch_size: int = 32,
+            shuffle: bool = False):
+        pass
+
+
+class Sequential_:
     def __init__(self):
         self.is_compiled = False
         self.diff = differentiators.SimpleDifferentiator()
