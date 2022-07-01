@@ -28,10 +28,10 @@ class Sequential:
         if self.is_compiled:
             raise errors.TryModifyCompiledNN
 
-        if not isinstance(layer, layers.Layer):
+        if not isinstance(layer, layers.AbstractLayer):
             raise errors.IsNotALayer(layer)
 
-        if isinstance(layer, layers.ActivationLayer):
+        if isinstance(layer, layers.AbstractActivationLayer):
             self.layers.append(layer)
         else:
             if self.input_layer is None:

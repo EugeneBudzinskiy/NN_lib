@@ -1,15 +1,8 @@
-from abc import ABC
-from abc import abstractmethod
-
-from numpy import ndarray
 from numpy import sqrt
+from numpy import ndarray
 
 
-class Optimizer(ABC):
-    @abstractmethod
-    def __call__(self, trainable_variables: ndarray, gradient_vector: ndarray):
-        pass
-
+from nnlibrary.optimizers.abstractions import AbstractOptimizer
 
 # class SGD(Optimizer):
 #     def __init__(self,
@@ -28,7 +21,7 @@ class Optimizer(ABC):
 #             trainable_variables -= self.learning_rate * gradient_vector
 
 
-class Adam(Optimizer):
+class Adam(AbstractOptimizer):
     def __init__(self,
                  learning_rate: float = 0.0001,
                  beta_1: float = 0.9,
@@ -59,7 +52,7 @@ class Adam(Optimizer):
         trainable_variables -= self.learning_rate * dash_v_t / (sqrt(dash_s_t) + self.epsilon)
 
 
-class RMSprop(Optimizer):
+class RMSprop(AbstractOptimizer):
     def __init__(self,
                  learning_rate: float = 0.0001,
                  beta: float = 0.9,

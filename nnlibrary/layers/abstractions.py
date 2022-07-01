@@ -1,4 +1,4 @@
-class Layer:
+class AbstractLayer:
     def __init__(self, node_count: int):
         self._node_count = node_count
 
@@ -7,9 +7,9 @@ class Layer:
         return self._node_count
 
 
-class ActivationLayer(Layer):
+class AbstractActivationLayer(AbstractLayer):
     def __init__(self, node_count: int, activation, bias_flag: bool = True, trainable: bool = True):
-        super(ActivationLayer, self).__init__(node_count=node_count)
+        super(AbstractActivationLayer, self).__init__(node_count=node_count)
         self._activation = activation
         self._bias_flag = bias_flag
         self._trainable = trainable

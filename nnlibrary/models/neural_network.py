@@ -1,8 +1,8 @@
 # import numpy as np
 #
 # from nnlibrary.losses import Loss
-# from nnlibrary.nn.AbstractNeuralNetwork import AbstractNeuralNetwork
-# from nnlibrary.nn.VariableStorage import VariableStorage
+# from nnlibrary.models.AbstractNeuralNetwork import AbstractNeuralNetwork
+# from nnlibrary.models.VariableStorage import VariableStorage
 # from nnlibrary.optimizers import Optimizer
 
 

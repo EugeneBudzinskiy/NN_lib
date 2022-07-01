@@ -1,28 +1,21 @@
-from abc import ABC
-from abc import abstractmethod
-
 from numpy import ndarray
 from numpy import exp
 from numpy import tanh
 
-
-class Activation(ABC):
-    @abstractmethod
-    def __call__(self, x: ndarray):
-        pass
+from nnlibrary.activations.abstractions import AbstractActivation
 
 
-class Linear(Activation):
+class Linear(AbstractActivation):
     def __call__(self, x: ndarray):
         return x.copy()
 
 
-class Sigmoid(Activation):
+class Sigmoid(AbstractActivation):
     def __call__(self, x: ndarray):
         return 1 / (1 + exp(-x))
 
 
-class HardSigmoid(Activation):
+class HardSigmoid(AbstractActivation):
     def __call__(self, x: ndarray):
         z = x.copy()
         z[(z >= -2.5) * (z <= 2.5)] *= 0.2
@@ -32,18 +25,18 @@ class HardSigmoid(Activation):
         return z
 
 
-class ReLU(Activation):
+class ReLU(AbstractActivation):
     def __call__(self, x: ndarray):
         z = x.copy()
         z[z < 0] = 0
         return z
 
 
-class TanH(Activation):
+class TanH(AbstractActivation):
     def __call__(self, x: ndarray):
         return tanh(x)
 
 
-class Exponent(Activation):
+class Exponent(AbstractActivation):
     def __call__(self, x: ndarray):
         return exp(x)

@@ -6,7 +6,7 @@ np.random.seed(13)
 
 
 def main():
-    model = nnl.nn.Sequential()
+    model = nnl.models.Sequential()
 
     model.add(nnl.layers.Input(node_count=100))
     model.add(nnl.layers.Dense(node_count=500, activation=nnl.activation_.sigmoid))

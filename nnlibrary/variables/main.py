@@ -1,21 +1,2 @@
-from abc import ABC
-from abc import abstractmethod
+from nnlibrary.variables.abstractions import AbstractTrainableVariables
 
-from numpy import ndarray
-
-
-class TrainableVariables(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def init_variables(self):
-        pass
-
-    @abstractmethod
-    def get_weight(self, layer_number: int) -> ndarray:
-        pass
-
-    @abstractmethod
-    def get_bias(self, layer_number: int) -> ndarray:
-        pass

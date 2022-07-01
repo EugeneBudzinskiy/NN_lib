@@ -1,17 +1,7 @@
-from abc import ABC
-from abc import abstractmethod
+from nnlibrary.progress_bars.abstractions import AbstractProgressBar
 
 
-class ProgressBar(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def __call__(self, *args, **kwargs):
-        pass
-
-
-class SimpleProgressBar(ProgressBar):
+class SimpleProgressBar(AbstractProgressBar):
     def __call__(self, *args, **kwargs):
         pass
 
