@@ -10,6 +10,7 @@ from nnlibrary import layers
 from nnlibrary.differentiators import SimpleDifferentiator
 from nnlibrary.models import AbstractModel
 from nnlibrary.layers import AbstractLayer
+from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.losses import AbstractLoss
@@ -42,8 +43,69 @@ class Sequential(AbstractModel):
         )
         self.is_compiled = True
 
-    def predict(self, x: ndarray):
-        pass
+    def feedforward(self, x: ndarray) -> (ndarray, [ndarray], [ndarray]):
+        a = x.copy()
+        z_list, a_list = list(), list([a])
+
+        for i in range(1, self.layer_structure.get_layers_number()):
+            current_layer = self.layer_structure.get_layer(layer_number=i)
+            current_weight = self.trainable_variables.get_weight(layer_number=i)
+            current_bias = self.trainable_variables.get_bias(layer_number=i)
+
+            z = np.dot(a, current_weight) + current_bias
+            z_list.append(z)
+
+            if isinstance(current_layer, AbstractActivationLayer):
+                a = current_layer.activation(x=z)
+            else:
+                a = z.copy()  # TODO Probably replace with Custom Exception
+
+            a_list.append(a)
+
+        return a_list.pop(), z_list, a_list
+
+    def predict(self, x: ndarray) -> ndarray:
+        output, _, _ = self.feedforward(x=x)
+        return output
+
+    @staticmethod
+    def loss_wrapper(loss: AbstractLoss, target: ndarray) -> callable:
+        return lambda x: loss(y_predicted=x, y_target=target)
+
+    def backpropagation(self, x: ndarray, y: ndarray, batch_size: int):
+        output, z_list, a_list = self.feedforward(x=x)
+        current_layer = self.layer_structure.get_layer(
+            layer_number=self.layer_structure.get_layers_number() - 1
+        )
+
+        if isinstance(current_layer, AbstractActivationLayer):
+            current_activation = current_layer.activation
+            current_bias_flag = current_layer.bias_flag
+        else:
+            current_activation = None  # TODO Custom Exception
+            current_bias_flag = None  # TODO Custom Exception
+
+        if isinstance(self.loss, AbstractLoss):
+            loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
+        else:
+            loss_fixed = None  # TODO Custom Exception
+
+        # TODO Continue refactoring of backprop
+
+        delta = self.diff(func=loss_fixed, x=output) * self.diff(func=current_activation, x=z_list[-1])
+        d_weight = np.dot(a_list[-1].T, delta)
+        d_bias = np.sum(delta, axis=0) if current_bias_flag else np.zeros(current_layer.node_count)
+        gradient = np.concatenate((d_weight, d_bias), axis=None)
+
+
+        # for i in range(self.layer_count - 2, -1, -1):
+        #     delta = np.dot(delta, self.get_weight(i + 1).T) * self.diff(self.get_activation(i), z_list[i])
+        #     d_weight = np.dot(a_list[i].T, delta)
+        #     d_bias = np.sum(delta, axis=0) if self.get_bias_flag(i) else np.zeros(self.layers[i].node_count)
+        #     gradient = np.concatenate((d_weight, d_bias, gradient), axis=None)
+        #
+        # gradient /= batch_size
+        # self.optimizer(trainable_variables=self.variables, gradient_vector=gradient)
 
     def fit(self,
             x: ndarray,
@@ -184,13 +246,13 @@ class Sequential_:
     def get_bias_flag(self, layer_number):
         return self.layers[layer_number].bias_flag
 
-    def predict(self, x: np.ndarray):
+    def predict(self, x: ndarray):
         data = x.copy()
         for i in range(self.layer_count):
             data = self.get_activation(i)(np.dot(data, self.get_weight(i)) + self.get_bias(i))
         return data
 
-    def feedforward(self, x: np.ndarray):
+    def feedforward(self, x: ndarray):
         a = x.copy()
         if a.ndim == 1:
             a = a.reshape((1, -1))
@@ -229,8 +291,8 @@ class Sequential_:
         self.optimizer(trainable_variables=self.variables, gradient_vector=gradient)
 
     def fit(self,
-            x: np.ndarray,
-            y: np.ndarray,
+            x: ndarray,
+            y: ndarray,
             epochs: int = 1,
             batch_size: int = None,
             shuffle: bool = True):
@@ -253,8 +315,8 @@ class Sequential_:
         pass
 
     def static_fit(self,
-                   x: np.ndarray,
-                   y: np.ndarray,
+                   x: ndarray,
+                   y: ndarray,
                    epochs: int = 1,
                    batch_size: int = None):
 
@@ -271,8 +333,8 @@ class Sequential_:
                 self.fit_progress_bar(i=i, total=total, epoch=epoch, epochs=epochs, time_start=time_start)
 
     def random_fit(self,
-                   x: np.ndarray,
-                   y: np.ndarray,
+                   x: ndarray,
+                   y: ndarray,
                    epochs: int = 1,
                    batch_size: int = None):
 

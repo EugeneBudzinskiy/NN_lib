@@ -1,5 +1,6 @@
 from nnlibrary.layers.abstractions import AbstractLayer
 from nnlibrary.layers.abstractions import AbstractActivationLayer
+from nnlibrary.activations.abstractions import AbstractActivation
 
 
 class Input(AbstractLayer):
@@ -10,7 +11,7 @@ class Input(AbstractLayer):
 class Dense(AbstractActivationLayer):
     def __init__(self,
                  node_count: int,
-                 activation,
+                 activation: AbstractActivation,
                  bias_flag: bool = True,
                  trainable: bool = True):
 
