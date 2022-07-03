@@ -55,10 +55,10 @@ class Sequential(AbstractModel):
             z = np.dot(a, current_weight) + current_bias
             z_list.append(z)
 
-            if isinstance(current_layer, AbstractActivationLayer):
-                a = current_layer.activation(x=z)
-            else:
-                a = z.copy()  # TODO Probably replace with Custom Exception
+            if not isinstance(current_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            a = current_layer.activation(x=z)
 
             a_list.append(a)
 
@@ -73,39 +73,43 @@ class Sequential(AbstractModel):
         return lambda x: loss(y_predicted=x, y_target=target)
 
     def backpropagation(self, x: ndarray, y: ndarray, batch_size: int):
+        if not isinstance(self.loss, AbstractLoss):
+            raise Exception()  # TODO Custom Exception
+
         output, z_list, a_list = self.feedforward(x=x)
+        layers_number = self.layer_structure.get_layers_number()
+
         current_layer = self.layer_structure.get_layer(
             layer_number=self.layer_structure.get_layers_number() - 1
         )
 
-        if isinstance(current_layer, AbstractActivationLayer):
-            current_activation = current_layer.activation
-            current_bias_flag = current_layer.bias_flag
-        else:
-            current_activation = None  # TODO Custom Exception
-            current_bias_flag = None  # TODO Custom Exception
+        if not isinstance(current_layer, AbstractActivationLayer):
+            raise Exception()  # TODO Custom Exception
 
-        if isinstance(self.loss, AbstractLoss):
-            loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
-        else:
-            loss_fixed = None  # TODO Custom Exception
+        loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
 
-        # TODO Continue refactoring of backprop
-
-        delta = self.diff(func=loss_fixed, x=output) * self.diff(func=current_activation, x=z_list[-1])
+        delta = self.diff(func=loss_fixed, x=output) * \
+            self.diff(func=current_layer.activation, x=z_list[-1])
         d_weight = np.dot(a_list[-1].T, delta)
-        d_bias = np.sum(delta, axis=0) if current_bias_flag else np.zeros(current_layer.node_count)
-        gradient = np.concatenate((d_weight, d_bias), axis=None)
+        d_bias = np.sum(delta, axis=0)
 
+        gradient_list = [(d_weight, d_bias)]
 
-        # for i in range(self.layer_count - 2, -1, -1):
-        #     delta = np.dot(delta, self.get_weight(i + 1).T) * self.diff(self.get_activation(i), z_list[i])
-        #     d_weight = np.dot(a_list[i].T, delta)
-        #     d_bias = np.sum(delta, axis=0) if self.get_bias_flag(i) else np.zeros(self.layers[i].node_count)
-        #     gradient = np.concatenate((d_weight, d_bias, gradient), axis=None)
-        #
-        # gradient /= batch_size
-        # self.optimizer(trainable_variables=self.variables, gradient_vector=gradient)
+        for i in range(1, layers_number):
+            j = layers_number - i - 1
+
+            current_layer = self.layer_structure.get_layer(layer_number=j)
+            if not isinstance(current_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            delta = np.dot(delta, self.trainable_variables.get_weight(j + 1).T) * \
+                self.diff(func=current_layer.activation, x=z_list[j])
+            d_weight = np.dot(a_list[j].T, delta)
+            d_bias = np.sum(delta, axis=0)
+            gradient_list.append((d_weight, d_bias))
+
+        gradient_list.reverse()
+        print(gradient_list)  # TODO Probably debug is needed
 
     def fit(self,
             x: ndarray,

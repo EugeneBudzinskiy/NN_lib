@@ -6,9 +6,13 @@ from numpy import ndarray
 from nnlibrary.layer_structures import AbstractLayerStructure
 
 
-class AbstractTrainableVariables(ABC):
+class AbstractTrainableVariables(ABC):  # TODO Add init (+ add restriction to variable inner structure)
     @abstractmethod
     def init_variables(self, layer_structure: AbstractLayerStructure):
+        pass
+
+    @abstractmethod
+    def update_variables(self, value):  # TODO Replace with setter
         pass
 
     @abstractmethod
