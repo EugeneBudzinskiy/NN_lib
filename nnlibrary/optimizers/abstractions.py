@@ -1,10 +1,10 @@
 from abc import ABC
 from abc import abstractmethod
 
-from numpy import ndarray
+import numpy as np
 
 
 class AbstractOptimizer(ABC):
     @abstractmethod
-    def __call__(self, trainable_variables: ndarray, gradient_vector: ndarray):
+    def __call__(self, trainable_variables: np.ndarray, gradient_vector: np.ndarray):
         pass

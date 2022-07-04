@@ -1,24 +1,28 @@
 from abc import ABC
 from abc import abstractmethod
 
-from numpy import ndarray
+import numpy as np
 
 from nnlibrary.layer_structures import AbstractLayerStructure
 
 
-class AbstractTrainableVariables(ABC):  # TODO Add init (+ add restriction to variable inner structure)
+class AbstractVariables(ABC):
     @abstractmethod
     def init_variables(self, layer_structure: AbstractLayerStructure):
         pass
 
     @abstractmethod
-    def update_variables(self, value):  # TODO Replace with setter
+    def set_all(self, value: np.ndarray):
         pass
 
     @abstractmethod
-    def get_weight(self, layer_number: int) -> ndarray:
+    def set_single(self, layer_number: int, value: np.ndarray):
         pass
 
     @abstractmethod
-    def get_bias(self, layer_number: int) -> ndarray:
+    def get_all(self) -> np.ndarray:
+        pass
+
+    @abstractmethod
+    def get_single(self, layer_number: int) -> np.ndarray:
         pass

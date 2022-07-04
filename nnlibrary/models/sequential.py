@@ -1,7 +1,6 @@
 import time
 
 import numpy as np
-from numpy import ndarray
 
 from nnlibrary import errors
 from nnlibrary import differentiators
@@ -43,7 +42,7 @@ class Sequential(AbstractModel):
         )
         self.is_compiled = True
 
-    def feedforward(self, x: ndarray) -> (ndarray, [ndarray], [ndarray]):
+    def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
         a = x.copy()
         z_list, a_list = list(), list([a])
 
@@ -64,15 +63,15 @@ class Sequential(AbstractModel):
 
         return a_list.pop(), z_list, a_list
 
-    def predict(self, x: ndarray) -> ndarray:
+    def predict(self, x: np.ndarray) -> np.ndarray:
         output, _, _ = self.feedforward(x=x)
         return output
 
     @staticmethod
-    def loss_wrapper(loss: AbstractLoss, target: ndarray) -> callable:
+    def loss_wrapper(loss: AbstractLoss, target: np.ndarray) -> callable:
         return lambda x: loss(y_predicted=x, y_target=target)
 
-    def backpropagation(self, x: ndarray, y: ndarray, batch_size: int):
+    def backpropagation(self, x: np.ndarray, y: np.ndarray, batch_size: int):
         if not isinstance(self.loss, AbstractLoss):
             raise Exception()  # TODO Custom Exception
 
@@ -112,8 +111,8 @@ class Sequential(AbstractModel):
         print(gradient_list)  # TODO Probably debug is needed
 
     def fit(self,
-            x: ndarray,
-            y: ndarray,
+            x: np.ndarray,
+            y: np.ndarray,
             epoch_number: int = 1,
             batch_size: int = 32,
             shuffle: bool = False):
@@ -250,13 +249,13 @@ class Sequential_:
     def get_bias_flag(self, layer_number):
         return self.layers[layer_number].bias_flag
 
-    def predict(self, x: ndarray):
+    def predict(self, x: np.ndarray):
         data = x.copy()
         for i in range(self.layer_count):
             data = self.get_activation(i)(np.dot(data, self.get_weight(i)) + self.get_bias(i))
         return data
 
-    def feedforward(self, x: ndarray):
+    def feedforward(self, x: np.ndarray):
         a = x.copy()
         if a.ndim == 1:
             a = a.reshape((1, -1))
@@ -295,8 +294,8 @@ class Sequential_:
         self.optimizer(trainable_variables=self.variables, gradient_vector=gradient)
 
     def fit(self,
-            x: ndarray,
-            y: ndarray,
+            x: np.ndarray,
+            y: np.ndarray,
             epochs: int = 1,
             batch_size: int = None,
             shuffle: bool = True):
@@ -319,8 +318,8 @@ class Sequential_:
         pass
 
     def static_fit(self,
-                   x: ndarray,
-                   y: ndarray,
+                   x: np.ndarray,
+                   y: np.ndarray,
                    epochs: int = 1,
                    batch_size: int = None):
 
@@ -337,8 +336,8 @@ class Sequential_:
                 self.fit_progress_bar(i=i, total=total, epoch=epoch, epochs=epochs, time_start=time_start)
 
     def random_fit(self,
-                   x: ndarray,
-                   y: ndarray,
+                   x: np.ndarray,
+                   y: np.ndarray,
                    epochs: int = 1,
                    batch_size: int = None):
 

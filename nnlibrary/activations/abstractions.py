@@ -1,10 +1,10 @@
 from abc import ABC
 from abc import abstractmethod
 
-from numpy import ndarray
+import numpy as np
 
 
 class AbstractActivation(ABC):
     @abstractmethod
-    def __call__(self, x: ndarray):
+    def __call__(self, x: np.ndarray):
         pass

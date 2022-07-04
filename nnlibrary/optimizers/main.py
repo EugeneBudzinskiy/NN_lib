@@ -1,5 +1,4 @@
-from numpy import sqrt
-from numpy import ndarray
+import numpy as np
 
 
 from nnlibrary.optimizers.abstractions import AbstractOptimizer
@@ -13,7 +12,7 @@ from nnlibrary.optimizers.abstractions import AbstractOptimizer
 #         self.momentum = momentum
 #         self.velocity = 0
 #
-#     def __call__(self, trainable_variables: ndarray, gradient_vector: ndarray):
+#     def __call__(self, trainable_variables: np.ndarray, gradient_vector: np.ndarray):
 #         if self.momentum:
 #             self.velocity = self.momentum * self.velocity - self.learning_rate * gradient_vector
 #             trainable_variables += self.velocity
@@ -39,7 +38,7 @@ class Adam(AbstractOptimizer):
         self.powered_beta_1 = 1
         self.powered_beta_2 = 1
 
-    def __call__(self, trainable_variables: ndarray, gradient_vector: ndarray):
+    def __call__(self, trainable_variables: np.ndarray, gradient_vector: np.ndarray):
         self.v_t = self.beta_1 * self.v_t + (1 - self.beta_1) * gradient_vector
         self.s_t = self.beta_2 * self.s_t + (1 - self.beta_2) * gradient_vector ** 2
 
@@ -49,7 +48,7 @@ class Adam(AbstractOptimizer):
         dash_v_t = self.v_t / (1 - self.powered_beta_1)
         dash_s_t = self.s_t / (1 - self.powered_beta_2)
 
-        trainable_variables -= self.learning_rate * dash_v_t / (sqrt(dash_s_t) + self.epsilon)
+        trainable_variables -= self.learning_rate * dash_v_t / (np.sqrt(dash_s_t) + self.epsilon)
 
 
 class RMSprop(AbstractOptimizer):
@@ -67,12 +66,12 @@ class RMSprop(AbstractOptimizer):
         self.previous = 0
         self.velocity = 0
 
-    def __call__(self, trainable_variables: ndarray, gradient_vector: ndarray):
+    def __call__(self, trainable_variables: np.ndarray, gradient_vector: np.ndarray):
         if self.momentum:
             self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
             self.previous = self.momentum * self.previous - \
-                self.learning_rate * gradient_vector / (sqrt(self.velocity) + self.epsilon)
+                self.learning_rate * gradient_vector / (np.sqrt(self.velocity) + self.epsilon)
             trainable_variables += self.previous
         else:
             self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
-            trainable_variables -= self.learning_rate * gradient_vector / (sqrt(self.velocity) + self.epsilon)
+            trainable_variables -= self.learning_rate * gradient_vector / (np.sqrt(self.velocity) + self.epsilon)

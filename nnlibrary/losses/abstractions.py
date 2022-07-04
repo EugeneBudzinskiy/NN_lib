@@ -1,10 +1,10 @@
 from abc import ABC
 from abc import abstractmethod
 
-from numpy import ndarray
+import numpy as np
 
 
 class AbstractLoss(ABC):
     @abstractmethod
-    def __call__(self, y_predicted: ndarray, y_target: ndarray):
+    def __call__(self, y_predicted: np.ndarray, y_target: np.ndarray):
         pass
