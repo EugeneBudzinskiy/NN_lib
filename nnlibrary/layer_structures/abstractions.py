@@ -13,6 +13,7 @@ class AbstractLayerStructure(ABC):
     def get_layer(self, layer_number: int) -> AbstractLayer:
         pass
 
+    @property
     @abstractmethod
-    def get_layers_number(self) -> int:
+    def layers_number(self) -> int:
         pass

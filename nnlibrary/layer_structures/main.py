@@ -12,5 +12,6 @@ class LayerStructure(AbstractLayerStructure):
     def get_layer(self, layer_number: int) -> AbstractLayer:
         return self.structure[layer_number]
 
-    def get_layers_number(self) -> int:
+    @property
+    def layers_number(self) -> int:
         return len(self.structure)
