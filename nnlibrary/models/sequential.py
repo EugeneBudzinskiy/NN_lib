@@ -37,19 +37,18 @@ class Sequential(AbstractModel):
         self.optimizer = optimizer
         self.loss = loss
 
-        self.trainable_variables.init_variables(
-            layer_structure=self.layer_structure
-        )
+        self.trainable_variables.init_variables(layer_structure=self.layer_structure)
         self.is_compiled = True
 
     def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
         a = x.copy()
         z_list, a_list = list(), list([a])
 
-        for i in range(1, self.layer_structure.get_layers_number()):
+        for i in range(1, self.layer_structure.layers_number):
             current_layer = self.layer_structure.get_layer(layer_number=i)
-            current_weight = self.trainable_variables.get_weight(layer_number=i)
-            current_bias = self.trainable_variables.get_bias(layer_number=i)
+            current_vars = self.trainable_variables.get_single(layer_number=i)
+            current_weight = None
+            current_bias = None
 
             z = np.dot(a, current_weight) + current_bias
             z_list.append(z)

@@ -15,10 +15,12 @@ class TrainableVariables(AbstractVariables):
 
     def _set_inner_sizes(self, layer_structure: AbstractLayerStructure) -> (int, int):
         map_size = 3 * (layer_structure.layers_number - 1)
-        variable_size = sum([layer_structure.get_layer(layer_number=i).node_count
-                             for i in range(1, layer_structure.layers_number)])
+        variable_size = 0
+        for i in range(1, layer_structure.layers_number):
+            variable_size += (layer_structure.get_layer(layer_number=i - 1).node_count + 1) * \
+                             layer_structure.get_layer(layer_number=i).node_count
 
-        self.__variables, self.__map = np.zeros(variable_size), np.zeros(map_size)
+        self.__variables, self.__map = np.zeros(variable_size), np.zeros(map_size, dtype=int)
 
     def _fill_map(self, layer_structure: AbstractLayerStructure):
         buff = 0
@@ -27,36 +29,37 @@ class TrainableVariables(AbstractVariables):
             next_node_count = layer_structure.get_layer(layer_number=i + 1).node_count
             self.__map[3 * i + 0] = buff + 0
             self.__map[3 * i + 1] = buff + prev_node_count * next_node_count
-            self.__map[3 * i + 2] = buff + prev_node_count * next_node_count + next_node_count
+            self.__map[3 * i + 2] = buff + (prev_node_count + 1) * next_node_count
 
             buff += (prev_node_count + 1) * next_node_count
+
+    def _unpack_map_single(self, layer_number) -> (int, int, int):
+        return self.__map[3 * layer_number + 0], \
+               self.__map[3 * layer_number + 1], \
+               self.__map[3 * layer_number + 2]
 
     def init_variables(self, layer_structure: AbstractLayerStructure):
         # TODO Write better initialization method or make several and let to chose
         self._set_inner_sizes(layer_structure=layer_structure)
         self._fill_map(layer_structure=layer_structure)
 
-        print(self.__map)
-        exit(-22)
-
-
-        # layer_number = layer_structure.get_layers_number()
-        # for i in range(layer_number - 1):
-        #     prev_layer = layer_structure.get_layer(layer_number=i)
-        #     next_layer = layer_structure.get_layer(layer_number=i + 1)
-        #
-        #     self.weights.append(np.random.random((prev_layer.node_count, next_layer.node_count)))
-        #     self.biases.append(np.random.random((1, next_layer.node_count)))
+        for i in range(layer_structure.layers_number - 1):
+            w_s, b_s, b_e = self._unpack_map_single(layer_number=i)
+            self.__variables[w_s:b_s] = np.random.random(size=b_s - w_s)
 
     def set_all(self, value: np.ndarray):
-        pass
+        if value.shape == self.__variables.shape:
+            self.__variables = value.copy()
+        else:
+            raise Exception()  # TODO Custom Exception
 
     def set_single(self, layer_number: int, value: np.ndarray):
-        pass
+        raise Exception('Implementation doesnt exist yet!')  # TODO Custom Exception
 
     def get_all(self) -> np.ndarray:
-        pass
+        return self.__variables.copy()
 
     def get_single(self, layer_number: int) -> np.ndarray:
-        pass
+        w_s, _, b_e = self._unpack_map_single(layer_number=layer_number)
+        return self.__variables[w_s:b_e].copy()
 
