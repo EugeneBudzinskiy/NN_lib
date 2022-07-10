@@ -40,24 +40,35 @@ class Sequential(AbstractModel):
         self.trainable_variables.init_variables(layer_structure=self.layer_structure)
         self.is_compiled = True
 
+    def __unpack_weight_and_bias(self, layer_number: int) -> (np.ndarray, np.ndarray):
+        current_layer = self.layer_structure.get_layer(layer_number=layer_number)
+        current_vars = self.trainable_variables.get_single(layer_number=layer_number)
+
+        current_node_count = current_layer.node_count
+        previous_node_count = len(current_vars) // (current_node_count + 1)
+        w_size = previous_node_count * current_node_count
+
+        current_weight = current_vars[:w_size].reshape((current_node_count, previous_node_count))
+        current_bias = current_vars[w_size:]
+
+        return current_weight, current_bias
+
     def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
-        a = x.copy()
-        z_list, a_list = list(), list([a])
+        a = x.copy().flatten()
+        z_list, a_list = list(), list()
+        a_list.append(a)
 
         for i in range(1, self.layer_structure.layers_number):
             current_layer = self.layer_structure.get_layer(layer_number=i)
-            current_vars = self.trainable_variables.get_single(layer_number=i)
-            current_weight = None
-            current_bias = None
+            current_weight, current_bias = self.__unpack_weight_and_bias(layer_number=i)
 
-            z = np.dot(a, current_weight) + current_bias
+            z = np.dot(current_weight, a) + current_bias
             z_list.append(z)
 
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
             a = current_layer.activation(x=z)
-
             a_list.append(a)
 
         return a_list.pop(), z_list, a_list
@@ -75,11 +86,8 @@ class Sequential(AbstractModel):
             raise Exception()  # TODO Custom Exception
 
         output, z_list, a_list = self.feedforward(x=x)
-        layers_number = self.layer_structure.get_layers_number()
-
-        current_layer = self.layer_structure.get_layer(
-            layer_number=self.layer_structure.get_layers_number() - 1
-        )
+        layers_number = self.layer_structure.layers_number
+        current_layer = self.layer_structure.get_layer(layer_number=layers_number - 1)
 
         if not isinstance(current_layer, AbstractActivationLayer):
             raise Exception()  # TODO Custom Exception
@@ -93,15 +101,16 @@ class Sequential(AbstractModel):
 
         gradient_list = [(d_weight, d_bias)]
 
-        for i in range(1, layers_number):
-            j = layers_number - i - 1
+        for i in range(layers_number - 1):
+            j = layers_number - i - 2
 
             current_layer = self.layer_structure.get_layer(layer_number=j)
+            previous_weight, _ = self.__unpack_weight_and_bias(layer_number=j + 1)
+
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
-            delta = np.dot(delta, self.trainable_variables.get_weight(j + 1).T) * \
-                self.diff(func=current_layer.activation, x=z_list[j])
+            delta = np.dot(delta, previous_weight.T) * self.diff(func=current_layer.activation, x=z_list[j])
             d_weight = np.dot(a_list[j].T, delta)
             d_bias = np.sum(delta, axis=0)
             gradient_list.append((d_weight, d_bias))

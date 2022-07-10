@@ -17,6 +17,9 @@ def main():
 
     model.compile(optimizer=optimizer, loss=loss)
 
+    res = model.predict(x=np.array([1, 1]))
+    print(res)
+
 
 if __name__ == '__main__':
     main()

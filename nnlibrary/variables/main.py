@@ -22,7 +22,7 @@ class TrainableVariables(AbstractVariables):
 
         self.__variables, self.__map = np.zeros(variable_size), np.zeros(map_size, dtype=int)
 
-    def _fill_map(self, layer_structure: AbstractLayerStructure):
+    def __fill_map(self, layer_structure: AbstractLayerStructure):
         buff = 0
         for i in range(layer_structure.layers_number - 1):
             prev_node_count = layer_structure.get_layer(layer_number=i).node_count
@@ -33,7 +33,7 @@ class TrainableVariables(AbstractVariables):
 
             buff += (prev_node_count + 1) * next_node_count
 
-    def _unpack_map_single(self, layer_number) -> (int, int, int):
+    def __unpack_map_single(self, layer_number: int) -> (int, int, int):
         return self.__map[3 * layer_number + 0], \
                self.__map[3 * layer_number + 1], \
                self.__map[3 * layer_number + 2]
@@ -41,10 +41,10 @@ class TrainableVariables(AbstractVariables):
     def init_variables(self, layer_structure: AbstractLayerStructure):
         # TODO Write better initialization method or make several and let to chose
         self._set_inner_sizes(layer_structure=layer_structure)
-        self._fill_map(layer_structure=layer_structure)
+        self.__fill_map(layer_structure=layer_structure)
 
         for i in range(layer_structure.layers_number - 1):
-            w_s, b_s, b_e = self._unpack_map_single(layer_number=i)
+            w_s, b_s, b_e = self.__unpack_map_single(layer_number=i)
             self.__variables[w_s:b_s] = np.random.random(size=b_s - w_s)
 
     def set_all(self, value: np.ndarray):
@@ -60,6 +60,6 @@ class TrainableVariables(AbstractVariables):
         return self.__variables.copy()
 
     def get_single(self, layer_number: int) -> np.ndarray:
-        w_s, _, b_e = self._unpack_map_single(layer_number=layer_number)
+        w_s, _, b_e = self.__unpack_map_single(layer_number=layer_number - 1)
         return self.__variables[w_s:b_e].copy()
 
