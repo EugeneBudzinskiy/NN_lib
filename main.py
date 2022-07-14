@@ -20,17 +20,7 @@ def main():
     # res = model.predict(x=np.array([1, 1]))
     # print(res)
 
-    # f = lambda x: x[0] ** 3 + 7 * x[1] + 13 * np.sqrt(x[2]) - x[0] * x[1] * x[2]
-    f = lambda x: x[0] * x[1] * x[2]
-    point = np.array([2, 3, 25])
-
-    old_diff = nnl.differentiators.SimpleDifferentiator()
-    diff = nnl.differentiators.Differentiator()
-
-    old_res = old_diff(func=f, x=point)
-    res = diff(func=f, x=point)
-    print(old_res)
-    print(res, np.sum(res))
+    model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
 
 
 if __name__ == '__main__':
