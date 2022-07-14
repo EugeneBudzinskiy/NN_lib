@@ -22,6 +22,9 @@ def main():
 
     model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
 
+    model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
+
+
 
 if __name__ == '__main__':
     main()

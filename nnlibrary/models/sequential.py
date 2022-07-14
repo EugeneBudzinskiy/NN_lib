@@ -103,24 +103,33 @@ class Sequential(AbstractModel):
         gradient_list = list()
         gradient_list.append((d_weight, d_bias))
 
-        for i in range(layers_number):
-            j = layers_number - i - 2
-            print(j)
+        for i in range(1, layers_number - 1):
+            j = layers_number - i - 1
 
-            # current_layer = self.layer_structure.get_layer(layer_number=j)
-            # previous_weight, _ = self.__unpack_weight_and_bias(layer_number=j + 1)
-            #
-            # if not isinstance(current_layer, AbstractActivationLayer):
-            #     raise Exception()  # TODO Custom Exception
-            #
+            current_layer = self.layer_structure.get_layer(layer_number=j)
+            previous_weight, _ = self.__unpack_weight_and_bias(layer_number=j + 1)
 
-            # delta = np.dot(previous_weight.T, delta) * self.diff(func=current_layer.activation, x=z_list[j])
-            # d_weight = np.dot(delta, a_list[j].T)
-            # d_bias = delta
-            # gradient_list.append((d_weight, d_bias))
+            if not isinstance(current_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            delta = np.dot(previous_weight.T, delta) * self.diff(func=current_layer.activation, x=z_list[j - 1])
+            d_weight = np.dot(delta, a_list[j - 1].T)
+            d_bias = delta
+            gradient_list.append((d_weight, d_bias))
 
         gradient_list.reverse()
-        # print(gradient_list)  # TODO Probably debug is needed
+
+        adjustment = np.zeros(len(self.trainable_variables))
+        start_p, end_p = 0, 0
+        for pair in gradient_list:
+            for el in pair:
+                val = el.ravel()
+                end_p += len(val)
+                adjustment[start_p:end_p] = val
+                start_p += len(val)
+
+        self.trainable_variables.set_all(value=self.trainable_variables.get_all() - adjustment)
+        print(loss_fixed(output).mean())
 
     def fit(self,
             x: np.ndarray,

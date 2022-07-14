@@ -7,11 +7,12 @@ from nnlibrary.layer_structures import AbstractLayerStructure
 class TrainableVariables(AbstractVariables):
     def __init__(self):
         # TODO Select more suitable approach (large 1d array + representation)
-        self.weights = list()
-        self.biases = list()
 
         self.__variables = np.array([])
         self.__map = np.array([])
+
+    def __len__(self):
+        return len(self.__variables)
 
     def _set_inner_sizes(self, layer_structure: AbstractLayerStructure) -> (int, int):
         map_size = 3 * (layer_structure.layers_number - 1)

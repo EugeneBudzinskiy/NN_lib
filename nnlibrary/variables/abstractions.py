@@ -8,6 +8,10 @@ from nnlibrary.layer_structures import AbstractLayerStructure
 
 class AbstractVariables(ABC):
     @abstractmethod
+    def __len__(self):
+        pass
+
+    @abstractmethod
     def init_variables(self, layer_structure: AbstractLayerStructure):
         pass
 
