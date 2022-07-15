@@ -129,7 +129,7 @@ class Sequential(AbstractModel):
                 start_p += len(val)
 
         self.trainable_variables.set_all(value=self.trainable_variables.get_all() - adjustment)
-        print(loss_fixed(output).mean())
+        print(type(loss_fixed(output)))
 
     def fit(self,
             x: np.ndarray,
