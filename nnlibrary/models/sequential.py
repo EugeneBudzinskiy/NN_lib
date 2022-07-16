@@ -86,6 +86,9 @@ class Sequential(AbstractModel):
         if not isinstance(self.loss, AbstractLoss):
             raise Exception()  # TODO Custom Exception
 
+        if not isinstance(self.optimizer, AbstractOptimizer):
+            raise Exception()  # TODO Custom Exception
+
         output, z_list, a_list = self.feedforward(x=x)
         layers_number = self.layer_structure.layers_number
         current_layer = self.layer_structure.get_layer(layer_number=layers_number - 1)
@@ -101,7 +104,8 @@ class Sequential(AbstractModel):
         d_bias = delta
 
         gradient_list = list()
-        gradient_list.append((d_weight, d_bias))
+        gradient_list.append(d_bias)
+        gradient_list.append(d_weight)
 
         for i in range(1, layers_number - 1):
             j = layers_number - i - 1
@@ -115,21 +119,15 @@ class Sequential(AbstractModel):
             delta = np.dot(previous_weight.T, delta) * self.diff(func=current_layer.activation, x=z_list[j - 1])
             d_weight = np.dot(delta, a_list[j - 1].T)
             d_bias = delta
-            gradient_list.append((d_weight, d_bias))
+            gradient_list.append(d_bias)
+            gradient_list.append(d_weight)
 
         gradient_list.reverse()
+        gradient_vector = np.concatenate(gradient_list, axis=None)
 
-        adjustment = np.zeros(len(self.trainable_variables))
-        start_p, end_p = 0, 0
-        for pair in gradient_list:
-            for el in pair:
-                val = el.ravel()
-                end_p += len(val)
-                adjustment[start_p:end_p] = val
-                start_p += len(val)
-
-        self.trainable_variables.set_all(value=self.trainable_variables.get_all() - adjustment)
-        print(type(loss_fixed(output)))
+        # self.trainable_variables.set_all(value=self.trainable_variables.get_all() - adjustment)
+        self.optimizer(trainable_variables=self.trainable_variables, gradient_vector=gradient_vector)
+        print(loss_fixed(output))
 
     def fit(self,
             x: np.ndarray,

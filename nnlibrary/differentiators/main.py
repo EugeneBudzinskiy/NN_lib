@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.differentiators.abstractions import AbstractDifferentiator
+from nnlibrary.differentiators import AbstractDifferentiator
 
 
 class SimpleDifferentiator(AbstractDifferentiator):

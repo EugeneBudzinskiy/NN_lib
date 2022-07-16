@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.variables.abstractions import AbstractVariables
+from nnlibrary.variables import AbstractVariables
 from nnlibrary.layer_structures import AbstractLayerStructure
 
 

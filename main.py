@@ -12,8 +12,8 @@ def main():
     model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Sigmoid()))
     model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Sigmoid()))
 
-    optimizer = nnl.optimizers.RMSprop()
-    loss = nnl.losses.MSE()
+    optimizer = nnl.optimizers.SGD()
+    loss = nnl.losses.MeanSquaredError()
 
     model.compile(optimizer=optimizer, loss=loss)
 
@@ -22,7 +22,7 @@ def main():
 
     model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
 
-    model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
+    # model.backpropagation(x=np.array([1, 1]), y=np.array([0.1, 0.1, 0.1, 0.1, 0.1]))
 
 
 
