@@ -48,13 +48,13 @@ class Sequential(AbstractModel):
         previous_node_count = len(current_vars) // (current_node_count + 1)
         w_size = previous_node_count * current_node_count
 
-        current_weight = current_vars[:w_size].reshape((current_node_count, previous_node_count))
-        current_bias = current_vars[w_size:].reshape((-1, 1))
+        current_weight = current_vars[:w_size].reshape((previous_node_count, current_node_count))
+        current_bias = current_vars[w_size:].reshape((1, -1))
 
         return current_weight, current_bias
 
     def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
-        a = x.copy().reshape((-1, 1)) if x.ndim == 1 else x.copy()
+        a = x.copy().reshape((1, -1)) if x.ndim == 1 else x.copy()
         z_list, a_list = list(), list()
         a_list.append(a)
 
@@ -62,7 +62,7 @@ class Sequential(AbstractModel):
             current_layer = self.layer_structure.get_layer(layer_number=i)
             current_weight, current_bias = self.__unpack_weight_and_bias(layer_number=i)
 
-            z = np.dot(current_weight, a) + current_bias
+            z = np.dot(a, current_weight) + current_bias
             z_list.append(z)
 
             if not isinstance(current_layer, AbstractActivationLayer):
@@ -100,7 +100,7 @@ class Sequential(AbstractModel):
 
         delta = self.diff(func=loss_fixed, x=output) * \
             self.diff(func=current_layer.activation, x=z_list[-1])
-        d_weight = np.dot(delta, a_list[-1].T)
+        d_weight = np.dot(a_list[-1].T, delta)
         d_bias = delta
 
         gradient_list = list()
@@ -116,9 +116,10 @@ class Sequential(AbstractModel):
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
-            delta = np.dot(previous_weight.T, delta) * self.diff(func=current_layer.activation, x=z_list[j - 1])
-            d_weight = np.dot(delta, a_list[j - 1].T)
+            delta = np.dot(delta, previous_weight.T) * self.diff(func=current_layer.activation, x=z_list[j - 1])
+            d_weight = np.dot(a_list[j - 1].T, delta)
             d_bias = delta
+
             gradient_list.append(d_bias)
             gradient_list.append(d_weight)
 
