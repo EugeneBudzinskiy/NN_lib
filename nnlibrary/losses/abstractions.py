@@ -6,5 +6,5 @@ import numpy as np
 
 class AbstractLoss(ABC):
     @abstractmethod
-    def __call__(self, y_predicted: np.ndarray, y_target: np.ndarray) -> float:
+    def __call__(self, y_predicted: np.ndarray, y_target: np.ndarray) -> np.ndarray:
         pass

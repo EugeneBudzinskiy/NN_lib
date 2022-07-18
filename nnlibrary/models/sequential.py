@@ -6,7 +6,7 @@ from nnlibrary import errors
 from nnlibrary import differentiators
 from nnlibrary import layers
 
-from nnlibrary.differentiators import SimpleDifferentiator
+from nnlibrary.differentiators import Differentiator
 from nnlibrary.models import AbstractModel
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.layers import AbstractActivationLayer
@@ -20,7 +20,7 @@ class Sequential(AbstractModel):
     def __init__(self):
         self.is_compiled = False
 
-        self.diff = SimpleDifferentiator()
+        self.diff = Differentiator()
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
 
@@ -79,7 +79,7 @@ class Sequential(AbstractModel):
 
     @staticmethod
     def loss_wrapper(loss: AbstractLoss, target: np.ndarray) -> callable:
-        y = target.copy().reshape((-1, 1)) if target.ndim == 1 else target.copy()
+        y = target.copy().reshape((1, -1)) if target.ndim == 1 else target.copy()
         return lambda x: loss(y_predicted=x, y_target=y)
 
     def backpropagation(self, x: np.ndarray, y: np.ndarray, batch_size: int = None):
@@ -98,10 +98,17 @@ class Sequential(AbstractModel):
 
         loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
 
-        delta = self.diff(func=loss_fixed, x=output) * \
-            self.diff(func=current_layer.activation, x=z_list[-1])
-        d_weight = np.dot(a_list[-1].T, delta)
-        d_bias = delta
+        # delta = self.diff(func=loss_fixed, x=output) * \
+        #     self.diff(func=current_layer.activation, x=z_list[-1])
+        # d_weight = np.dot(a_list[-1].T, delta)
+        # d_bias = delta
+
+        # print(self.diff(func=loss_fixed, x=output))
+        from nnlibrary.differentiators import SimpleDifferentiator
+        der = SimpleDifferentiator()
+        print(self.diff(func=current_layer.activation, x=z_list[-1]))
+        print(der(func=current_layer.activation, x=z_list[-1]))
+        exit(-22)
 
         gradient_list = list()
         gradient_list.append(d_bias)
