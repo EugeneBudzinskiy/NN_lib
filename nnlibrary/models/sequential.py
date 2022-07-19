@@ -6,7 +6,8 @@ from nnlibrary import errors
 from nnlibrary import differentiators
 from nnlibrary import layers
 
-from nnlibrary.differentiators import Differentiator
+from nnlibrary.differentiators import Derivative
+from nnlibrary.differentiators import Gradient
 from nnlibrary.models import AbstractModel
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.layers import AbstractActivationLayer
@@ -20,7 +21,9 @@ class Sequential(AbstractModel):
     def __init__(self):
         self.is_compiled = False
 
-        self.diff = Differentiator()
+        self.derivative = Derivative()
+        self.gradient = Gradient()
+
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
 
@@ -98,8 +101,8 @@ class Sequential(AbstractModel):
 
         loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
 
-        delta = self.diff(func=loss_fixed, x=output) * \
-            self.diff(func=current_layer.activation, x=z_list[-1])
+        delta = self.gradient(func=loss_fixed, x=output) * \
+            self.derivative(func=current_layer.activation, x=z_list[-1])
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = delta
 
@@ -116,7 +119,7 @@ class Sequential(AbstractModel):
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
-            delta = np.dot(delta, previous_weight.T) * self.diff(func=current_layer.activation, x=z_list[j - 1])
+            delta = np.dot(delta, previous_weight.T) * self.derivative(func=current_layer.activation, x=z_list[j - 1])
             d_weight = np.dot(a_list[j - 1].T, delta)
             d_bias = delta
 
@@ -141,7 +144,7 @@ class Sequential(AbstractModel):
 class Sequential_:
     def __init__(self):
         self.is_compiled = False
-        self.diff = differentiators.Differentiator()
+        self.diff = differentiators.Gradient()
 
         self.input_layer = None
         self.layers = list()
