@@ -4,4 +4,6 @@ def test_all():
     tests.differentiators.test_derivative()
     tests.differentiators.test_gradient()
 
+    tests.sequential.test_predict()
+
     print('Passed!')
