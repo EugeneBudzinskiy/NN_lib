@@ -119,7 +119,8 @@ class Sequential(AbstractModel):
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
-            delta = np.dot(delta, previous_weight.T) * self.derivative(func=current_layer.activation, x=z_list[j - 1])
+            delta = np.dot(delta, previous_weight.T) * \
+                self.derivative(func=current_layer.activation, x=z_list[j - 1])
             d_weight = np.dot(a_list[j - 1].T, delta)
             d_bias = delta
 
