@@ -5,5 +5,6 @@ def test_all():
     tests.differentiators.test_gradient()
 
     tests.sequential.test_predict()
+    tests.sequential.test_backpropagation()
 
     print('Passed!')
