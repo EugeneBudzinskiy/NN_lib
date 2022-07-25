@@ -4,6 +4,7 @@ from abc import abstractmethod
 import numpy as np
 
 from nnlibrary.layer_structures import AbstractLayerStructure
+from nnlibrary.initializers import AbstractInitializer
 
 
 class AbstractVariables(ABC):
@@ -12,7 +13,10 @@ class AbstractVariables(ABC):
         pass
 
     @abstractmethod
-    def init_variables(self, layer_structure: AbstractLayerStructure):
+    def init_variables(self,
+                       layer_structure: AbstractLayerStructure,
+                       weight_initializer: AbstractInitializer = None,
+                       bias_initializer: AbstractInitializer = None):
         pass
 
     @abstractmethod

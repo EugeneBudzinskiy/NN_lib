@@ -15,6 +15,7 @@ from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.variables import TrainableVariables
+from nnlibrary.variables import AbstractInitializer
 
 
 class Sequential(AbstractModel):
@@ -35,12 +36,18 @@ class Sequential(AbstractModel):
 
     def compile(self,
                 optimizer: AbstractOptimizer = None,
-                loss: AbstractLoss = None):
+                loss: AbstractLoss = None,
+                weight_initializer: AbstractInitializer = None,
+                bias_initializer: AbstractInitializer = None):
 
         self.optimizer = optimizer
         self.loss = loss
 
-        self.trainable_variables.init_variables(layer_structure=self.layer_structure)
+        self.trainable_variables.init_variables(
+            layer_structure=self.layer_structure,
+            weight_initializer=weight_initializer,
+            bias_initializer=bias_initializer
+        )
         self.is_compiled = True
 
     def __unpack_weight_and_bias(self, layer_number: int) -> (np.ndarray, np.ndarray):

@@ -14,7 +14,10 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        model.compile(optimizer=optimizer, loss=loss)
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
         value = model.trainable_variables.get_all()
         target = np.array([0.77770241, 0.23754122, 0.82427853, 0.9657492, 0.97260111, 0.45344925,
@@ -51,7 +54,10 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        model.compile(optimizer=optimizer, loss=loss)
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
         x = np.array([1, 1], dtype='float64')
 
@@ -86,7 +92,10 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        model.compile(optimizer=optimizer, loss=loss)
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
         x = np.array([[1, 1], [0, 0.5]], dtype='float64')
 

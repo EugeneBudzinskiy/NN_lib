@@ -1,13 +1,14 @@
 import numpy as np
 
 from nnlibrary.variables import AbstractVariables
+from nnlibrary.initializers import AbstractInitializer
+from nnlibrary.initializers import UniformZeroOne
+from nnlibrary.initializers import Zeros
 from nnlibrary.layer_structures import AbstractLayerStructure
 
 
 class TrainableVariables(AbstractVariables):
     def __init__(self):
-        # TODO Select more suitable approach (large 1d array + representation)
-
         self.__variables = np.array([])
         self.__map = np.array([])
 
@@ -39,14 +40,24 @@ class TrainableVariables(AbstractVariables):
                self.__map[3 * layer_number + 1], \
                self.__map[3 * layer_number + 2]
 
-    def init_variables(self, layer_structure: AbstractLayerStructure):
-        # TODO Write better initialization method or make several and let to chose
+    def init_variables(self,
+                       layer_structure: AbstractLayerStructure,
+                       weight_initializer: AbstractInitializer = None,
+                       bias_initializer: AbstractInitializer = None):
+
+        if weight_initializer is None:
+            weight_initializer = UniformZeroOne()
+
+        if bias_initializer is None:
+            bias_initializer = Zeros()
+
         self._set_inner_sizes(layer_structure=layer_structure)
         self.__fill_map(layer_structure=layer_structure)
 
         for i in range(layer_structure.layers_number - 1):
             w_s, b_s, b_e = self.__unpack_map_single(layer_number=i)
-            self.__variables[w_s:b_s] = np.random.random(size=b_s - w_s)
+            self.__variables[w_s:b_s] = weight_initializer(shape=(b_s - w_s))
+            self.__variables[b_s:b_e] = bias_initializer(shape=(b_e - b_s))
 
     def set_all(self, value: np.ndarray):
         if value.shape == self.__variables.shape:
@@ -63,4 +74,3 @@ class TrainableVariables(AbstractVariables):
     def get_single(self, layer_number: int) -> np.ndarray:
         w_s, _, b_e = self.__unpack_map_single(layer_number=layer_number - 1)
         return self.__variables[w_s:b_e].copy()
-
