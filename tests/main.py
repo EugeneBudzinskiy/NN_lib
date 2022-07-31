@@ -7,4 +7,6 @@ def test_all():
     tests.sequential.test_predict()
     tests.sequential.test_backpropagation()
 
+    tests.losses.test_loss_mse()
+
     print('Passed!')
