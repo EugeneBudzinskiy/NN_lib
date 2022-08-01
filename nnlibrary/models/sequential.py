@@ -103,8 +103,9 @@ class Sequential(AbstractModel):
 
         loss_gradient = self.gradient(func=lambda t: self.loss(y_predicted=t, y_target=y), x=output)
         delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
-        d_weight = np.dot(a_list[-1].T, delta)
-        d_bias = delta
+
+        d_weight = np.dot(a_list[-1].T, delta) / delta.shape[0]
+        d_bias = np.mean(delta, axis=0).reshape(1, -1)
 
         gradient_list = list()
         gradient_list.append(d_bias)
@@ -119,10 +120,11 @@ class Sequential(AbstractModel):
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
 
-            delta = np.dot(delta, previous_weight.T) * \
-                self.derivative(func=current_layer.activation, x=z_list[j - 1])
-            d_weight = np.dot(a_list[j - 1].T, delta)
-            d_bias = delta
+            next_delta = np.dot(delta, previous_weight.T)
+            delta = next_delta * self.derivative(func=current_layer.activation, x=z_list[j - 1])
+
+            d_weight = np.dot(a_list[j - 1].T, delta) / delta.shape[0]
+            d_bias = np.mean(delta, axis=0).reshape(1, -1)
 
             gradient_list.append(d_bias)
             gradient_list.append(d_weight)

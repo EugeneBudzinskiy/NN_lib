@@ -122,32 +122,6 @@ def test_predict():
 
 
 def test_backpropagation():
-    # import numpy as np
-    # import nnlibrary as nnl
-    #
-    # np.random.seed(13)
-    #
-    # model = nnl.models.Sequential()
-    #
-    # model.add(layer=nnl.layers.Input(node_count=2))
-    # model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Sigmoid()))
-    # model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Sigmoid()))
-    #
-    # optimizer = nnl.optimizers.SGD(learning_rate=1)
-    # loss = nnl.losses.MeanSquaredError()
-    #
-    # model.compile(optimizer=optimizer, loss=loss)
-    #
-    # x = np.array([[1, 1], [1, 1]])
-    # y = np.array([[0.1, 0.1, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.1, 0.1]])
-    #
-    # print(model.backpropagation(x=x, y=y))
-    #
-    # print(model.trainable_variables.get_all())
-    #
-    # model.backpropagation(x=x, y=y)
-    # exit()
-
     def model_3l_235_sigmoid_weight(flag: bool = False):
         import numpy as np
         import nnlibrary as nnl
@@ -210,7 +184,7 @@ def test_backpropagation():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([[1, 1]], dtype='float64')
+        x = np.array([1, 1], dtype='float64')
         y = np.array([0.1, 0.1, 0.1, 0.1, 0.1], dtype='float64')
 
         value = model.backpropagation(x=x, y=y)
@@ -225,7 +199,50 @@ def test_backpropagation():
                        f'    Target:\n{target}\n' \
                        f'    Value:\n{value}'
 
-        # assert np.allclose(target, value), error_prompt
+        assert np.allclose(target, value), error_prompt
+
+        if flag:
+            print(f'Structure: {prompt}\n'
+                  f'  Point = {x}\n'
+                  f'  Desire Output:\n{target}\n'
+                  f'  Real Output:\n{value}\n')
+
+    def model_3l_235_sigmoid_multi(flag: bool = False):
+        import numpy as np
+        import nnlibrary as nnl
+
+        np.random.seed(13)
+
+        model = nnl.models.Sequential()
+
+        model.add(layer=nnl.layers.Input(node_count=2))
+        model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Sigmoid()))
+        model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Sigmoid()))
+
+        optimizer = nnl.optimizers.SGD(learning_rate=1)
+        loss = nnl.losses.MeanSquaredError()
+
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
+
+        x = np.array([[1, 1], [0, 1]], dtype='float64')
+        y = np.array([[0.1, 0.1, 0.1, 0.1, 0.1], [0.5, 0.5, 0.5, 0.5, 0.5]], dtype='float64')
+
+        value = model.backpropagation(x=x, y=y)
+        target = np.array([0.0085904, 0.00952737, 0.00780344, 0.01344478, 0.01365507, 0.01189515,
+                           0.0134448, 0.01365506, 0.01189514, 0.027215, 0.02714866, 0.02694768,
+                           0.02695358, 0.02646597, 0.02520731, 0.02514825, 0.02504581, 0.02503496,
+                           0.02461094, 0.02456282, 0.02450117, 0.02425525, 0.02427313, 0.02381176,
+                           0.03319946, 0.03312356, 0.03305633, 0.03302884, 0.0324927])
+
+        prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value:\n{value}'
+
+        assert np.allclose(target, value), error_prompt
 
         if flag:
             print(f'Structure: {prompt}\n'
@@ -235,3 +252,4 @@ def test_backpropagation():
 
     model_3l_235_sigmoid_weight()
     model_3l_235_sigmoid_single()
+    model_3l_235_sigmoid_multi()
