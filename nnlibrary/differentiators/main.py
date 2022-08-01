@@ -10,12 +10,12 @@ class Derivative(AbstractDifferentiator):
 
 class Gradient(AbstractDifferentiator):
     def __call__(self, func: callable, x: np.ndarray,  epsilon: float = 1e-5) -> np.ndarray:
-        point = x.copy().reshape((1, -1)) if x.ndim == 1 else x.copy()
+        point = x.copy() if x.ndim > 1 else x.copy().reshape(1, -1)
         tmp = np.zeros_like(point, dtype='float64')
         output = tmp.copy()
-        for i in range(x.shape[-1]):
+        for i in range(point.shape[-1]):
             offset = tmp.copy()
             offset[:, i] = epsilon
-            output[:, i] = (func(point + offset) - func(x - offset)) / (2 * epsilon)
+            output[:, i] = (func(point + offset) - func(point - offset)) / (2 * epsilon)
 
         return output

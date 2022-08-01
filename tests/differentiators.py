@@ -71,8 +71,8 @@ def test_gradient():
 
     def single_point_grad(flag: bool = False):
         prompt = 'x[0] ** 2 + sqrt(x[1]) + ln(x[2])'
-        x = np.array([[1, 1, 4]], dtype='float64')
-        target = (lambda t: np.array([2 * t[:, 0], 1 / (2 * np.sqrt(t[:, 1])), 1 / t[:, 2]]).T)(x)
+        x = np.array([1, 1, 4], dtype='float64')
+        target = (lambda t: np.array([2 * t[0], 1 / (2 * np.sqrt(t[1])), 1 / t[2]]))(x)
         value = gradient(lambda t: t[:, 0] ** 2 + np.sqrt(t[:, 1]) + np.log(t[:, 2]), x=x)
 
         error_prompt = f'\n  Target and Value are not the same: \n' \
