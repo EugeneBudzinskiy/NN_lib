@@ -87,11 +87,6 @@ class Sequential(AbstractModel):
         output, _, _ = self.feedforward(x=x)
         return output
 
-    @staticmethod
-    def loss_wrapper(loss: AbstractLoss, target: np.ndarray) -> callable:
-        y = target.copy().reshape((1, -1)) if target.ndim == 1 else target.copy()
-        return lambda x: loss(y_predicted=x, y_target=y)
-
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
         if not isinstance(self.loss, AbstractLoss):
             raise Exception()  # TODO Custom Exception
@@ -106,10 +101,8 @@ class Sequential(AbstractModel):
         if not isinstance(current_layer, AbstractActivationLayer):
             raise Exception()  # TODO Custom Exception
 
-        loss_fixed = self.loss_wrapper(loss=self.loss, target=y)
-
-        delta = self.gradient(func=loss_fixed, x=output) * \
-            self.derivative(func=current_layer.activation, x=z_list[-1])
+        loss_gradient = self.gradient(func=lambda t: self.loss(y_predicted=t, y_target=y), x=output)
+        delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = delta
 
@@ -137,8 +130,6 @@ class Sequential(AbstractModel):
         gradient_list.reverse()
         gradient_vector = np.concatenate(gradient_list, axis=None)
         return gradient_vector
-        # self.optimizer(trainable_variables=self.trainable_variables, gradient_vector=gradient_vector)
-        # print(loss_fixed(output))
 
     def fit(self,
             x: np.ndarray,
