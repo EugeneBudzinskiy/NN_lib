@@ -140,11 +140,24 @@ class Sequential(AbstractModel):
             batch_size: int = 32,
             shuffle: bool = True):
 
-        print(len(x))
-        exit(-2)
+        if not isinstance(self.loss, AbstractLoss):
+            raise Exception()  # TODO Custom Exception
 
+        if not isinstance(self.optimizer, AbstractOptimizer):
+            raise Exception()  # TODO Custom Exception
+
+        size = x.shape[0]
+        indexes = np.arange(size)
         for epoch in range(epochs):
-            pass
+            if shuffle:
+                np.random.shuffle(indexes)
+
+            for i in range(0, size, batch_size):
+                idx = indexes[i:i + batch_size]
+                self.optimizer(
+                    trainable_variables=self.trainable_variables,
+                    gradient_vector=self.backpropagation(x=x[idx], y=y[idx])
+                )
 
 
 class Sequential_:

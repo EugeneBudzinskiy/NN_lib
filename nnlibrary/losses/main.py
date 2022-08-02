@@ -2,6 +2,9 @@ import numpy as np
 
 from nnlibrary.losses import AbstractLoss
 
+# TODO  Loss should normally return single value. And return multiple while `fit`
+# TODO  Probably implement reducer (i.e. `mean`, `sum`, `none` ...)
+
 
 class MeanSquaredError(AbstractLoss):
     def __call__(self, y_predicted: np.ndarray, y_target: np.ndarray) -> np.ndarray:
