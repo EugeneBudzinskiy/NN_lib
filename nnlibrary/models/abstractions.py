@@ -27,7 +27,7 @@ class AbstractModel(ABC):
     def fit(self,
             x: ndarray,
             y: ndarray,
-            epoch_number: int = 1,
+            epochs: int = 1,
             batch_size: int = 32,
             shuffle: bool = False):
         pass

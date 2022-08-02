@@ -136,10 +136,15 @@ class Sequential(AbstractModel):
     def fit(self,
             x: np.ndarray,
             y: np.ndarray,
-            epoch_number: int = 1,
+            epochs: int = 1,
             batch_size: int = 32,
-            shuffle: bool = False):
-        pass
+            shuffle: bool = True):
+
+        print(len(x))
+        exit(-2)
+
+        for epoch in range(epochs):
+            pass
 
 
 class Sequential_:

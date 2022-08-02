@@ -6,6 +6,7 @@ def test_all():
 
     tests.sequential.test_predict()
     tests.sequential.test_backpropagation()
+    tests.sequential.test_fit()
 
     tests.losses.test_loss_mse()
 
