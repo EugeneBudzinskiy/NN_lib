@@ -292,6 +292,54 @@ def test_fit():
                   f'  Desire Output:\n{target}\n'
                   f'  Real Output:\n{value}\n')
 
+    def model_3l_235_sigmoid_cost_single(flag: bool = False):
+        import numpy as np
+        import nnlibrary as nnl
+
+        np.random.seed(13)
+
+        model = nnl.models.Sequential()
+
+        model.add(layer=nnl.layers.Input(node_count=2))
+        model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Sigmoid()))
+        model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Sigmoid()))
+
+        optimizer = nnl.optimizers.SGD(learning_rate=1)
+        loss = nnl.losses.MeanSquaredError()
+
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
+
+        x = np.array([1, 1], dtype='float64')
+        y = np.array([1.0, 1.0, 1.0, 1.0, 1.0], dtype='float64')
+
+        before_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss before Fit
+
+        model.fit(x=x, y=y, epochs=1, batch_size=2, shuffle=False)
+        target = np.array([0.06128797, 0.056028955])  # targeted [`before`, `after`] fit values
+
+        after_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss after Fit
+        value = np.array([before_fit, after_fit])
+
+        prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n' \
+                       f'       Before fit: {target[0]}\n' \
+                       f'        After fit: {target[1]}\n' \
+                       f'    Value:\n' \
+                       f'       Before fit: {value[0]}\n' \
+                       f'        After fit: {value[1]}\n'
+
+        assert np.allclose(target, value), error_prompt
+
+        if flag:
+            print(f'Structure: {prompt}\n'
+                  f'  Point = {x}\n'
+                  f'  Desire Output:\n{target}\n'
+                  f'  Real Output:\n{value}\n')
+
     def model_3l_235_sigmoid_cost_multi(flag: bool = False):
         import numpy as np
         import nnlibrary as nnl
@@ -327,13 +375,13 @@ def test_fit():
             [0.1, 0.1, 0.1, 0.1, 0.1]
         ], dtype='float64')
 
-        value = np.zeros(2, dtype='float64')
-        value[0] = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss before Fit
+        before_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss before Fit
 
         model.fit(x=x, y=y, epochs=1, batch_size=2, shuffle=False)
         target = np.array([0.19699292, 0.1736497])  # targeted [`before`, `after`] fit values
 
-        value[1] = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss after Fit
+        after_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss after Fit
+        value = np.array([before_fit, after_fit])
 
         prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
         error_prompt = f'\n  Target and Value are not the same: \n' \
@@ -353,4 +401,5 @@ def test_fit():
                   f'  Real Output:\n{value}\n')
 
     model_3l_235_sigmoid_weight()
+    model_3l_235_sigmoid_cost_single()
     model_3l_235_sigmoid_cost_multi()
