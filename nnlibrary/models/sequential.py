@@ -13,7 +13,10 @@ from nnlibrary.layers import AbstractLayer
 from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.optimizers import AbstractOptimizer
+from nnlibrary.optimizers import SGD
 from nnlibrary.losses import AbstractLoss
+from nnlibrary.losses import MeanSquaredError
+from nnlibrary.losses import ReductionNone
 from nnlibrary.variables import TrainableVariables
 from nnlibrary.variables import AbstractInitializer
 
@@ -28,8 +31,8 @@ class Sequential(AbstractModel):
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
 
-        self.optimizer = None
-        self.loss = None
+        self.optimizer = SGD()  # Default value
+        self.loss = MeanSquaredError()  # Default value
 
     def add(self, layer: AbstractLayer):
         self.layer_structure.add_layer(layer=layer)
@@ -40,8 +43,11 @@ class Sequential(AbstractModel):
                 weight_initializer: AbstractInitializer = None,
                 bias_initializer: AbstractInitializer = None):
 
-        self.optimizer = optimizer
-        self.loss = loss
+        if optimizer is not None:
+            self.optimizer = optimizer
+
+        if loss is not None:
+            self.loss = loss
 
         self.trainable_variables.init_variables(
             layer_structure=self.layer_structure,
@@ -88,12 +94,6 @@ class Sequential(AbstractModel):
         return output
 
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
-        if not isinstance(self.loss, AbstractLoss):
-            raise Exception()  # TODO Custom Exception
-
-        if not isinstance(self.optimizer, AbstractOptimizer):
-            raise Exception()  # TODO Custom Exception
-
         output, z_list, a_list = self.feedforward(x=x)
         layers_number = self.layer_structure.layers_number
         current_layer = self.layer_structure.get_layer(layer_number=layers_number - 1)
@@ -101,7 +101,11 @@ class Sequential(AbstractModel):
         if not isinstance(current_layer, AbstractActivationLayer):
             raise Exception()  # TODO Custom Exception
 
-        loss_gradient = self.gradient(func=lambda t: self.loss(y_predicted=t, y_target=y), x=output)
+        loss_gradient = self.gradient(
+            func=lambda t: self.loss(y_predicted=t,
+                                     y_target=y,
+                                     reduction=ReductionNone()),
+            x=output)
         delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
 
         d_weight = np.dot(a_list[-1].T, delta)
@@ -139,12 +143,6 @@ class Sequential(AbstractModel):
             epochs: int = 1,
             batch_size: int = 32,
             shuffle: bool = True):
-
-        if not isinstance(self.loss, AbstractLoss):
-            raise Exception()  # TODO Custom Exception
-
-        if not isinstance(self.optimizer, AbstractOptimizer):
-            raise Exception()  # TODO Custom Exception
 
         size = x.shape[0]
         indexes = np.arange(size)
