@@ -7,12 +7,27 @@ from nnlibrary.variables import AbstractVariables
 
 class SGD(AbstractOptimizer):
     def __init__(self,
-                 learning_rate: float = 0.0001):
+                 learning_rate: float = 0.0001,
+                 momentum: float = 0.0,
+                 nesterov: bool = False):
 
         self.learning_rate = learning_rate
+        self.momentum = momentum
+        self.nesterov = nesterov
+        self.velocity = 0
 
     def __call__(self, trainable_variables: AbstractVariables, gradient_vector: np.ndarray):
-        adjustment = - self.learning_rate * gradient_vector
+        if self.momentum == 0:
+            adjustment = - self.learning_rate * gradient_vector
+        else:
+            self.velocity *= self.momentum
+            self.velocity -= self.learning_rate * gradient_vector
+            adjustment = self.velocity
+
+            if self.nesterov:
+                adjustment *= self.velocity
+                adjustment -= self.learning_rate * gradient_vector
+
         trainable_variables.set_all(value=trainable_variables.get_all() + adjustment)
 
 

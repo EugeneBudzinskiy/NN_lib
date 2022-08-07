@@ -10,4 +10,6 @@ def test_all():
 
     tests.losses.test_loss_mse()
 
+    tests.optimizers.test_optimizer_sgd()
+
     print('Passed!')
