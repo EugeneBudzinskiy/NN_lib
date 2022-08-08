@@ -169,10 +169,9 @@ class Sequential(AbstractModel):
 
             for i in range(0, size, batch_size):
                 idx = indexes[i:i + batch_size]
-                self.optimizer(
-                    trainable_variables=self.trainable_variables,
-                    gradient_vector=self.backpropagation(x=x[idx], y=y[idx])
-                )
+                gradient_vector = self.backpropagation(x=x[idx], y=y[idx])
+                adjustment = self.optimizer(gradient_vector=gradient_vector)
+                self.trainable_variables.set_all(value=self.trainable_variables.get_all() + adjustment)
 
 # import time
 # from nnlibrary import errors

@@ -1,50 +1,53 @@
 def test_optimizer_sgd():
-    def learning_rate_1_momentum_0_nesterov_false(flag: bool = False):
+    def lr_0_1_mom_0_nesterov_false_single(flag: bool = False):
         import numpy as np
         import nnlibrary as nnl
 
-        np.random.seed(13)
+        optimizer = nnl.optimizers.SGD(learning_rate=0.1, momentum=0, nesterov=False)
 
-        model = nnl.models.Sequential()
+        x = np.array([1.0], dtype='float64')  # loss = x ** 2 / 2 => d(loss)/dx = x
+        value = optimizer(gradient_vector=x)
 
-        model.add(layer=nnl.layers.Input(node_count=2))
-        model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Sigmoid()))
-        model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Sigmoid()))
+        target = np.array([-0.1], dtype='float64')
 
-        optimizer = nnl.optimizers.SGD(learning_rate=1, momentum=0, nesterov=False)
-        loss = nnl.losses.MeanSquaredError()
-
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
-
-        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
-
-        x = np.array([1, 1], dtype='float64')
-        y = np.array([1.0, 1.0, 1.0, 1.0, 1.0], dtype='float64')
-
-        before_fit = model.trainable_variables.get_all()  # Save Weights before Fit
-
-        model.fit(x=x, y=y)
-        target = np.array([0.06128797, 0.056028955])  # targeted [`before`, `after`] fit values
-
-        after_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Weights after Fit
-        value = np.array([before_fit, after_fit])
-
-        prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
+        prompt = 'Optimizer SGD: LR=1, MOM=0, Nesterov=False'
         error_prompt = f'\n  Target and Value are not the same: \n' \
-                       f'    Target:\n' \
-                       f'       Before fit: {target[0]}\n' \
-                       f'        After fit: {target[1]}\n' \
-                       f'    Value:\n' \
-                       f'       Before fit: {value[0]}\n' \
-                       f'        After fit: {value[1]}\n'
+                       f'    Target:\n{target}\n' \
+                       f'    Value:\n{value}\n'
 
-        assert np.allclose(target, value), error_prompt
+        assert np.isclose(target, value), error_prompt
 
         if flag:
-            print(f'Structure: {prompt}\n'
+            print(f'Params: {prompt}\n'
                   f'  Point = {x}\n'
                   f'  Desire Output:\n{target}\n'
                   f'  Real Output:\n{value}\n')
 
-    learning_rate_1_momentum_0_nesterov_false()
+    def lr_0_1_mom_0_9_nesterov_false_single(flag: bool = False):
+        import numpy as np
+        import nnlibrary as nnl
+
+        optimizer = nnl.optimizers.SGD(learning_rate=0.1, momentum=0.9, nesterov=False)
+        x = np.array([1.0], dtype='float64')  # loss = x ** 2 / 2 => d(loss)/dx = x
+
+        first_step = optimizer(gradient_vector=x)
+        second_step = optimizer(gradient_vector=x + first_step)
+
+        value = np.concatenate([first_step, second_step], axis=None)
+        target = np.array([-0.1, -0.18], dtype='float64')
+
+        prompt = 'Optimizer SGD: LR=1, MOM=0, Nesterov=False'
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value:\n{value}\n'
+
+        assert np.allclose(target, value), error_prompt
+
+        if flag:
+            print(f'Params: {prompt}\n'
+                  f'  Point = {x}\n'
+                  f'  Desire Output:\n{target}\n'
+                  f'  Real Output:\n{value}\n')
+
+    lr_0_1_mom_0_nesterov_false_single()
+    lr_0_1_mom_0_9_nesterov_false_single()

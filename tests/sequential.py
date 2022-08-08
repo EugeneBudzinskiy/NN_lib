@@ -315,13 +315,13 @@ def test_fit():
         x = np.array([1, 1], dtype='float64')
         y = np.array([1.0, 1.0, 1.0, 1.0, 1.0], dtype='float64')
 
-        before_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss before Fit
+        before_fit = model.loss(y_predicted=model.predict(x=x), y_target=y)  # Save Loss before Fit
 
         model.fit(x=x, y=y, epochs=1, batch_size=2, shuffle=False)
         target = np.array([0.06128797, 0.056028955])  # targeted [`before`, `after`] fit values
 
-        after_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss after Fit
-        value = np.array([before_fit, after_fit])
+        after_fit = model.loss(y_predicted=model.predict(x=x), y_target=y)  # Save Loss after Fit
+        value = np.concatenate([before_fit, after_fit], axis=None)
 
         prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
         error_prompt = f'\n  Target and Value are not the same: \n' \
@@ -375,13 +375,13 @@ def test_fit():
             [0.1, 0.1, 0.1, 0.1, 0.1]
         ], dtype='float64')
 
-        before_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss before Fit
+        before_fit = model.loss(y_predicted=model.predict(x=x), y_target=y)  # Save Loss before Fit
 
         model.fit(x=x, y=y, epochs=1, batch_size=2, shuffle=False)
         target = np.array([0.19699292, 0.1736497])  # targeted [`before`, `after`] fit values
 
-        after_fit = np.mean(model.loss(y_predicted=model.predict(x=x), y_target=y))  # Save Loss after Fit
-        value = np.array([before_fit, after_fit])
+        after_fit = model.loss(y_predicted=model.predict(x=x), y_target=y)  # Save Loss after Fit
+        value = np.concatenate([before_fit, after_fit], axis=None)
 
         prompt = '3 Layers: (2 Input - 3 Sigmoid - 5 Sigmoid)'
         error_prompt = f'\n  Target and Value are not the same: \n' \
