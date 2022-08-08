@@ -19,13 +19,11 @@ class SGD(AbstractOptimizer):
         if self.momentum == 0:
             adjustment = - self.learning_rate * gradient_vector
         else:
-            self.velocity *= self.momentum
-            self.velocity -= self.learning_rate * gradient_vector
+            self.velocity = self.momentum * self.velocity - self.learning_rate * gradient_vector
             adjustment = self.velocity
 
             if self.nesterov:
-                adjustment *= self.velocity
-                adjustment -= self.learning_rate * gradient_vector
+                adjustment = self.momentum * self.velocity - self.learning_rate * gradient_vector
 
         return adjustment.copy()
 
