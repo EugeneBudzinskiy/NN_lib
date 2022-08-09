@@ -15,9 +15,9 @@ class SGD(AbstractOptimizer):
         self.velocity = 0
 
     def __call__(self, gradient_vector: np.ndarray):
-        if self.momentum == 0:
-            adjustment = - self.learning_rate * gradient_vector
-        else:
+        adjustment = - self.learning_rate * gradient_vector
+
+        if self.momentum:
             self.velocity = self.momentum * self.velocity - self.learning_rate * gradient_vector
             adjustment = self.velocity
 
@@ -62,24 +62,31 @@ class RMSprop(AbstractOptimizer):
                  learning_rate: float = 0.0001,
                  rho: float = 0.9,
                  momentum: float = 0.0,
-                 epsilon: float = 1e-7):
+                 epsilon: float = 1e-7,
+                 centered: bool = False):
 
         self.learning_rate = learning_rate
-        self.beta = rho
+        self.rho = rho
         self.momentum = momentum
         self.epsilon = epsilon
+        self.centered = centered
 
         self.previous = 0
-        self.velocity = 0
+        self.rms = 0
+        self.mg = 0
 
     def __call__(self, gradient_vector: np.ndarray) -> np.ndarray:
-        self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
+        self.rms = self.rho * self.rms + (1 - self.rho) * gradient_vector ** 2
+        direction = self.rms
 
-        direction = - self.learning_rate * gradient_vector / (np.sqrt(self.velocity + self.epsilon))
-        adjustment = direction
+        if self.centered:
+            self.mg = self.rho * self.mg + (1 - self.rho) * gradient_vector
+            direction = self.rms - self.mg ** 2
+
+        adjustment = - self.learning_rate * gradient_vector / (np.sqrt(direction) + self.epsilon)
 
         if self.momentum:
-            self.previous = self.momentum * self.previous + direction
+            self.previous = self.momentum * self.previous + adjustment
             adjustment = self.previous
 
         return adjustment.copy()
