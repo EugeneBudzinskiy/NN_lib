@@ -1,6 +1,5 @@
 import numpy as np
 
-
 from nnlibrary.optimizers import AbstractOptimizer
 
 
@@ -34,7 +33,6 @@ class Adam(AbstractOptimizer):
                  beta_1: float = 0.9,
                  beta_2: float = 0.999,
                  epsilon: float = 1e-7):
-
         self.learning_rate = learning_rate
         self.beta_1 = beta_1
         self.beta_2 = beta_2
@@ -62,24 +60,26 @@ class Adam(AbstractOptimizer):
 class RMSprop(AbstractOptimizer):
     def __init__(self,
                  learning_rate: float = 0.0001,
-                 beta: float = 0.9,
+                 rho: float = 0.9,
                  momentum: float = 0.0,
                  epsilon: float = 1e-7):
 
         self.learning_rate = learning_rate
-        self.beta = beta
-        self.epsilon = epsilon
+        self.beta = rho
         self.momentum = momentum
+        self.epsilon = epsilon
 
         self.previous = 0
         self.velocity = 0
 
-    def __call__(self, gradient_vector: np.ndarray):
+    def __call__(self, gradient_vector: np.ndarray) -> np.ndarray:
+        self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
+
+        direction = - self.learning_rate * gradient_vector / (np.sqrt(self.velocity + self.epsilon))
+        adjustment = direction
+
         if self.momentum:
-            self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
-            self.previous = self.momentum * self.previous - \
-                self.learning_rate * gradient_vector / (np.sqrt(self.velocity) + self.epsilon)
-            return self.previous
-        else:
-            self.velocity = self.beta * self.velocity + (1 - self.beta) * gradient_vector ** 2
-            return - self.learning_rate * gradient_vector / (np.sqrt(self.velocity) + self.epsilon)
+            self.previous = self.momentum * self.previous + direction
+            adjustment = self.previous
+
+        return adjustment.copy()
