@@ -12,5 +12,6 @@ def test_all():
 
     tests.optimizers.test_optimizer_sgd()
     tests.optimizers.test_optimizer_rmsprop()
+    tests.optimizers.test_optimizer_adam()
 
     print('Passed!')

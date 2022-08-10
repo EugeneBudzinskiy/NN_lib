@@ -12,7 +12,7 @@ class SGD(AbstractOptimizer):
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.nesterov = nesterov
-        self.velocity = 0
+        self.velocity = 0.0
 
     def __call__(self, gradient_vector: np.ndarray):
         adjustment = - self.learning_rate * gradient_vector
@@ -25,36 +25,6 @@ class SGD(AbstractOptimizer):
                 adjustment = self.momentum * self.velocity - self.learning_rate * gradient_vector
 
         return adjustment.copy()
-
-
-class Adam(AbstractOptimizer):
-    def __init__(self,
-                 learning_rate: float = 0.0001,
-                 beta_1: float = 0.9,
-                 beta_2: float = 0.999,
-                 epsilon: float = 1e-7):
-        self.learning_rate = learning_rate
-        self.beta_1 = beta_1
-        self.beta_2 = beta_2
-        self.epsilon = epsilon
-
-        self.v_t = 0
-        self.s_t = 0
-
-        self.powered_beta_1 = 1
-        self.powered_beta_2 = 1
-
-    def __call__(self, gradient_vector: np.ndarray):
-        self.v_t = self.beta_1 * self.v_t + (1 - self.beta_1) * gradient_vector
-        self.s_t = self.beta_2 * self.s_t + (1 - self.beta_2) * gradient_vector ** 2
-
-        self.powered_beta_1 *= self.beta_1
-        self.powered_beta_2 *= self.beta_2
-
-        dash_v_t = self.v_t / (1 - self.powered_beta_1)
-        dash_s_t = self.s_t / (1 - self.powered_beta_2)
-
-        return - self.learning_rate * dash_v_t / (np.sqrt(dash_s_t) + self.epsilon)
 
 
 class RMSprop(AbstractOptimizer):
@@ -71,9 +41,9 @@ class RMSprop(AbstractOptimizer):
         self.epsilon = epsilon
         self.centered = centered
 
-        self.previous = 0
-        self.rms = 0
-        self.mg = 0
+        self.previous = 0.0
+        self.rms = 0.0
+        self.mg = 0.0
 
     def __call__(self, gradient_vector: np.ndarray) -> np.ndarray:
         self.rms = self.rho * self.rms + (1 - self.rho) * gradient_vector ** 2
@@ -90,3 +60,40 @@ class RMSprop(AbstractOptimizer):
             adjustment = self.previous
 
         return adjustment.copy()
+
+
+class Adam(AbstractOptimizer):
+    def __init__(self,
+                 learning_rate: float = 0.0001,
+                 beta_1: float = 0.9,
+                 beta_2: float = 0.999,
+                 epsilon: float = 1e-7,
+                 amsgrad: bool = False):
+        self.learning_rate = learning_rate
+        self.beta_1 = beta_1
+        self.beta_2 = beta_2
+        self.epsilon = epsilon
+        self.amsgrad = amsgrad
+
+        self.m_t = 0.0
+        self.v_t = 0.0
+        self.v_hat_t = 0.0
+
+        self.powered_beta_1 = 1.0
+        self.powered_beta_2 = 1.0
+
+    def __call__(self, gradient_vector: np.ndarray):
+        self.m_t = self.beta_1 * self.m_t + (1 - self.beta_1) * gradient_vector
+        self.v_t = self.beta_2 * self.v_t + (1 - self.beta_2) * gradient_vector ** 2
+        direction = self.v_t
+
+        if self.amsgrad:
+            self.v_hat_t = np.maximum(self.v_hat_t, self.v_t)
+            direction = self.v_hat_t
+
+        self.powered_beta_1 *= self.beta_1
+        self.powered_beta_2 *= self.beta_2
+
+        lr_t = self.learning_rate * np.sqrt(1 - self.powered_beta_2) / (1 - self.powered_beta_1)
+
+        return - lr_t * self.m_t / (np.sqrt(direction) + self.epsilon)
