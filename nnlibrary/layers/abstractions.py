@@ -3,7 +3,7 @@ class AbstractLayer:
         self._node_count = node_count
 
     @property
-    def node_count(self):
+    def node_count(self) -> int:
         return self._node_count
 
 
@@ -15,17 +15,17 @@ class AbstractActivationLayer(AbstractLayer):
         self._trainable = trainable
 
     @property
-    def activation(self):
+    def activation(self) -> callable:
         return self._activation
 
     @property
-    def bias_flag(self):
+    def bias_flag(self) -> bool:
         return self._bias_flag
 
     @property
-    def trainable(self):
+    def trainable(self) -> bool:
         return self._trainable
 
     @trainable.setter
-    def trainable(self, value):
+    def trainable(self, value: bool):
         self._trainable = value

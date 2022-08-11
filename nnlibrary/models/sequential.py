@@ -56,7 +56,7 @@ class Sequential(AbstractModel):
         )
         self.is_compiled = True
 
-    def __unpack_weight_and_bias(self, layer_number: int) -> (np.ndarray, np.ndarray):
+    def __unpack_variables(self, layer_number: int) -> (np.ndarray, np.ndarray):
         current_layer = self.layer_structure.get_layer(layer_number=layer_number)
         current_vars = self.trainable_variables.get_single(layer_number=layer_number)
 
@@ -79,7 +79,7 @@ class Sequential(AbstractModel):
 
         for i in range(1, self.layer_structure.layers_number):
             current_layer = self.layer_structure.get_layer(layer_number=i)
-            current_weight, current_bias = self.__unpack_weight_and_bias(layer_number=i)
+            current_weight, current_bias = self.__unpack_variables(layer_number=i)
 
             z = np.dot(a, current_weight) + current_bias
             z_list.append(z)
@@ -99,6 +99,24 @@ class Sequential(AbstractModel):
         output, _, _ = self.feedforward(x=x)
         return output
 
+    def __get_delta(self,
+                    y_target: np.ndarray,
+                    y_predicted_activated: np.ndarray,
+                    y_predicted_non_activated: np.ndarray,
+                    last_activation: callable) -> np.ndarray:
+
+        def loss_wrapper():
+            return lambda y_predicted: self.loss(
+                y_predicted=y_predicted,
+                y_target=y_target,
+                reduction=ReductionNone()
+            )
+
+        loss_gradient = self.gradient(func=loss_wrapper(), x=y_predicted_activated)
+        delta = loss_gradient * self.derivative(func=last_activation, x=y_predicted_non_activated)
+
+        return delta
+
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
         if not self.is_compiled:
             raise Exception()  # TODO Custom Exception (not compiled)
@@ -113,11 +131,12 @@ class Sequential(AbstractModel):
         if not isinstance(current_layer, AbstractActivationLayer):
             raise Exception()  # TODO Custom Exception
 
-        loss_gradient = self.gradient(
-            func=lambda t: self.loss(y_predicted=t, y_target=y, reduction=ReductionNone()),
-            x=output
+        delta = self.__get_delta(
+            y_target=y,
+            y_predicted_activated=output,
+            y_predicted_non_activated=z_list[-1],
+            last_activation=current_layer.activation
         )
-        delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
 
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = np.sum(delta, axis=0).reshape(1, -1)
@@ -130,7 +149,7 @@ class Sequential(AbstractModel):
             j = layers_number - i - 1
 
             current_layer = self.layer_structure.get_layer(layer_number=j)
-            previous_weight, _ = self.__unpack_weight_and_bias(layer_number=j + 1)
+            previous_weight, _ = self.__unpack_variables(layer_number=j + 1)
 
             if not isinstance(current_layer, AbstractActivationLayer):
                 raise Exception()  # TODO Custom Exception
@@ -145,7 +164,7 @@ class Sequential(AbstractModel):
             gradient_list.append(d_weight)
 
         gradient_list.reverse()
-        gradient_vector = np.concatenate(gradient_list, axis=None) / loss_gradient.shape[0]
+        gradient_vector = np.concatenate(gradient_list, axis=None) / y.shape[0]
         return gradient_vector
 
     def fit(self,
