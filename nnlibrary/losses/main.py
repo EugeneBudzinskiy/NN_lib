@@ -1,5 +1,6 @@
 import numpy as np
 
+from nnlibrary.differentiators import Gradient
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import AbstractReduction
 
@@ -20,6 +21,9 @@ class ReductionMean(AbstractReduction):
 
 
 class MeanSquaredError(AbstractLoss):
+    def __init__(self):
+        self.gradient = Gradient()
+
     def __call__(self,
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
@@ -29,3 +33,13 @@ class MeanSquaredError(AbstractLoss):
 
         value = np.mean(np.square(y_predicted - y_target), axis=-1).reshape(1, -1)
         return reduction(values=value)
+
+    def get_gradient(self,
+                     y_predicted: np.ndarray,
+                     y_target: np.ndarray):
+        return self.gradient(
+            func=lambda p: self.__call__(
+                y_predicted=p, y_target=y_target, reduction=ReductionNone()
+            ),
+            x=y_predicted
+        )

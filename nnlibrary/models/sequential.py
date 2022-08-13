@@ -1,17 +1,11 @@
-from abc import ABC
-from abc import abstractmethod
-
 import numpy as np
 
-from nnlibrary.activations import AbstractActivation
 from nnlibrary.differentiators import Derivative
-from nnlibrary.differentiators import Gradient
 from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import MeanSquaredError
-from nnlibrary.losses import ReductionNone
 from nnlibrary.models import AbstractModel
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.optimizers import SGD
@@ -24,7 +18,6 @@ class Sequential(AbstractModel):
         self.is_compiled = False
 
         self.derivative = Derivative()
-        self.gradient = Gradient()
 
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
@@ -100,24 +93,6 @@ class Sequential(AbstractModel):
         output, _, _ = self.feedforward(x=x)
         return output
 
-    def __get_delta(self,
-                    y_target: np.ndarray,
-                    y_predicted_activated: np.ndarray,
-                    y_predicted_non_activated: np.ndarray,
-                    last_activation: AbstractActivation) -> np.ndarray:
-
-        def loss_wrapper():
-            return lambda y_predicted: self.loss(
-                y_predicted=y_predicted,
-                y_target=y_target,
-                reduction=ReductionNone()
-            )
-
-        loss_gradient = self.gradient(func=loss_wrapper(), x=y_predicted_activated)
-        delta = loss_gradient * self.derivative(func=last_activation, x=y_predicted_non_activated)
-
-        return delta
-
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
         if not self.is_compiled:
             raise Exception()  # TODO Custom Exception (not compiled)
@@ -132,12 +107,8 @@ class Sequential(AbstractModel):
         if not isinstance(current_layer, AbstractActivationLayer):
             raise Exception()  # TODO Custom Exception
 
-        delta = self.__get_delta(
-            y_target=y,
-            y_predicted_activated=output,
-            y_predicted_non_activated=z_list[-1],
-            last_activation=current_layer.activation
-        )
+        loss_gradient = self.loss.get_gradient(y_target=y, y_predicted=output)
+        delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
 
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = np.sum(delta, axis=0).reshape(1, -1)
