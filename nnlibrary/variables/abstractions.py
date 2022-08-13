@@ -3,8 +3,8 @@ from abc import abstractmethod
 
 import numpy as np
 
-from nnlibrary.layer_structures import AbstractLayerStructure
 from nnlibrary.initializers import AbstractInitializer
+from nnlibrary.layer_structures import AbstractLayerStructure
 
 
 class AbstractVariables(ABC):

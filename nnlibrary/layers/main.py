@@ -1,6 +1,6 @@
-from nnlibrary.layers import AbstractLayer
-from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.activations import AbstractActivation
+from nnlibrary.layers import AbstractActivationLayer
+from nnlibrary.layers import AbstractLayer
 
 
 class Input(AbstractLayer):

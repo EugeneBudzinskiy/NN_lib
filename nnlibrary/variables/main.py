@@ -1,10 +1,10 @@
 import numpy as np
 
-from nnlibrary.variables import AbstractVariables
 from nnlibrary.initializers import AbstractInitializer
 from nnlibrary.initializers import UniformZeroOne
 from nnlibrary.initializers import Zeros
 from nnlibrary.layer_structures import AbstractLayerStructure
+from nnlibrary.variables import AbstractVariables
 
 
 class TrainableVariables(AbstractVariables):

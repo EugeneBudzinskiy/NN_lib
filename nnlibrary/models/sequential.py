@@ -1,18 +1,22 @@
+from abc import ABC
+from abc import abstractmethod
+
 import numpy as np
 
+from nnlibrary.activations import AbstractActivation
 from nnlibrary.differentiators import Derivative
 from nnlibrary.differentiators import Gradient
-from nnlibrary.models import AbstractModel
-from nnlibrary.layers import AbstractLayer
-from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layer_structures import LayerStructure
-from nnlibrary.optimizers import AbstractOptimizer
-from nnlibrary.optimizers import SGD
+from nnlibrary.layers import AbstractActivationLayer
+from nnlibrary.layers import AbstractLayer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import MeanSquaredError
 from nnlibrary.losses import ReductionNone
-from nnlibrary.variables import TrainableVariables
+from nnlibrary.models import AbstractModel
+from nnlibrary.optimizers import AbstractOptimizer
+from nnlibrary.optimizers import SGD
 from nnlibrary.variables import AbstractInitializer
+from nnlibrary.variables import TrainableVariables
 
 
 class Sequential(AbstractModel):
@@ -25,8 +29,8 @@ class Sequential(AbstractModel):
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
 
-        self.optimizer = SGD()  # Default value
-        self.loss = MeanSquaredError()  # Default value
+        self.optimizer = None
+        self.loss = None
 
     def add(self, layer: AbstractLayer):
         if self.is_compiled:
@@ -43,11 +47,8 @@ class Sequential(AbstractModel):
         if self.is_compiled:
             raise Exception()  # TODO Custom Exception (already compiled)
 
-        if optimizer is not None:
-            self.optimizer = optimizer
-
-        if loss is not None:
-            self.loss = loss
+        self.optimizer = SGD() if optimizer is None else optimizer
+        self.loss = MeanSquaredError() if loss is None else loss
 
         self.trainable_variables.init_variables(
             layer_structure=self.layer_structure,
@@ -103,7 +104,7 @@ class Sequential(AbstractModel):
                     y_target: np.ndarray,
                     y_predicted_activated: np.ndarray,
                     y_predicted_non_activated: np.ndarray,
-                    last_activation: callable) -> np.ndarray:
+                    last_activation: AbstractActivation) -> np.ndarray:
 
         def loss_wrapper():
             return lambda y_predicted: self.loss(
