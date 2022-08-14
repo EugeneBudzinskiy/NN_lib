@@ -17,9 +17,3 @@ class AbstractLoss(ABC):
                  y_target: np.ndarray,
                  reduction: AbstractReduction) -> np.ndarray:
         pass
-
-    @abstractmethod
-    def get_gradient(self,
-                     y_predicted: np.ndarray,
-                     y_target: np.ndarray):
-        pass

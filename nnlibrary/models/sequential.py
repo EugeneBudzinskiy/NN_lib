@@ -1,11 +1,14 @@
 import numpy as np
 
 from nnlibrary.differentiators import Derivative
+from nnlibrary.differentiators import Gradient
 from nnlibrary.layer_structures import LayerStructure
+from nnlibrary.layer_structures import AbstractLayerStructure
 from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import MeanSquaredError
+from nnlibrary.losses import ReductionNone
 from nnlibrary.models import AbstractModel
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.optimizers import SGD
@@ -18,6 +21,7 @@ class Sequential(AbstractModel):
         self.is_compiled = False
 
         self.derivative = Derivative()
+        self.gradient = Gradient()
 
         self.layer_structure = LayerStructure()
         self.trainable_variables = TrainableVariables()
@@ -25,11 +29,43 @@ class Sequential(AbstractModel):
         self.optimizer = None
         self.loss = None
 
+        self.loss_gradient = None
+        self.activation_derivatives = list()
+
     def add(self, layer: AbstractLayer):
         if self.is_compiled:
             raise Exception()  # TODO Custom Exception (not changeable after compile)
 
         self.layer_structure.add_layer(layer=layer)
+
+    def __get_loss_gradient(self) -> callable:
+        def loss_wrapper(y_target: np.ndarray):
+            return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
+
+        if None:
+            return lambda: 1
+
+        else:
+            return lambda y_target, y_predicted: self.gradient(
+                func=loss_wrapper(y_target=y_target), x=y_predicted
+            )
+
+    def __get_activation_derivatives(self, layer_structure: AbstractLayerStructure) -> [callable]:
+        derivatives = list([None])
+        for i in range(1, layer_structure.layers_number):
+            if None:
+                pass
+
+            else:
+                current_layer = layer_structure.get_layer(layer_number=i)
+
+                if not isinstance(current_layer, AbstractActivationLayer):
+                    raise Exception()  # TODO Custom Exception
+
+                activation = current_layer.activation
+                derivatives.append(lambda x: self.derivative(func=activation, x=x))
+
+        return derivatives
 
     def compile(self,
                 optimizer: AbstractOptimizer = None,
@@ -42,6 +78,11 @@ class Sequential(AbstractModel):
 
         self.optimizer = SGD() if optimizer is None else optimizer
         self.loss = MeanSquaredError() if loss is None else loss
+
+        self.loss_gradient = self.__get_loss_gradient()
+        self.activation_derivatives = self.__get_activation_derivatives(
+            layer_structure=self.layer_structure
+        )
 
         self.trainable_variables.init_variables(
             layer_structure=self.layer_structure,
@@ -102,13 +143,9 @@ class Sequential(AbstractModel):
 
         output, z_list, a_list = self.feedforward(x=x)
         layers_number = self.layer_structure.layers_number
-        current_layer = self.layer_structure.get_layer(layer_number=layers_number - 1)
 
-        if not isinstance(current_layer, AbstractActivationLayer):
-            raise Exception()  # TODO Custom Exception
-
-        loss_gradient = self.loss.get_gradient(y_target=y, y_predicted=output)
-        delta = loss_gradient * self.derivative(func=current_layer.activation, x=z_list[-1])
+        loss_gradient = self.loss_gradient(y_target=y, y_predicted=output)
+        delta = loss_gradient * self.activation_derivatives[-1](x=z_list[-1])
 
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = np.sum(delta, axis=0).reshape(1, -1)
@@ -119,15 +156,10 @@ class Sequential(AbstractModel):
 
         for i in range(1, layers_number - 1):
             j = layers_number - i - 1
-
-            current_layer = self.layer_structure.get_layer(layer_number=j)
             previous_weight, _ = self.__unpack_variables(layer_number=j + 1)
 
-            if not isinstance(current_layer, AbstractActivationLayer):
-                raise Exception()  # TODO Custom Exception
-
             next_delta = np.dot(delta, previous_weight.T)
-            delta = next_delta * self.derivative(func=current_layer.activation, x=z_list[j - 1])
+            delta = next_delta * self.activation_derivatives[j](x=z_list[j - 1])
 
             d_weight = np.dot(a_list[j - 1].T, delta)
             d_bias = np.sum(delta, axis=0).reshape(1, -1)
