@@ -3,11 +3,8 @@ from abc import abstractmethod
 
 import numpy as np
 
-
-class AbstractReduction(ABC):
-    @abstractmethod
-    def __call__(self, values: np.ndarray) -> np.ndarray:
-        pass
+from nnlibrary.reductions import AbstractReduction
+from nnlibrary.reductions import ReductionMean
 
 
 class AbstractLoss(ABC):
@@ -15,5 +12,5 @@ class AbstractLoss(ABC):
     def __call__(self,
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
-                 reduction: AbstractReduction) -> np.ndarray:
+                 reduction: AbstractReduction = ReductionMean()) -> np.ndarray:
         pass

@@ -2,16 +2,16 @@ import numpy as np
 
 from nnlibrary.differentiators import Derivative
 from nnlibrary.differentiators import Gradient
-from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.layer_structures import AbstractLayerStructure
+from nnlibrary.layer_structures import LayerStructure
 from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import MeanSquaredError
-from nnlibrary.losses import ReductionNone
 from nnlibrary.models import AbstractModel
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.optimizers import SGD
+from nnlibrary.reductions import ReductionNone
 from nnlibrary.variables import AbstractInitializer
 from nnlibrary.variables import TrainableVariables
 
