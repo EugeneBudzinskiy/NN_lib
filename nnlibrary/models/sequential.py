@@ -8,6 +8,7 @@ from nnlibrary.layers import AbstractActivationLayer
 from nnlibrary.layers import AbstractLayer
 from nnlibrary.losses import AbstractLoss
 from nnlibrary.losses import MeanSquaredError
+from nnlibrary.losses import CategoricalCrossentropy
 from nnlibrary.models import AbstractModel
 from nnlibrary.optimizers import AbstractOptimizer
 from nnlibrary.optimizers import SGD
@@ -42,8 +43,9 @@ class Sequential(AbstractModel):
         def loss_wrapper(y_target: np.ndarray):
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
-        if None:
-            return lambda: 1
+        if isinstance(self.loss, CategoricalCrossentropy):
+            # TODO Fix it for multi-var
+            return lambda y_target, y_predicted: - np.log(np.sum(y_target * y_predicted))
 
         else:
             return lambda y_target, y_predicted: self.gradient(

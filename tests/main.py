@@ -9,6 +9,7 @@ def test_all():
     tests.sequential.test_fit()
 
     tests.losses.test_loss_mse()
+    tests.losses.test_loss_cce()
 
     tests.optimizers.test_optimizer_sgd()
     tests.optimizers.test_optimizer_rmsprop()
