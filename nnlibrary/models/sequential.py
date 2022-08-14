@@ -44,8 +44,10 @@ class Sequential(AbstractModel):
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
         if isinstance(self.loss, CategoricalCrossentropy):
-            # TODO Fix it for multi-var
-            return lambda y_target, y_predicted: - np.log(np.sum(y_target * y_predicted))
+            return lambda y_target, y_predicted: - 1 / y_predicted
+            # return lambda y_target, y_predicted: self.gradient(
+            #     func=loss_wrapper(y_target=y_target), x=y_predicted
+            # )
 
         else:
             return lambda y_target, y_predicted: self.gradient(
