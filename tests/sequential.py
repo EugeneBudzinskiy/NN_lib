@@ -19,7 +19,7 @@ def test_predict():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        value = model.trainable_variables.get_all()
+        value = model.get_variables()
         target = np.array([0.77770241, 0.23754122, 0.82427853, 0.9657492, 0.97260111, 0.45344925,
                            0., 0., 0., 0.60904246, 0.77552651, 0.64161334,
                            0.72201823, 0.03503652, 0.29844947, 0.05851249, 0.85706094, 0.37285403,
@@ -121,7 +121,7 @@ def test_backpropagation():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        value = model.trainable_variables.get_all()
+        value = model.get_variables()
         target = np.array([0.77770241, 0.23754122, 0.82427853, 0.9657492, 0.97260111, 0.45344925,
                            0., 0., 0., 0.60904246, 0.77552651, 0.64161334,
                            0.72201823, 0.03503652, 0.29844947, 0.05851249, 0.85706094, 0.37285403,
@@ -273,7 +273,7 @@ def test_fit():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        value = model.trainable_variables.get_all()
+        value = model.get_variables()
         target = np.array([0.77770241, 0.23754122, 0.82427853, 0.9657492, 0.97260111, 0.45344925,
                            0., 0., 0., 0.60904246, 0.77552651, 0.64161334,
                            0.72201823, 0.03503652, 0.29844947, 0.05851249, 0.85706094, 0.37285403,

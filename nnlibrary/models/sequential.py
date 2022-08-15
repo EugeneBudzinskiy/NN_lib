@@ -21,70 +21,40 @@ from nnlibrary.variables import TrainableVariables
 
 class Sequential(AbstractModel):
     def __init__(self):
-        self.is_compiled = False
-
-        self.derivative = Derivative()
-        self.gradient = Gradient()
-
         self.layer_structure = LayerStructure()
-        self.trainable_variables = TrainableVariables()
 
-        self.optimizer = None
-        self.loss = None
+        # noinspection PyTypeChecker
+        self.core: SequentialCompiledCore = None
 
-        self.loss_gradient = None
-        self.activation_derivatives = list()
+    @property
+    def is_compiled(self) -> bool:
+        return isinstance(self.core, SequentialCompiledCore)
+
+    def get_variables(self) -> np.ndarray:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.trainable_variables.get_all()
+
+    @property
+    def loss(self) -> AbstractLoss:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.loss
+
+    @property
+    def optimizer(self) -> AbstractOptimizer:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.optimizer
 
     def add(self, layer: AbstractLayer):
         if self.is_compiled:
             raise Exception()  # TODO Custom Exception (not changeable after compile)
 
         self.layer_structure.add_layer(layer=layer)
-
-    def __get_loss_gradient(self,
-                            loss: AbstractLoss,
-                            layer_structure: AbstractLayerStructure) -> callable:
-        def loss_wrapper(y_target: np.ndarray):
-            return lambda x: loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
-
-        if isinstance(self.loss, CategoricalCrossentropy):
-            last_layer = layer_structure.get_layer(layer_number=layer_structure.layers_number - 1)
-            softmax = Softmax()
-
-            if not isinstance(last_layer, AbstractActivationLayer):
-                raise Exception()  # TODO Custom Exception
-
-            if isinstance(last_layer.activation, Softmax) or \
-                    isinstance(last_layer.activation, Sigmoid):
-                raise Exception('empty')
-
-            else:
-                def shortcut(y_target, y_predicted):
-                    return None
-
-                return shortcut
-
-        else:
-            return lambda y_target, y_predicted: self.gradient(
-                func=loss_wrapper(y_target=y_target), x=y_predicted
-            )
-
-    def __get_activation_derivatives(self, layer_structure: AbstractLayerStructure) -> [callable]:
-        derivatives = list([None])
-        for i in range(1, layer_structure.layers_number):
-            if None:
-                raise Exception('empty')
-
-            else:
-                current_layer = layer_structure.get_layer(layer_number=i)
-
-                if not isinstance(current_layer, AbstractActivationLayer):
-                    raise Exception()  # TODO Custom Exception
-
-                activation = current_layer.activation
-                derivatives.append(lambda x: self.derivative(func=activation, x=x))
-
-        return derivatives
 
     def compile(self,
                 optimizer: AbstractOptimizer = None,
@@ -95,34 +65,16 @@ class Sequential(AbstractModel):
         if self.is_compiled:
             raise Exception()  # TODO Custom Exception (already compiled)
 
-        self.optimizer = SGD() if optimizer is None else optimizer
-        self.loss = MeanSquaredError() if loss is None else loss
+        optimizer = SGD() if optimizer is None else optimizer
+        loss = MeanSquaredError() if loss is None else loss
 
-        self.loss_gradient = \
-            self.__get_loss_gradient(loss=self.loss, layer_structure=self.layer_structure)
-
-        self.activation_derivatives = \
-            self.__get_activation_derivatives(layer_structure=self.layer_structure)
-
-        self.trainable_variables.init_variables(
+        self.core = SequentialCompiledCore(
             layer_structure=self.layer_structure,
+            optimizer=optimizer,
+            loss=loss,
             weight_initializer=weight_initializer,
             bias_initializer=bias_initializer
         )
-        self.is_compiled = True
-
-    def __unpack_variables(self, layer_number: int) -> (np.ndarray, np.ndarray):
-        current_layer = self.layer_structure.get_layer(layer_number=layer_number)
-        current_vars = self.trainable_variables.get_single(layer_number=layer_number)
-
-        current_node_count = current_layer.node_count
-        previous_node_count = len(current_vars) // (current_node_count + 1)
-        w_size = previous_node_count * current_node_count
-
-        current_weight = current_vars[:w_size].reshape((previous_node_count, current_node_count))
-        current_bias = current_vars[w_size:].reshape((1, -1))
-
-        return current_weight, current_bias
 
     def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
         if not self.is_compiled:
@@ -134,7 +86,7 @@ class Sequential(AbstractModel):
 
         for i in range(1, self.layer_structure.layers_number):
             current_layer = self.layer_structure.get_layer(layer_number=i)
-            current_weight, current_bias = self.__unpack_variables(layer_number=i)
+            current_weight, current_bias = self.core.unpack_variables(layer_number=i)
 
             z = np.dot(a, current_weight) + current_bias
             z_list.append(z)
@@ -164,8 +116,8 @@ class Sequential(AbstractModel):
         output, z_list, a_list = self.feedforward(x=x)
         layers_number = self.layer_structure.layers_number
 
-        loss_gradient = self.loss_gradient(y_target=y, y_predicted=output)
-        delta = loss_gradient * self.activation_derivatives[-1](x=z_list[-1])
+        loss_gradient = self.core.loss_gradient(y_target=y, y_predicted=output)
+        delta = loss_gradient * self.core.activation_derivatives[-1](x=z_list[-1])
 
         d_weight = np.dot(a_list[-1].T, delta)
         d_bias = np.sum(delta, axis=0).reshape(1, -1)
@@ -176,10 +128,10 @@ class Sequential(AbstractModel):
 
         for i in range(1, layers_number - 1):
             j = layers_number - i - 1
-            previous_weight, _ = self.__unpack_variables(layer_number=j + 1)
+            previous_weight, _ = self.core.unpack_variables(layer_number=j + 1)
 
             next_delta = np.dot(delta, previous_weight.T)
-            delta = next_delta * self.activation_derivatives[j](x=z_list[j - 1])
+            delta = next_delta * self.core.activation_derivatives[j](x=z_list[j - 1])
 
             d_weight = np.dot(a_list[j - 1].T, delta)
             d_bias = np.sum(delta, axis=0).reshape(1, -1)
@@ -213,8 +165,95 @@ class Sequential(AbstractModel):
             for i in range(0, size, batch_size):
                 idx = indexes[i:i + batch_size]
                 gradient_vector = self.backpropagation(x=x[idx], y=y[idx])
-                adjustment = self.optimizer(gradient_vector=gradient_vector)
-                self.trainable_variables.set_all(value=self.trainable_variables.get_all() + adjustment)
+                adjustment = self.core.optimizer(gradient_vector=gradient_vector)
+
+                self.core.trainable_variables.set_all(
+                    value=self.core.trainable_variables.get_all() + adjustment
+                )
+
+
+class SequentialCompiledCore:
+    def __init__(self,
+                 layer_structure: AbstractLayerStructure,
+                 optimizer: AbstractOptimizer,
+                 loss: AbstractLoss,
+                 weight_initializer: AbstractInitializer,
+                 bias_initializer: AbstractInitializer):
+
+        self.derivative = Derivative()
+        self.gradient = Gradient()
+
+        self.trainable_variables = TrainableVariables()
+        self.layer_structure = layer_structure
+
+        self.optimizer = optimizer
+        self.loss = loss
+
+        self.trainable_variables.init_variables(
+            layer_structure=self.layer_structure,
+            weight_initializer=weight_initializer,
+            bias_initializer=bias_initializer
+        )
+
+        self.loss_gradient = self.get_loss_gradient()
+        self.activation_derivatives = self.get_activation_derivatives()
+
+    def get_loss_gradient(self) -> callable:
+        def loss_wrapper(y_target: np.ndarray):
+            return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
+
+        if isinstance(self.loss, CategoricalCrossentropy):
+            last_layer = self.layer_structure.get_layer(layer_number=self.layer_structure.layers_number - 1)
+            softmax = Softmax()
+
+            if not isinstance(last_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            if isinstance(last_layer.activation, Softmax) or \
+                    isinstance(last_layer.activation, Sigmoid):
+                raise Exception('empty')
+
+            else:
+                def shortcut(y_target, y_predicted):
+                    return - 1. / y_predicted
+
+                return shortcut
+
+        else:
+            return lambda y_target, y_predicted: self.gradient(
+                func=loss_wrapper(y_target=y_target), x=y_predicted
+            )
+
+    def get_activation_derivatives(self) -> [callable]:
+        derivatives = list([None])
+        for i in range(1, self.layer_structure.layers_number):
+            if None:
+                raise Exception('empty')
+
+            else:
+                current_layer = self.layer_structure.get_layer(layer_number=i)
+
+                if not isinstance(current_layer, AbstractActivationLayer):
+                    raise Exception()  # TODO Custom Exception
+
+                activation = current_layer.activation
+                derivatives.append(lambda x: self.derivative(func=activation, x=x))
+
+        return derivatives
+
+    def unpack_variables(self, layer_number: int) -> (np.ndarray, np.ndarray):
+        current_layer = self.layer_structure.get_layer(layer_number=layer_number)
+        current_vars = self.trainable_variables.get_single(layer_number=layer_number)
+
+        current_node_count = current_layer.node_count
+        previous_node_count = len(current_vars) // (current_node_count + 1)
+        w_size = previous_node_count * current_node_count
+
+        current_weight = current_vars[:w_size].reshape((previous_node_count, current_node_count))
+        current_bias = current_vars[w_size:].reshape((1, -1))
+
+        return current_weight, current_bias
+
 
 # import time
 # from nnlibrary import errors
