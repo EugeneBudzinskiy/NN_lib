@@ -1,5 +1,7 @@
 import numpy as np
 
+from nnlibrary.activations import Sigmoid
+from nnlibrary.activations import Softmax
 from nnlibrary.differentiators import Derivative
 from nnlibrary.differentiators import Gradient
 from nnlibrary.layer_structures import AbstractLayerStructure
@@ -39,15 +41,28 @@ class Sequential(AbstractModel):
 
         self.layer_structure.add_layer(layer=layer)
 
-    def __get_loss_gradient(self) -> callable:
+    def __get_loss_gradient(self,
+                            loss: AbstractLoss,
+                            layer_structure: AbstractLayerStructure) -> callable:
         def loss_wrapper(y_target: np.ndarray):
-            return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
+            return lambda x: loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
         if isinstance(self.loss, CategoricalCrossentropy):
-            return lambda y_target, y_predicted: - 1 / y_predicted
-            # return lambda y_target, y_predicted: self.gradient(
-            #     func=loss_wrapper(y_target=y_target), x=y_predicted
-            # )
+            last_layer = layer_structure.get_layer(layer_number=layer_structure.layers_number - 1)
+            softmax = Softmax()
+
+            if not isinstance(last_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            if isinstance(last_layer.activation, Softmax) or \
+                    isinstance(last_layer.activation, Sigmoid):
+                raise Exception('empty')
+
+            else:
+                def shortcut(y_target, y_predicted):
+                    return None
+
+                return shortcut
 
         else:
             return lambda y_target, y_predicted: self.gradient(
@@ -58,7 +73,7 @@ class Sequential(AbstractModel):
         derivatives = list([None])
         for i in range(1, layer_structure.layers_number):
             if None:
-                pass
+                raise Exception('empty')
 
             else:
                 current_layer = layer_structure.get_layer(layer_number=i)
@@ -83,10 +98,11 @@ class Sequential(AbstractModel):
         self.optimizer = SGD() if optimizer is None else optimizer
         self.loss = MeanSquaredError() if loss is None else loss
 
-        self.loss_gradient = self.__get_loss_gradient()
-        self.activation_derivatives = self.__get_activation_derivatives(
-            layer_structure=self.layer_structure
-        )
+        self.loss_gradient = \
+            self.__get_loss_gradient(loss=self.loss, layer_structure=self.layer_structure)
+
+        self.activation_derivatives = \
+            self.__get_activation_derivatives(layer_structure=self.layer_structure)
 
         self.trainable_variables.init_variables(
             layer_structure=self.layer_structure,

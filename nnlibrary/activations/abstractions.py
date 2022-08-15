@@ -6,5 +6,5 @@ import numpy as np
 
 class AbstractActivation(ABC):
     @abstractmethod
-    def __call__(self, x: np.ndarray):
+    def __call__(self, x: np.ndarray) -> np.ndarray:
         pass

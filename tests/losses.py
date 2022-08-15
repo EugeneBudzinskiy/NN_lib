@@ -4,8 +4,7 @@ def test_loss_mse():
 
     loss = MeanSquaredError()
 
-    def single_point_loss(flag: bool = False):
-        prompt = 'Mean Squared Error'
+    def single_point_loss():
         y_predicted = np.array([3.5, 1.2, 3.3], dtype='float64')
         y_target = np.array([3.0, 2.0, 1.0], dtype='float64')
         target = np.array([2.06], dtype='float64')
@@ -17,15 +16,7 @@ def test_loss_mse():
 
         assert np.isclose(target, value), error_prompt
 
-        if flag:
-            print(f'Function: {prompt}\n'
-                  f'  y_predicted = {y_predicted}\n'
-                  f'  y_target = {y_target}\n'
-                  f'  Desire Output: {target}\n'
-                  f'  Real Output:   {value}\n')
-
-    def multi_point_loss(flag: bool = False):
-        prompt = 'Mean Squared Error'
+    def multi_point_loss():
         y_predicted = np.array([[3.5, 1.2, 3.3], [0.6, 0.7, 0.0]], dtype='float64')
         y_target = np.array([[3.0, 2.0, 1.0], [1.0, 0.5, 0.2]], dtype='float64')
         target = np.array([1.07], dtype='float64')
@@ -37,13 +28,6 @@ def test_loss_mse():
 
         assert np.allclose(target, value), error_prompt
 
-        if flag:
-            print(f'Function: {prompt}\n'
-                  f'  y_predicted = {y_predicted}\n'
-                  f'  y_target = {y_target}\n'
-                  f'  Desire Output: {target}\n'
-                  f'  Real Output:   {value}\n')
-
     single_point_loss()
     multi_point_loss()
 
@@ -54,8 +38,7 @@ def test_loss_cce():
 
     loss = CategoricalCrossentropy()
 
-    def single_point_loss(flag: bool = False):
-        prompt = 'Categorical Cross Entropy'
+    def single_point_loss():
         y_predicted = np.array([0.05, 0.95, 0], dtype='float64')
         y_target = np.array([0.0, 1.0, 0.0], dtype='float64')
         target = np.array([0.051293306], dtype='float64')
@@ -67,15 +50,7 @@ def test_loss_cce():
 
         assert np.isclose(target, value), error_prompt
 
-        if flag:
-            print(f'Function: {prompt}\n'
-                  f'  y_predicted = {y_predicted}\n'
-                  f'  y_target = {y_target}\n'
-                  f'  Desire Output: {target}\n'
-                  f'  Real Output:   {value}\n')
-
-    def multi_point_loss(flag: bool = False):
-        prompt = 'Categorical Cross Entropy'
+    def multi_point_loss():
         y_predicted = np.array([[0.05, 0.95, 0], [0.1, 0.8, 0.1]], dtype='float64')
         y_target = np.array([[0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], dtype='float64')
         target = np.array([1.1769392], dtype='float64')
@@ -86,13 +61,6 @@ def test_loss_cce():
                        f'    Value : {value}'
 
         assert np.allclose(target, value), error_prompt
-
-        if flag:
-            print(f'Function: {prompt}\n'
-                  f'  y_predicted = {y_predicted}\n'
-                  f'  y_target = {y_target}\n'
-                  f'  Desire Output: {target}\n'
-                  f'  Real Output:   {value}\n')
 
     single_point_loss()
     multi_point_loss()
