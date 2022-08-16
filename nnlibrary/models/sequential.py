@@ -355,19 +355,30 @@ class SequentialCompiledCore:
         def loss_wrapper(y_target: np.ndarray):
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
-        if isinstance(self.loss, CategoricalCrossentropy):
-            if self.loss.from_logits:
-                pass
-            else:
-                def shortcut(y_target: np.ndarray, y_predicted: np.ndarray) -> callable:
-                    s = np.sum(y_predicted)
-                    off_diagonal = \
-                        np.repeat(y_predicted, y_predicted.shape[-1], axis=0).T - np.diag(y_predicted.ravel())
-                    on_diagonal = s - y_predicted
-                    jacobian = (off_diagonal - np.diag(on_diagonal.ravel()))
-                    return np.dot(- y_target / y_predicted, jacobian) / s
+        def sum_norm_jacobian(y_predicted: np.ndarray) -> np.ndarray:
+            s = np.sum(y_predicted)
+            matrix = np.repeat(y_predicted, y_predicted.shape[-1], axis=0).T
+            off_diagonal = matrix - np.diag(y_predicted.ravel())
+            on_diagonal = s - y_predicted
+            return (- off_diagonal + np.diag(on_diagonal.ravel())) / s
 
-                return shortcut
+        def softmax_jacobian(y_predicted: np.ndarray) -> np.ndarray:
+            softmax = Softmax()
+            s = softmax(x=y_predicted)
+            matrix = np.repeat(s, s.shape[-1], axis=0)
+
+            print(matrix)
+            exit()
+
+            off_diagonal = matrix - np.diag(y_predicted.ravel())
+            on_diagonal = s - y_predicted
+            return (- off_diagonal + np.diag(on_diagonal.ravel())) / s
+
+        if isinstance(self.loss, CategoricalCrossentropy):
+            jac = softmax_jacobian if self.loss.from_logits else sum_norm_jacobian
+
+            return lambda y_predicted, y_target: \
+                np.dot(- y_target / y_predicted, jac(y_predicted=y_predicted))
 
         else:
             return lambda y_target, y_predicted: self.gradient(
