@@ -212,7 +212,7 @@ def test_backpropagation():
 
         np.random.seed(13)
 
-        model = nnl.models.SequentialJac()
+        model = nnl.models.Sequential()
 
         model.add(layer=nnl.layers.Input(node_count=2))
         model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Linear()))
@@ -242,10 +242,47 @@ def test_backpropagation():
 
         assert np.allclose(target, value), error_prompt
 
+    def model_3l_235_linear_cce_single_uneven_target():
+        import numpy as np
+        import nnlibrary as nnl
+
+        np.random.seed(13)
+
+        model = nnl.models.Sequential()
+
+        model.add(layer=nnl.layers.Input(node_count=2))
+        model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Linear()))
+        model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Linear()))
+
+        optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
+        loss = nnl.losses.CategoricalCrossentropy()
+
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
+
+        x = np.array([1, 1], dtype='float64')
+        y = np.array([1.0, 1.0, 1.0, 1.0, 1.0], dtype='float64')
+
+        value = model.backpropagation(x=x, y=y)
+        target = np.array([2.1061156, 1.7986116, 1.4769835, 2.1061156, 1.7986116, 1.4769835,
+                           2.1061156, 1.7986116, 1.4769835, 1.1509978, 1.2322825, 1.4420539,
+                           1.442088, 1.3923074, 0.79891586, 0.8553362, 1.0009401, 1.0009637,
+                           0.96641064, 0.84353465, 0.90310603, 1.0568417, 1.0568666, 1.0203838,
+                           0.66018337, 0.70680624, 0.82712585, 0.8271454, 0.7985925])
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value:\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
     model_3l_235_sigmoid_weight()
     model_3l_235_sigmoid_grad_single()
     model_3l_235_sigmoid_grad_multi()
     model_3l_235_linear_cce_single()
+    # model_3l_235_linear_cce_single_uneven_target()
 
 
 def test_fit():
