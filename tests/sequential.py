@@ -212,7 +212,7 @@ def test_backpropagation():
 
         np.random.seed(13)
 
-        model = nnl.models.Sequential()
+        model = nnl.models.SequentialJac()
 
         model.add(layer=nnl.layers.Input(node_count=2))
         model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Linear()))
@@ -239,10 +239,6 @@ def test_backpropagation():
         error_prompt = f'\n  Target and Value are not the same: \n' \
                        f'    Target:\n{target}\n' \
                        f'    Value:\n{value}'
-
-        output = model.predict(x=x)
-        print(model.loss(y_target=y, y_predicted=output))
-        exit()
 
         assert np.allclose(target, value), error_prompt
 

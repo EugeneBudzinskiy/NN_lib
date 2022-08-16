@@ -172,6 +172,159 @@ class Sequential(AbstractModel):
                 )
 
 
+class SequentialJac(AbstractModel):
+    def __init__(self):
+        self.layer_structure = LayerStructure()
+
+        # noinspection PyTypeChecker
+        self.core: SequentialCompiledCore = None
+
+    @property
+    def is_compiled(self) -> bool:
+        return isinstance(self.core, SequentialCompiledCore)
+
+    def get_variables(self) -> np.ndarray:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.trainable_variables.get_all()
+
+    @property
+    def loss(self) -> AbstractLoss:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.loss
+
+    @property
+    def optimizer(self) -> AbstractOptimizer:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        return self.core.optimizer
+
+    def add(self, layer: AbstractLayer):
+        if self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not changeable after compile)
+
+        self.layer_structure.add_layer(layer=layer)
+
+    def compile(self,
+                optimizer: AbstractOptimizer = None,
+                loss: AbstractLoss = None,
+                weight_initializer: AbstractInitializer = None,
+                bias_initializer: AbstractInitializer = None):
+
+        if self.is_compiled:
+            raise Exception()  # TODO Custom Exception (already compiled)
+
+        optimizer = SGD() if optimizer is None else optimizer
+        loss = MeanSquaredError() if loss is None else loss
+
+        self.core = SequentialCompiledCore(
+            layer_structure=self.layer_structure,
+            optimizer=optimizer,
+            loss=loss,
+            weight_initializer=weight_initializer,
+            bias_initializer=bias_initializer
+        )
+
+    def feedforward(self, x: np.ndarray) -> (np.ndarray, [np.ndarray], [np.ndarray]):
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        a = x.copy() if x.ndim > 1 else x.reshape(1, -1)
+        z_list, a_list = list(), list()
+        a_list.append(a)
+
+        for i in range(1, self.layer_structure.layers_number):
+            current_layer = self.layer_structure.get_layer(layer_number=i)
+            current_weight, current_bias = self.core.unpack_variables(layer_number=i)
+
+            z = np.dot(a, current_weight) + current_bias
+            z_list.append(z)
+
+            if not isinstance(current_layer, AbstractActivationLayer):
+                raise Exception()  # TODO Custom Exception
+
+            a = current_layer.activation(x=z)
+            a_list.append(a)
+
+        return a_list.pop(), z_list, a_list
+
+    def predict(self, x: np.ndarray) -> np.ndarray:
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        output, _, _ = self.feedforward(x=x)
+        return output
+
+    def backpropagation(self, x: np.ndarray, y: np.ndarray):
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        x = x if x.ndim > 1 else x.reshape(1, -1)
+        y = y if y.ndim > 1 else y.reshape(1, -1)
+
+        output, z_list, a_list = self.feedforward(x=x)
+        layers_number = self.layer_structure.layers_number
+
+        loss_gradient = self.core.loss_gradient(y_target=y, y_predicted=output)
+        delta = loss_gradient * self.core.activation_derivatives[-1](x=z_list[-1])
+
+        d_weight = np.dot(a_list[-1].T, delta)
+        d_bias = np.sum(delta, axis=0).reshape(1, -1)
+
+        gradient_list = list()
+        gradient_list.append(d_bias)
+        gradient_list.append(d_weight)
+
+        for i in range(1, layers_number - 1):
+            j = layers_number - i - 1
+            previous_weight, _ = self.core.unpack_variables(layer_number=j + 1)
+
+            next_delta = np.dot(delta, previous_weight.T)
+            delta = next_delta * self.core.activation_derivatives[j](x=z_list[j - 1])
+
+            d_weight = np.dot(a_list[j - 1].T, delta)
+            d_bias = np.sum(delta, axis=0).reshape(1, -1)
+
+            gradient_list.append(d_bias)
+            gradient_list.append(d_weight)
+
+        gradient_list.reverse()
+        gradient_vector = np.concatenate(gradient_list, axis=None) / y.shape[0]
+        return gradient_vector
+
+    def fit(self,
+            x: np.ndarray,
+            y: np.ndarray,
+            epochs: int = 1,
+            batch_size: int = 32,
+            shuffle: bool = True):
+
+        if not self.is_compiled:
+            raise Exception()  # TODO Custom Exception (not compiled)
+
+        x = x if x.ndim > 1 else x.reshape(1, -1)
+        y = y if y.ndim > 1 else y.reshape(1, -1)
+
+        size = x.shape[0]
+        indexes = np.arange(size)
+        for epoch in range(epochs):
+            if shuffle:
+                np.random.shuffle(indexes)
+
+            for i in range(0, size, batch_size):
+                idx = indexes[i:i + batch_size]
+                gradient_vector = self.backpropagation(x=x[idx], y=y[idx])
+                adjustment = self.core.optimizer(gradient_vector=gradient_vector)
+
+                self.core.trainable_variables.set_all(
+                    value=self.core.trainable_variables.get_all() + adjustment
+                )
+
+
 class SequentialCompiledCore:
     def __init__(self,
                  layer_structure: AbstractLayerStructure,
@@ -203,19 +356,16 @@ class SequentialCompiledCore:
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
         if isinstance(self.loss, CategoricalCrossentropy):
-            last_layer = self.layer_structure.get_layer(layer_number=self.layer_structure.layers_number - 1)
-            softmax = Softmax()
-
-            if not isinstance(last_layer, AbstractActivationLayer):
-                raise Exception()  # TODO Custom Exception
-
-            if isinstance(last_layer.activation, Softmax) or \
-                    isinstance(last_layer.activation, Sigmoid):
-                raise Exception('empty')
-
+            if self.loss.from_logits:
+                pass
             else:
-                def shortcut(y_target, y_predicted):
-                    return - 1. / y_predicted
+                def shortcut(y_target: np.ndarray, y_predicted: np.ndarray) -> callable:
+                    s = np.sum(y_predicted)
+                    off_diagonal = \
+                        np.repeat(y_predicted, y_predicted.shape[-1], axis=0).T - np.diag(y_predicted.ravel())
+                    on_diagonal = s - y_predicted
+                    jacobian = (off_diagonal - np.diag(on_diagonal.ravel()))
+                    return np.dot(- y_target / y_predicted, jacobian) / s
 
                 return shortcut
 

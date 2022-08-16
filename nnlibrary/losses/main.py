@@ -37,7 +37,7 @@ class CategoricalCrossentropy(AbstractLoss):
         if self.from_logits:
             y_predicted = self.softmax(y_predicted)
         else:
-            y_predicted /= np.sum(y_predicted, axis=-1)
+            y_predicted /= np.sum(y_predicted, axis=-1).reshape(-1, 1)
 
         y_predicted = np.maximum(y_predicted, self.epsilon)
         y_predicted = np.minimum(y_predicted, 1. - self.epsilon)
