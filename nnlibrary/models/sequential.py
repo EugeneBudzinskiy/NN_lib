@@ -205,33 +205,30 @@ class SequentialCompiledCore:
         def loss_wrapper(y_target: np.ndarray):
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
-        def sum_norm_jacobian(y_predicted: np.ndarray) -> np.ndarray:
-            s = np.sum(y_predicted)
-            matrix = np.repeat(y_predicted, y_predicted.shape[-1], axis=0).T
-            off_diagonal = matrix - np.diag(y_predicted.ravel())
-            on_diagonal = s - y_predicted
-            return (- off_diagonal + np.diag(on_diagonal.ravel())) / s
-
-        def softmax_jacobian(y_predicted: np.ndarray) -> np.ndarray:
-            softmax = Softmax()
-            s = softmax(x=y_predicted)
-            tmp = np.repeat(s, s.shape[-1], axis=0)
-            matrix = - tmp * tmp.T
-            return matrix + np.diag(s.ravel())
-
         if isinstance(self.loss, CategoricalCrossentropy):
 
             if self.loss.from_logits:
-                return lambda y_predicted, y_target: \
-                    np.dot(- y_target / y_predicted, softmax_jacobian(y_predicted=y_predicted))
+                def result_gradient_func(y_predicted: np.ndarray, y_target: np.ndarray) -> np.ndarray:
+                    softmax = Softmax()
+                    s = softmax(x=y_predicted)
+                    tmp = np.repeat(s, s.shape[-1], axis=0)
+                    matrix = - tmp * tmp.T + np.diag(s.ravel())
+                    return np.dot(- y_target / s, matrix)
+
             else:
-                return lambda y_predicted, y_target: \
-                    np.dot(- y_target / y_predicted, sum_norm_jacobian(y_predicted=y_predicted))
+                def result_gradient_func(y_predicted: np.ndarray, y_target: np.ndarray) -> np.ndarray:
+                    s = np.sum(y_predicted)
+                    tmp = np.repeat(y_predicted, y_predicted.shape[-1], axis=0).T
+                    diff = s - y_predicted
+                    matrix = - tmp + np.diag(y_predicted.ravel()) + np.diag(diff.ravel())
+                    return np.dot(- y_target / y_predicted, matrix / s)
+
+            return lambda y_predicted, y_target: \
+                result_gradient_func(y_predicted=y_predicted, y_target=y_target)
 
         else:
-            return lambda y_target, y_predicted: self.gradient(
-                func=loss_wrapper(y_target=y_target), x=y_predicted
-            )
+            return lambda y_target, y_predicted: \
+                self.gradient(func=loss_wrapper(y_target=y_target), x=y_predicted)
 
     def get_activation_derivatives(self) -> [callable]:
         derivatives = list([None])

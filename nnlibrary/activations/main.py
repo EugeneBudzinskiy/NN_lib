@@ -43,4 +43,4 @@ class Exponent(AbstractActivation):
 class Softmax(AbstractActivation):
     def __call__(self, x: np.ndarray) -> np.ndarray:
         exp = np.exp(x)
-        return exp / np.sum(exp, axis=-1)
+        return exp / np.sum(exp, axis=-1).reshape(-1, 1)
