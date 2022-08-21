@@ -242,10 +242,47 @@ def test_backpropagation():
 
         assert np.allclose(target, value), error_prompt
 
+    def model_3l_235_linear_cce_logits_single():
+        import numpy as np
+        import nnlibrary as nnl
+
+        np.random.seed(13)
+
+        model = nnl.models.Sequential()
+
+        model.add(layer=nnl.layers.Input(node_count=2))
+        model.add(layer=nnl.layers.Dense(node_count=3, activation=nnl.activations.Linear()))
+        model.add(layer=nnl.layers.Dense(node_count=5, activation=nnl.activations.Linear()))
+
+        optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
+        loss = nnl.losses.CategoricalCrossentropy(from_logits=True)
+
+        w_init = nnl.variables.UniformZeroOne()
+        b_init = nnl.variables.Zeros()
+
+        model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
+
+        x = np.array([1, 1], dtype='float64')
+        y = np.array([1.0, 0.0, 0.0, 0.0, 0.0], dtype='float64')
+
+        value = model.backpropagation(x=x, y=y)
+        target = np.array([-0.07098395, 0.05505513, 0.04471427, -0.07098395, 0.05505514, 0.04471427,
+                           -0.07098398, 0.05505513, 0.04471427, -0.82251304, 0.17348409, 0.17348412,
+                           0.17348409, 0.17348412, -0.57091224, 0.12041658, 0.12041658, 0.12041658,
+                           0.12041658, -0.6027972, 0.12714174, 0.12714174, 0.12714174, 0.12714171,
+                           -0.4717728, 0.09950612, 0.09950612, 0.09950612, 0.09950612])
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value:\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
     model_3l_235_sigmoid_weight()
     model_3l_235_sigmoid_grad_single()
     model_3l_235_sigmoid_grad_multi()
     model_3l_235_linear_cce_single()
+    model_3l_235_linear_cce_logits_single()
 
 
 def test_fit():

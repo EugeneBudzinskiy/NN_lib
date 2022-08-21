@@ -215,23 +215,18 @@ class SequentialCompiledCore:
         def softmax_jacobian(y_predicted: np.ndarray) -> np.ndarray:
             softmax = Softmax()
             s = softmax(x=y_predicted)
-            matrix = np.repeat(s, s.shape[-1], axis=0)
-
-            print(matrix)
-            exit()
-
-            off_diagonal = matrix - np.diag(y_predicted.ravel())
-            on_diagonal = s - y_predicted
-            return (- off_diagonal + np.diag(on_diagonal.ravel())) / s
+            tmp = np.repeat(s, s.shape[-1], axis=0)
+            matrix = - tmp * tmp.T
+            return matrix + np.diag(s.ravel())
 
         if isinstance(self.loss, CategoricalCrossentropy):
-            jac = softmax_jacobian if self.loss.from_logits else sum_norm_jacobian
 
-            def shoctcut(y_predicted: np.ndarray, y_target: np.ndarray) -> np.ndarray:
-                return np.dot(- y_target / y_predicted, jac(y_predicted=y_predicted))
-
-            return shoctcut
-
+            if self.loss.from_logits:
+                return lambda y_predicted, y_target: \
+                    np.dot(- y_target / y_predicted, softmax_jacobian(y_predicted=y_predicted))
+            else:
+                return lambda y_predicted, y_target: \
+                    np.dot(- y_target / y_predicted, sum_norm_jacobian(y_predicted=y_predicted))
 
         else:
             return lambda y_target, y_predicted: self.gradient(
