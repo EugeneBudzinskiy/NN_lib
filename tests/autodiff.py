@@ -39,6 +39,40 @@ def test_derivative():
 
         assert target == value, error_prompt
 
+    def op_negative():
+        x = Variable(3)
+
+        # z = - x
+        target = -1
+
+        # forward pass
+        x.dot = 1
+        z = - x
+        value = z.dot
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target: {target}\n' \
+                       f'    Value : {value}'
+
+        assert target == value, error_prompt
+
+    def op_positive():
+        x = Variable(3)
+
+        # z = x
+        target = 1
+
+        # forward pass
+        x.dot = 1
+        z = x
+        value = z.dot
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target: {target}\n' \
+                       f'    Value : {value}'
+
+        assert target == value, error_prompt
+
     def op_multiplication():
         x = Variable(3)
         y = Variable(5)
@@ -77,7 +111,29 @@ def test_derivative():
 
         assert target == value, error_prompt
 
+    def op_power():
+        x = Variable(3)
+        y = Variable(5)
+
+        # z = x ** y
+        target = y.value * x.value ** (y.value - 1)
+
+        # forward pass
+        x.dot = 1
+        y.dot = 0
+        z = x ** y
+        value = z.dot
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target: {target}\n' \
+                       f'    Value : {value}'
+
+        assert target == value, error_prompt
+
     op_addition()
     op_difference()
+    op_negative()
+    op_positive()
     op_multiplication()
     op_division()
+    op_power()
