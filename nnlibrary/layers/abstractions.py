@@ -1,3 +1,5 @@
+# TODO Refactor this structure of Layer
+
 class AbstractLayer:
     def __init__(self, node_count: int):
         self._node_count = node_count

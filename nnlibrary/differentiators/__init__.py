@@ -1,3 +1,4 @@
-from nnlibrary.differentiators.abstractions import *
-from nnlibrary.differentiators.main import *
+from nnlibrary.differentiators.abstractions import AbstractDifferentiator
 
+from nnlibrary.differentiators.differentiators import Derivative
+from nnlibrary.differentiators.differentiators import Gradient

@@ -1,3 +1,3 @@
 from nnlibrary.layers.abstractions import *
-from nnlibrary.layers.main import *
+from nnlibrary.layers.layers import *
 

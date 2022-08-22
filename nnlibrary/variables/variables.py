@@ -1,8 +1,6 @@
 import numpy as np
 
-from nnlibrary.initializers import AbstractInitializer
-from nnlibrary.initializers import UniformZeroOne
-from nnlibrary.initializers import Zeros
+from nnlibrary import initializers
 from nnlibrary.layer_structures import AbstractLayerStructure
 from nnlibrary.variables import AbstractVariables
 
@@ -42,14 +40,14 @@ class TrainableVariables(AbstractVariables):
 
     def init_variables(self,
                        layer_structure: AbstractLayerStructure,
-                       weight_initializer: AbstractInitializer = None,
-                       bias_initializer: AbstractInitializer = None):
+                       weight_initializer: initializers.AbstractInitializer = None,
+                       bias_initializer: initializers.AbstractInitializer = None):
 
         if weight_initializer is None:
-            weight_initializer = UniformZeroOne()
+            weight_initializer = initializers.UniformZeroOne()
 
         if bias_initializer is None:
-            bias_initializer = Zeros()
+            bias_initializer = initializers.Zeros()
 
         self._set_inner_sizes(layer_structure=layer_structure)
         self.__fill_map(layer_structure=layer_structure)

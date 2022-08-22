@@ -1,16 +1,15 @@
 import numpy as np
 
-from nnlibrary.activations import Softmax
+from nnlibrary import activations
+from nnlibrary import reductions
 from nnlibrary.losses import AbstractLoss
-from nnlibrary.reductions import AbstractReduction
-from nnlibrary.reductions import ReductionMean
 
 
 class MeanSquaredError(AbstractLoss):
     def __call__(self,
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
-                 reduction: AbstractReduction = ReductionMean()) -> np.ndarray:
+                 reduction: reductions.AbstractReduction = reductions.ReductionMean()) -> np.ndarray:
         y_predicted = y_predicted if y_predicted.ndim > 1 else y_predicted.reshape(1, -1)
         y_target = y_target if y_target.ndim > 1 else y_target.reshape(1, -1)
 
@@ -22,7 +21,7 @@ class CategoricalCrossentropy(AbstractLoss):
     def __init__(self,
                  from_logits: bool = False,
                  epsilon: float = 1e-7):
-        self.softmax = Softmax()
+        self.softmax = activations.Softmax()
 
         self.from_logits = from_logits
         self.epsilon = epsilon
@@ -30,7 +29,7 @@ class CategoricalCrossentropy(AbstractLoss):
     def __call__(self,
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
-                 reduction: AbstractReduction = ReductionMean()) -> np.ndarray:
+                 reduction: reductions.AbstractReduction = reductions.ReductionMean()) -> np.ndarray:
         y_predicted = y_predicted if y_predicted.ndim > 1 else y_predicted.reshape(1, -1)
         y_target = y_target if y_target.ndim > 1 else y_target.reshape(1, -1)
 

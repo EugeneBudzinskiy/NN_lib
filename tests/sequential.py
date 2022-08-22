@@ -14,8 +14,8 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -47,8 +47,8 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -78,8 +78,8 @@ def test_predict():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `predict` part
         loss = nnl.losses.MeanSquaredError()  # Doesn't affect `predict` part
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -116,8 +116,8 @@ def test_backpropagation():
         optimizer = nnl.optimizers.SGD(learning_rate=1)
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -149,8 +149,8 @@ def test_backpropagation():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -185,8 +185,8 @@ def test_backpropagation():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -221,8 +221,8 @@ def test_backpropagation():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
         loss = nnl.losses.CategoricalCrossentropy()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -257,8 +257,8 @@ def test_backpropagation():
         optimizer = nnl.optimizers.SGD(learning_rate=1)  # Doesn't affect `backpropagation` part
         loss = nnl.losses.CategoricalCrossentropy(from_logits=True)
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -301,8 +301,8 @@ def test_fit():
         optimizer = nnl.optimizers.SGD(learning_rate=1)
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -334,8 +334,8 @@ def test_fit():
         optimizer = nnl.optimizers.SGD(learning_rate=1)
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -375,8 +375,8 @@ def test_fit():
         optimizer = nnl.optimizers.SGD(learning_rate=1)
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
@@ -428,8 +428,8 @@ def test_fit():
         optimizer = nnl.optimizers.SGD(learning_rate=1)
         loss = nnl.losses.MeanSquaredError()
 
-        w_init = nnl.variables.UniformZeroOne()
-        b_init = nnl.variables.Zeros()
+        w_init = nnl.initializers.UniformZeroOne()
+        b_init = nnl.initializers.Zeros()
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 

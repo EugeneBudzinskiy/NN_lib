@@ -1,2 +1,4 @@
-from nnlibrary.initializers.abstractions import *
-from nnlibrary.initializers.main import *
+from nnlibrary.initializers.abstractions import AbstractInitializer
+from nnlibrary.initializers.initializers import Uniform
+from nnlibrary.initializers.initializers import UniformZeroOne
+from nnlibrary.initializers.initializers import Zeros
