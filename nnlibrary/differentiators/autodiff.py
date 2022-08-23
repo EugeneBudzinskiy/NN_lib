@@ -1,41 +1,27 @@
-# _g = None
-#
-#
-# class Graph:
-#     def __init__(self):
-#         self.operators = set()
-#         self.constants = set()
-#         self.variables = set()
-#         self.placeholders = set()
-#         global _g
-#         _g = self
-#
-#     def reset_counts(self, root):
-#         if hasattr(root, 'count'):
-#             root.count = 0
-#         else:
-#             for child in root.__subclasses__():
-#                 self.reset_counts(child)
-#
-#     def reset_session(self):
-#         try:
-#             del _g
-#         except NameError:
-#             pass
-#
-#         self.reset_counts(Node)
-#
-#     def __enter__(self):
-#         return self
-#
-#     def __exit__(self, exc_type, exc_value, traceback):
-#         self.reset_session()
+from abc import ABC
+from abc import abstractmethod
 
 
-class Variable:
-    def __init__(self, value, dot=0.):
+class Graph:
+    def __init__(self):
+        self.variables = list()
+
+    def __enter__(self):
+        Variable.graph = self
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        Variable.count = 0
+
+
+class Node(ABC):
+    def __init__(self, value, dot):
         self.value = value
         self.dot = dot
+
+    @abstractmethod
+    def __repr__(self):
+        pass
 
     def __add__(self, other):
         result = Variable(value=self.value + other.value)
@@ -71,6 +57,20 @@ class Variable:
         result = Variable(value=self.value ** power.value)
         result.dot = self.dot * power.value * self.value ** (power.value - 1)
         return result
+
+
+class Variable(Node):
+    count = 0
+    graph = Graph()
+
+    def __init__(self, value, dot=0., name=None):
+        super(Variable, self).__init__(value=value, dot=dot)
+        Variable.graph.variables.append(self)
+        self.name = f"Var/{Variable.count}" if name is None else name
+        Variable.count += 1
+
+    def __repr__(self):
+        return f"Variable: name:{self.name}, value:{self.value}"
 
 
 class AutomaticDifferentiation:

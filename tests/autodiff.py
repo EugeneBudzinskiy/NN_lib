@@ -130,10 +130,31 @@ def test_derivative():
 
         assert target == value, error_prompt
 
-    op_addition()
-    op_difference()
-    op_negative()
-    op_positive()
-    op_multiplication()
-    op_division()
-    op_power()
+    # op_addition()
+    # op_difference()
+    # op_negative()
+    # op_positive()
+    # op_multiplication()
+    # op_division()
+    # op_power()
+
+    from nnlibrary.differentiators import Graph
+
+    with Graph() as g:
+        x = Variable(2)
+        y = Variable(3)
+        c = Variable(5)
+        z = x * y + c
+
+    print(g)
+
+    with Graph() as g:
+        a = Variable(2)
+        b = Variable(3)
+        d = Variable(5)
+        e = a * b + d
+
+    print(g.variables)
+    exit(-2)
+
+
