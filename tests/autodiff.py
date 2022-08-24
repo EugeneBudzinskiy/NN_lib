@@ -149,4 +149,3 @@ def test_derivative():
     print(g.variables)
     exit(-2)
 
-

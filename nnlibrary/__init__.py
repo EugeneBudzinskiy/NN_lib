@@ -1,4 +1,5 @@
 from nnlibrary import activations
+from nnlibrary import auto_diff
 from nnlibrary import differentiators
 from nnlibrary import errors
 from nnlibrary import initializers

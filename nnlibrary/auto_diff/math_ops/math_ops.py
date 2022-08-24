@@ -144,5 +144,3 @@ class Tanh(UniOperation):
         value = np.tanh(x.value)
         gradient = x.gradient * (1 - value ** 2)
         return Variable(value=value, gradient=gradient)
-
-
