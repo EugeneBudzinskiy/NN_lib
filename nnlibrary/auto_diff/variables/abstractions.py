@@ -34,3 +34,55 @@ class AbstractVariable(ABC):
     @abstractmethod
     def __pow__(self, power, modulo=None):
         pass
+
+    @abstractmethod
+    def exp(self):
+        pass
+
+    @abstractmethod
+    def log(self):
+        pass
+
+    @abstractmethod
+    def log2(self):
+        pass
+
+    @abstractmethod
+    def log10(self):
+        pass
+
+    @abstractmethod
+    def sin(self):
+        pass
+
+    @abstractmethod
+    def cos(self):
+        pass
+
+    @abstractmethod
+    def tan(self):
+        pass
+
+    @abstractmethod
+    def arcsin(self):
+        pass
+
+    @abstractmethod
+    def arccos(self):
+        pass
+
+    @abstractmethod
+    def arctan(self):
+        pass
+
+    @abstractmethod
+    def sinh(self):
+        pass
+
+    @abstractmethod
+    def cosh(self):
+        pass
+
+    @abstractmethod
+    def tanh(self):
+        pass
