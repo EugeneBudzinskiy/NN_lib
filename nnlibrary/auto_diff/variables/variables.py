@@ -8,10 +8,10 @@ class Variable(AbstractVariable):
         super(Variable, self).__init__(value=value, partial=partial)
 
     def __add__(self, other):
-        return math_ops.Addition().__call__(x1=self, x2=other)
+        return math_ops.Addition().__call__(x1=self, x2=self._wrapper(other=other))
 
     def __sub__(self, other):
-        return math_ops.Subtraction().__call__(x1=self, x2=other)
+        return math_ops.Subtraction().__call__(x1=self, x2=self._wrapper(other=other))
 
     def __neg__(self):
         return math_ops.Negative().__call__(x=self)
@@ -20,13 +20,16 @@ class Variable(AbstractVariable):
         return math_ops.Positive().__call__(x=self)
 
     def __mul__(self, other):
-        return math_ops.Multiplication().__call__(x1=self, x2=other)
+        return math_ops.Multiplication().__call__(x1=self, x2=self._wrapper(other=other))
 
     def __truediv__(self, other):
-        return math_ops.Division().__call__(x1=self, x2=other)
+        return math_ops.Division().__call__(x1=self, x2=self._wrapper(other=other))
 
     def __pow__(self, power, modulo=None):
-        return math_ops.Power().__call__(x1=self, x2=power)
+        return math_ops.Power().__call__(x1=self, x2=self._wrapper(other=power))
+
+    def sqrt(self):
+        return math_ops.SquareRoot().__call__(x=self)
 
     def exp(self):
         return math_ops.Exponent().__call__(x=self)

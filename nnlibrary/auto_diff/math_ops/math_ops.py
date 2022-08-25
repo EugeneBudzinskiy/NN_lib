@@ -55,10 +55,17 @@ class Power(BiOperation):
         return Variable(value=value, partial=gradient)
 
 
+class SquareRoot(UniOperation):
+    def __call__(self, x: AbstractVariable) -> AbstractVariable:
+        value = np.sqrt(x.value)
+        gradient = x.partial / (2 * value)
+        return Variable(value=value, partial=gradient)
+
+
 class Exponent(UniOperation):
     def __call__(self, x: AbstractVariable) -> AbstractVariable:
         value = np.exp(x.value)
-        gradient = value * x.partial
+        gradient = x.partial * value
         return Variable(value=value, partial=gradient)
 
 

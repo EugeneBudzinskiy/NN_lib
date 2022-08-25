@@ -9,6 +9,7 @@ from nnlibrary.auto_diff.math_ops.math_ops import Positive
 from nnlibrary.auto_diff.math_ops.math_ops import Multiplication
 from nnlibrary.auto_diff.math_ops.math_ops import Division
 from nnlibrary.auto_diff.math_ops.math_ops import Power
+from nnlibrary.auto_diff.math_ops.math_ops import SquareRoot
 from nnlibrary.auto_diff.math_ops.math_ops import Exponent
 from nnlibrary.auto_diff.math_ops.math_ops import Logarithm
 from nnlibrary.auto_diff.math_ops.math_ops import Logarithm2

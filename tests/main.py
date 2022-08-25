@@ -5,6 +5,9 @@ def test_all():
     tests.differentiators.test_gradient()
 
     tests.autodiff.test_derivative()
+    tests.autodiff.test_gradient()
+    tests.autodiff.test_jacobian()
+    tests.autodiff.test_jacobian_vector_product()
 
     tests.sequential.test_predict()
     tests.sequential.test_backpropagation()

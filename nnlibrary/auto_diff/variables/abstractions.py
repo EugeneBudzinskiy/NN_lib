@@ -7,6 +7,9 @@ class AbstractVariable(ABC):
         self.value = value
         self.partial = partial
 
+    def _wrapper(self, other):
+        return other if isinstance(other, self.__class__) else self.__class__(other)
+
     @abstractmethod
     def __add__(self, other):
         pass
@@ -33,6 +36,10 @@ class AbstractVariable(ABC):
 
     @abstractmethod
     def __pow__(self, power, modulo=None):
+        pass
+
+    @abstractmethod
+    def sqrt(self):
         pass
 
     @abstractmethod
