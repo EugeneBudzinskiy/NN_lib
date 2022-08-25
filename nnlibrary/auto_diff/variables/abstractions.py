@@ -3,9 +3,9 @@ from abc import abstractmethod
 
 
 class AbstractVariable(ABC):
-    def __init__(self, value: float, gradient: float = 0.):
+    def __init__(self, value: float, partial: float = 0.):
         self.value = value
-        self.gradient = gradient
+        self.partial = partial
 
     @abstractmethod
     def __add__(self, other):

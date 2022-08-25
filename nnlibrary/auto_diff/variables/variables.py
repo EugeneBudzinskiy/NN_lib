@@ -4,8 +4,8 @@ from nnlibrary.auto_diff.variables import AbstractVariable
 
 
 class Variable(AbstractVariable):
-    def __init__(self, value: float, gradient: float = 0.):
-        super(Variable, self).__init__(value=value, gradient=gradient)
+    def __init__(self, value: float, partial: float = 0.):
+        super(Variable, self).__init__(value=value, partial=partial)
 
     def __add__(self, other):
         return math_ops.Addition().__call__(x1=self, x2=other)

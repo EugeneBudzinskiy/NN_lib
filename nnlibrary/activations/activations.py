@@ -5,7 +5,7 @@ from nnlibrary.activations import AbstractActivation
 
 class Linear(AbstractActivation):
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        return x.copy()
+        return + x
 
 
 class Sigmoid(AbstractActivation):
@@ -15,7 +15,7 @@ class Sigmoid(AbstractActivation):
 
 class HardSigmoid(AbstractActivation):
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        z = x.copy()
+        z = + x
         z[(z >= -2.5) * (z <= 2.5)] *= 0.2
         z[(z >= -2.5) * (z <= 2.5)] += 0.5
         z[z < -2.5] = 0
@@ -25,7 +25,7 @@ class HardSigmoid(AbstractActivation):
 
 class ReLU(AbstractActivation):
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        z = x.copy()
+        z = + x
         z[z < 0] = 0
         return z
 
