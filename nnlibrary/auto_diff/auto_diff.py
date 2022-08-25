@@ -32,10 +32,37 @@ class AutoDiff:
         var_x = AutoDiff.to_variable_direction(x=x, vector=np.ones_like(x))
         return AutoDiff.partial_to_numpy(x=func(var_x))
 
-    # @staticmethod
-    # def gradient(func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
-    #     var_x = AutoDiff.to_variable(x=x)
-    #     return AutoDiff.partial_to_numpy(x=func(var_x))
+    @staticmethod
+    def gradient(func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
+        var_x = AutoDiff.to_variable(x=x)
+        result = np.empty_like(x)
+
+        for i in range(result.shape[-1]):
+            AutoDiff.set_partial(var_x=var_x[:, i], value=1.)
+            result[:, i] = AutoDiff.partial_to_numpy(x=func(var_x))
+            AutoDiff.set_partial(var_x=var_x[:, i], value=0.)
+
+        return result
+
+    @staticmethod
+    def jacobian(func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
+        var_x = AutoDiff.to_variable(x=x)
+
+        # First iteration
+        AutoDiff.set_partial(var_x=var_x[:, 0], value=1.)
+        temp = AutoDiff.partial_to_numpy(x=func(var_x))
+        AutoDiff.set_partial(var_x=var_x[:, 0], value=0.)
+
+        # Creating `result` array only after knowing dimension of `func` output
+        result = np.empty((x.shape[-1], temp.shape[-1]))
+        result[:, 0] = temp
+
+        for i in range(1, result.shape[-1]):
+            AutoDiff.set_partial(var_x=var_x[:, i], value=1.)
+            result[:, i] = AutoDiff.partial_to_numpy(x=func(var_x))
+            AutoDiff.set_partial(var_x=var_x[:, i], value=0.)
+
+        return result
 
     @staticmethod
     def jvp(func: Callable[[np.ndarray], np.ndarray], x: np.ndarray, vector: np.ndarray):
