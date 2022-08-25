@@ -52,7 +52,7 @@ def test_predict():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([1, 1], dtype='float64')
+        x = np.array([[1, 1]], dtype='float64')
 
         value = model.predict(x=x)
         target = np.array([[0.72085387, 0.72650737, 0.7709476, 0.7653046, 0.785123]])
@@ -154,8 +154,8 @@ def test_backpropagation():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([1, 1], dtype='float64')
-        y = np.array([0.1, 0.1, 0.1, 0.1, 0.1], dtype='float64')
+        x = np.array([[1, 1]], dtype='float64')
+        y = np.array([[0.1, 0.1, 0.1, 0.1, 0.1]], dtype='float64')
 
         value = model.backpropagation(x=x, y=y)
         target = np.array([0.01718086, 0.01905474, 0.01560694, 0.01718086, 0.01905471, 0.01560694,
@@ -226,8 +226,8 @@ def test_backpropagation():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([1, 1], dtype='float64')
-        y = np.array([1.0, 0.0, 0.0, 0.0, 0.0], dtype='float64')
+        x = np.array([[1, 1]], dtype='float64')
+        y = np.array([[1.0, 0.0, 0.0, 0.0, 0.0]], dtype='float64')
 
         value = model.backpropagation(x=x, y=y)
         target = np.array([-0.07098395, 0.05505513, 0.04471427, -0.07098395, 0.05505514, 0.04471427,
@@ -262,8 +262,8 @@ def test_backpropagation():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([1, 1], dtype='float64')
-        y = np.array([1.0, 0.0, 0.0, 0.0, 0.0], dtype='float64')
+        x = np.array([[1, 1]], dtype='float64')
+        y = np.array([[1.0, 0.0, 0.0, 0.0, 0.0]], dtype='float64')
 
         value = model.backpropagation(x=x, y=y)
         target = np.array([-0.06135923, 0.18718518, 0.13114601, -0.06135923, 0.18718517, 0.13114604,
@@ -339,8 +339,8 @@ def test_fit():
 
         model.compile(optimizer=optimizer, loss=loss, weight_initializer=w_init, bias_initializer=b_init)
 
-        x = np.array([1, 1], dtype='float64')
-        y = np.array([1.0, 1.0, 1.0, 1.0, 1.0], dtype='float64')
+        x = np.array([[1, 1]], dtype='float64')
+        y = np.array([[1.0, 1.0, 1.0, 1.0, 1.0]], dtype='float64')
 
         before_fit = model.loss(y_predicted=model.predict(x=x), y_target=y)  # Save Loss before Fit
 

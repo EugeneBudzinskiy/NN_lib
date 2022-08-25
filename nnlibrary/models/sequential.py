@@ -73,7 +73,7 @@ class Sequential(AbstractModel):
         if not self.is_compiled:
             raise Exception()  # TODO Custom Exception (not compiled)
 
-        a = x.copy() if x.ndim > 1 else x.reshape(1, -1)
+        a = x.copy()
         z_list, a_list = list(), list()
         a_list.append(a)
 
@@ -102,9 +102,6 @@ class Sequential(AbstractModel):
     def backpropagation(self, x: np.ndarray, y: np.ndarray):
         if not self.is_compiled:
             raise Exception()  # TODO Custom Exception (not compiled)
-
-        x = x if x.ndim > 1 else x.reshape(1, -1)
-        y = y if y.ndim > 1 else y.reshape(1, -1)
 
         output, z_list, a_list = self.feedforward(x=x)
         layers_number = self.layer_structure.layers_number
@@ -147,9 +144,6 @@ class Sequential(AbstractModel):
 
         if not self.is_compiled:
             raise Exception()  # TODO Custom Exception (not compiled)
-
-        x = x if x.ndim > 1 else x.reshape(1, -1)
-        y = y if y.ndim > 1 else y.reshape(1, -1)
 
         size = x.shape[0]
         indexes = np.arange(size)

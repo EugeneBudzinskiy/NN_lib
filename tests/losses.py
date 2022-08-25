@@ -5,8 +5,8 @@ def test_loss_mse():
     loss = MeanSquaredError()
 
     def single_point_loss():
-        y_predicted = np.array([3.5, 1.2, 3.3], dtype='float64')
-        y_target = np.array([3.0, 2.0, 1.0], dtype='float64')
+        y_predicted = np.array([[3.5, 1.2, 3.3]], dtype='float64')
+        y_target = np.array([[3.0, 2.0, 1.0]], dtype='float64')
         target = np.array([2.06], dtype='float64')
         value = loss(y_predicted=y_predicted, y_target=y_target)
 
@@ -39,8 +39,8 @@ def test_loss_cce():
 
         loss = CategoricalCrossentropy()
 
-        y_predicted = np.array([0.05, 0.95, 0], dtype='float64')
-        y_target = np.array([0.0, 1.0, 0.0], dtype='float64')
+        y_predicted = np.array([[0.05, 0.95, 0]], dtype='float64')
+        y_target = np.array([[0.0, 1.0, 0.0]], dtype='float64')
         target = np.array([0.051293306], dtype='float64')
         value = loss(y_predicted=y_predicted, y_target=y_target)
 

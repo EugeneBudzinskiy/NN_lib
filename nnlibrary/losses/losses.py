@@ -10,9 +10,6 @@ class MeanSquaredError(AbstractLoss):
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
                  reduction: reductions.AbstractReduction = reductions.ReductionMean()) -> np.ndarray:
-        y_predicted = y_predicted if y_predicted.ndim > 1 else y_predicted.reshape(1, -1)
-        y_target = y_target if y_target.ndim > 1 else y_target.reshape(1, -1)
-
         value = np.mean(np.square(y_predicted - y_target), axis=-1).reshape(1, -1)
         return reduction(values=value)
 
@@ -30,9 +27,6 @@ class CategoricalCrossentropy(AbstractLoss):
                  y_predicted: np.ndarray,
                  y_target: np.ndarray,
                  reduction: reductions.AbstractReduction = reductions.ReductionMean()) -> np.ndarray:
-        y_predicted = y_predicted if y_predicted.ndim > 1 else y_predicted.reshape(1, -1)
-        y_target = y_target if y_target.ndim > 1 else y_target.reshape(1, -1)
-
         if self.from_logits:
             y_predicted = self.softmax(y_predicted)
         else:
