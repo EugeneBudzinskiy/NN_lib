@@ -74,19 +74,74 @@ def test_jacobian():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
-    def jac_non_sym():
+    def jac_simple_func():
         def func(t):
-            res = np.empty_like(t)
-            res[0, 0] = t[0, 0] ** 2 + t[0, 2] ** 2
-            res[0, 1] = - t[0, 1] ** 2
-            res[0, 2] = t[0, 1] + t[0, 2] * 3
-            return res
+            return np.array([[t[0, 0] ** 2 * t[0, 1], t[0, 0] * 5 + np.sin(t[0, 1])]])
 
-        x = np.array([[1, 1, 1]], dtype='float64')
+        x = np.array([[2, 3]], dtype='float64')
+        target = np.array([[2 * x[0, 0] * x[0, 1], x[0, 0] ** 2], [5, np.cos(x[0, 1])]], dtype='float64')
+        value = AutoDiff.jacobian(func=func, x=x)
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value :\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
+    def jac_polar_transform():
+        def func(t):
+            return np.array([[t[0, 0] * np.cos(t[0, 1]), t[0, 0] * np.sin(t[0, 1])]])
+
+        x = np.array([[2, 3]], dtype='float64')
         target = np.array([
-            [2 * x[0, 0], 0, 2 * x[0, 2]],
-            [0, - 2 * x[0, 1], 0],
-            [0, 1, 3]
+            [np.cos(x[0, 1]), - x[0, 0] * np.sin(x[0, 1])],
+            [np.sin(x[0, 1]), x[0, 0] * np.cos(x[0, 1])]
+        ], dtype='float64')
+        value = AutoDiff.jacobian(func=func, x=x)
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value :\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
+    def jac_sphere_transform():
+        def func(t):
+            return np.array([[
+                t[0, 0] * np.sin(t[0, 1]) * np.cos(t[0, 2]),
+                t[0, 0] * np.sin(t[0, 1]) * np.sin(t[0, 2]),
+                t[0, 0] * np.cos(t[0, 1])
+            ]])
+
+        x = np.array([[2, 3, 5]], dtype='float64')
+        target = np.array([
+            [np.sin(x[0, 1]) * np.cos(x[0, 2]),
+             x[0, 0] * np.cos(x[0, 1]) * np.cos(x[0, 2]),
+             - x[0, 0] * np.sin(x[0, 1]) * np.sin(x[0, 2])],
+            [np.sin(x[0, 1]) * np.sin(x[0, 2]),
+             x[0, 0] * np.cos(x[0, 1]) * np.sin(x[0, 2]),
+             x[0, 0] * np.sin(x[0, 1]) * np.cos(x[0, 2])],
+            [np.cos(x[0, 1]), - x[0, 0] * np.sin(x[0, 1]), 0]
+        ], dtype='float64')
+        value = AutoDiff.jacobian(func=func, x=x)
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value :\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
+    def jac_non_square():
+        def func(t):
+            x1, x2, x3 = t[0, 0], t[0, 1], t[0, 2]
+            return np.array([[x1, x3 * 5, x2 ** 2 * 4 - x3 * 2, x3 * np.sin(x1)]])
+
+        x = np.array([[2, 3, 5]], dtype='float64')
+        target = np.array([
+            [1., 0., 0.],
+            [0., 0., 5.],
+            [0., 8. * x[0, 1], - 2.],
+            [x[0, 2] * np.cos(x[0, 0]), 0, np.sin(x[0, 0])]
         ], dtype='float64')
         value = AutoDiff.jacobian(func=func, x=x)
 
@@ -114,7 +169,10 @@ def test_jacobian():
 
         assert np.allclose(target, value), error_prompt
 
-    jac_non_sym()
+    jac_simple_func()
+    jac_polar_transform()
+    jac_sphere_transform()
+    jac_non_square()
     # multi_point_jac()
 
 

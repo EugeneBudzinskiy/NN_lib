@@ -53,7 +53,7 @@ class AutoDiff:
         AutoDiff.set_partial(var_x=var_x[:, 0], value=0.)
 
         # Creating `result` array only after knowing dimension of `func` output
-        result = np.empty((x.shape[-1], temp.shape[-1]))
+        result = np.empty((temp.shape[-1], x.shape[-1]))
         result[:, 0] = temp
 
         for i in range(1, result.shape[-1]):
