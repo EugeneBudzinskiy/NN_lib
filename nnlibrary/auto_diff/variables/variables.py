@@ -13,12 +13,6 @@ class Variable(AbstractVariable):
     def __sub__(self, other):
         return math_ops.Subtraction().__call__(x1=self, x2=self._wrapper(other=other))
 
-    def __neg__(self):
-        return math_ops.Negative().__call__(x=self)
-
-    def __pos__(self):
-        return math_ops.Positive().__call__(x=self)
-
     def __mul__(self, other):
         return math_ops.Multiplication().__call__(x1=self, x2=self._wrapper(other=other))
 
@@ -27,6 +21,30 @@ class Variable(AbstractVariable):
 
     def __pow__(self, power, modulo=None):
         return math_ops.Power().__call__(x1=self, x2=self._wrapper(other=power))
+
+    def __eq__(self, other):
+        return self.value == self._wrapper(other=other).value
+
+    def __ne__(self, other):
+        return self.value != self._wrapper(other=other).value
+
+    def __le__(self, other):
+        return self.value <= self._wrapper(other=other).value
+
+    def __ge__(self, other):
+        return self.value >= self._wrapper(other=other).value
+
+    def __lt__(self, other):
+        return self.value < self._wrapper(other=other).value
+
+    def __gt__(self, other):
+        return self.value > self._wrapper(other=other).value
+
+    def __neg__(self):
+        return math_ops.Negative().__call__(x=self)
+
+    def __pos__(self):
+        return math_ops.Positive().__call__(x=self)
 
     def sqrt(self):
         return math_ops.SquareRoot().__call__(x=self)

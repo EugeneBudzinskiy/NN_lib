@@ -1,6 +1,6 @@
 import tests.main
 
-import tests.autodiff
+import tests.auto_diff
 import tests.differentiators
 import tests.sequential
 import tests.losses

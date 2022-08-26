@@ -5,6 +5,9 @@ from nnlibrary.auto_diff.variables import AbstractVariable
 
 
 class AbstractOperation(ABC):
+    def __init__(self):
+        self.epsilon = 1e-7
+
     @abstractmethod
     def __call__(self, *args, **kwargs) -> AbstractVariable:
         pass

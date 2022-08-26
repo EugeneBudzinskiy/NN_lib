@@ -19,14 +19,6 @@ class AbstractVariable(ABC):
         pass
 
     @abstractmethod
-    def __neg__(self):
-        pass
-
-    @abstractmethod
-    def __pos__(self):
-        pass
-
-    @abstractmethod
     def __mul__(self, other):
         pass
 
@@ -36,6 +28,38 @@ class AbstractVariable(ABC):
 
     @abstractmethod
     def __pow__(self, power, modulo=None):
+        pass
+
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
+    @abstractmethod
+    def __ne__(self, other):
+        pass
+
+    @abstractmethod
+    def __le__(self, other):
+        pass
+
+    @abstractmethod
+    def __ge__(self, other):
+        pass
+
+    @abstractmethod
+    def __lt__(self, other):
+        pass
+
+    @abstractmethod
+    def __gt__(self, other):
+        pass
+
+    @abstractmethod
+    def __neg__(self):
+        pass
+
+    @abstractmethod
+    def __pos__(self):
         pass
 
     @abstractmethod

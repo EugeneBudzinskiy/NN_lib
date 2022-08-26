@@ -74,17 +74,21 @@ def test_jacobian():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
-    def jacobian_helper(t):
-        s = np.sum(t, axis=-1).reshape(-1, 1)
-        tmp = np.repeat(t, t.shape[-1], axis=-2).reshape((t.shape[-2], t.shape[-1], t.shape[-1]))
-        template = np.repeat(np.array([np.diag(np.ones(t.shape[-1]))]), t.shape[-2], axis=0)
-        matrix = - tmp + np.array([t.T]).T * template + np.array([(s - t).T]).T * template
-        return matrix / s.reshape(-1, 1, 1) ** 2
+    def jac_non_sym():
+        def func(t):
+            res = np.empty_like(t)
+            res[0, 0] = t[0, 0] ** 2 + t[0, 2] ** 2
+            res[0, 1] = - t[0, 1] ** 2
+            res[0, 2] = t[0, 1] + t[0, 2] * 3
+            return res
 
-    def single_point_jac():
-        x = np.array([[1, 3, 4]], dtype='float64')
-        target = jacobian_helper(t=x)
-        value = AutoDiff.jacobian(func=lambda t: t / np.sum(t, axis=-1).reshape(-1, 1), x=x)
+        x = np.array([[1, 1, 1]], dtype='float64')
+        target = np.array([
+            [2 * x[0, 0], 0, 2 * x[0, 2]],
+            [0, - 2 * x[0, 1], 0],
+            [0, 1, 3]
+        ], dtype='float64')
+        value = AutoDiff.jacobian(func=func, x=x)
 
         error_prompt = f'\n  Target and Value are not the same: \n' \
                        f'    Target:\n{target}\n' \
@@ -93,6 +97,13 @@ def test_jacobian():
         assert np.allclose(target, value), error_prompt
 
     def multi_point_jac():
+        def jacobian_helper(t):
+            s = np.sum(t, axis=-1).reshape(-1, 1)
+            tmp = np.repeat(t, t.shape[-1], axis=-2).reshape((t.shape[-2], t.shape[-1], t.shape[-1]))
+            template = np.repeat(np.array([np.diag(np.ones(t.shape[-1]))]), t.shape[-2], axis=0)
+            matrix = - tmp + np.array([t.T]).T * template + np.array([(s - t).T]).T * template
+            return matrix / s.reshape(-1, 1, 1) ** 2
+
         x = np.array([[1, 3, 4], [2, 4, 10]], dtype='float64')
         target = jacobian_helper(t=x)
         value = AutoDiff.jacobian(func=lambda t: t / np.sum(t, axis=-1).reshape(-1, 1), x=x)
@@ -103,25 +114,25 @@ def test_jacobian():
 
         assert np.allclose(target, value), error_prompt
 
-    single_point_jac()
-    multi_point_jac()
+    jac_non_sym()
+    # multi_point_jac()
 
 
 def test_jacobian_vector_product():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
-    def jvp_helper(t, v):
-        s = np.sum(t, axis=-1).reshape(-1, 1)
-        tmp = np.repeat(t, t.shape[-1], axis=-2).reshape((t.shape[-2], t.shape[-1], t.shape[-1]))
-        template = np.repeat(np.array([np.diag(np.ones(t.shape[-1]))]), t.shape[-2], axis=0)
-        matrix = - tmp + np.array([t.T]).T * template + np.array([(s - t).T]).T * template
-        return np.array([np.dot(v[i], matrix[i]) for i in range(t.shape[0])]) / s ** 2
-
     def single_point_jvp():
+        def jvp_helper(t, vec):
+            s = np.sum(t, axis=-1).reshape(-1, 1)
+            tmp = np.repeat(t, t.shape[-1], axis=-2).reshape((t.shape[-2], t.shape[-1], t.shape[-1]))
+            template = np.repeat(np.array([np.diag(np.ones(t.shape[-1]))]), t.shape[-2], axis=0)
+            matrix = - tmp + np.array([t.T]).T * template + np.array([(s - t).T]).T * template
+            return np.array([np.dot(vec[i], matrix[i]) for i in range(t.shape[0])]) / s ** 2
+
         x = np.array([[1, 5, 7]], dtype='float64')
         v = np.array([[3, 1, 2]], dtype='float64')
-        target = jvp_helper(t=x, v=v)
+        target = jvp_helper(t=x, vec=v)
         value = AutoDiff.jvp(func=lambda t: t / np.sum(t, axis=-1).reshape(-1, 1), x=x, vector=v)
 
         error_prompt = f'\n  Target and Value are not the same: \n' \
@@ -131,6 +142,13 @@ def test_jacobian_vector_product():
         assert np.allclose(target, value), error_prompt
 
     def multi_point_jvp():
+        def jvp_helper(t, v):
+            s = np.sum(t, axis=-1).reshape(-1, 1)
+            tmp = np.repeat(t, t.shape[-1], axis=-2).reshape((t.shape[-2], t.shape[-1], t.shape[-1]))
+            template = np.repeat(np.array([np.diag(np.ones(t.shape[-1]))]), t.shape[-2], axis=0)
+            matrix = - tmp + np.array([t.T]).T * template + np.array([(s - t).T]).T * template
+            return np.array([np.dot(v[i], matrix[i]) for i in range(t.shape[0])]) / s ** 2
+
         x = np.array([[1, 5, 7], [2, 4, 10]], dtype='float64')
         v = np.array([[3, 1, 2], [8, 12, 2]], dtype='float64')
         target = jvp_helper(t=x, v=v)
@@ -142,5 +160,5 @@ def test_jacobian_vector_product():
 
         assert np.allclose(target, value), error_prompt
 
-    single_point_jvp()
-    multi_point_jvp()
+    # single_point_jvp()
+    # multi_point_jvp()

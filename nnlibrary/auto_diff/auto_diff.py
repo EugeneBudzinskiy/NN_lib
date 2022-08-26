@@ -36,7 +36,6 @@ class AutoDiff:
     def gradient(func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
         var_x = AutoDiff.to_variable(x=x)
         result = np.empty_like(x)
-
         for i in range(result.shape[-1]):
             AutoDiff.set_partial(var_x=var_x[:, i], value=1.)
             result[:, i] = AutoDiff.partial_to_numpy(x=func(var_x))
@@ -54,7 +53,7 @@ class AutoDiff:
         AutoDiff.set_partial(var_x=var_x[:, 0], value=0.)
 
         # Creating `result` array only after knowing dimension of `func` output
-        result = np.empty((x.shape[-2], x.shape[-1], temp.shape[-1]))
+        result = np.empty((x.shape[-1], temp.shape[-1]))
         result[:, 0] = temp
 
         for i in range(1, result.shape[-1]):
