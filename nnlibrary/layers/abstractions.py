@@ -1,4 +1,9 @@
+import numpy as np
+
+from typing import Callable
+
 # TODO Refactor this structure of Layer
+
 
 class AbstractLayer:
     def __init__(self, node_count: int):
@@ -17,7 +22,7 @@ class AbstractActivationLayer(AbstractLayer):
         self._trainable = trainable
 
     @property
-    def activation(self) -> callable:
+    def activation(self) -> Callable[[np.ndarray], np.ndarray]:
         return self._activation
 
     @property

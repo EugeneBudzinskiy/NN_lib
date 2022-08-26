@@ -1,5 +1,7 @@
 import numpy as np
 
+from typing import Callable
+
 from nnlibrary import activations
 from nnlibrary import differentiators
 from nnlibrary import initializers
@@ -188,7 +190,7 @@ class SequentialCompiledCore:
         self.activation_derivatives = self.get_activation_derivatives()
         self.delta_multiplications = self.get_delta_multiplications()
 
-    def get_loss_gradient(self) -> callable:
+    def get_loss_gradient(self) -> Callable[[np.ndarray], np.ndarray]:
         def loss_wrapper(y_target: np.ndarray):
             return lambda x: self.loss(y_predicted=x, y_target=y_target, reduction=ReductionNone())
 
@@ -217,7 +219,7 @@ class SequentialCompiledCore:
             return lambda y_target, y_predicted: \
                 self.gradient(func=loss_wrapper(y_target=y_target), x=y_predicted)
 
-    def get_activation_derivatives(self) -> [callable]:
+    def get_activation_derivatives(self) -> [Callable[[np.ndarray], np.ndarray]]:
         derivatives = list([None])
         for i in range(1, self.layer_structure.layers_number):
             if None:
@@ -234,7 +236,7 @@ class SequentialCompiledCore:
 
         return derivatives
 
-    def get_delta_multiplications(self) -> [callable]:
+    def get_delta_multiplications(self) -> [Callable[[np.ndarray], np.ndarray]]:
         def normal_mul(x1: np.ndarray, x2: np.ndarray) -> np.ndarray:
             return np.multiply(x1, x2)
 
