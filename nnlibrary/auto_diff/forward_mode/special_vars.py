@@ -1,6 +1,6 @@
-from nnlibrary.auto_diff import math_ops
+from nnlibrary.auto_diff.forward_mode import math_ops
 
-from nnlibrary.auto_diff.variables import AbstractVariable
+from nnlibrary.auto_diff.forward_mode import AbstractVariable
 
 
 class Variable(AbstractVariable):
@@ -87,3 +87,4 @@ class Variable(AbstractVariable):
 
     def tanh(self):
         return math_ops.Tanh().__call__(x=self)
+
