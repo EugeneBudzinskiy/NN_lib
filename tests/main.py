@@ -4,10 +4,10 @@ def test_all():
     tests.differentiators.test_derivative()
     tests.differentiators.test_gradient()
 
-    tests.auto_diff.test_derivative()
-    tests.auto_diff.test_gradient()
-    tests.auto_diff.test_jacobian()
-    tests.auto_diff.test_jacobian_vector_product()
+    tests.auto_diff.test_derivative_forward()
+    tests.auto_diff.test_gradient_forward()
+    tests.auto_diff.test_jacobian_forward()
+    tests.auto_diff.test_jacobian_vector_product_forward()
 
     tests.sequential.test_predict()
     tests.sequential.test_backpropagation()

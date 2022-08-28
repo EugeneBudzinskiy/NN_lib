@@ -2,13 +2,18 @@ from abc import ABC
 from abc import abstractmethod
 
 
-class AbstractVariable(ABC):
+class AbstractSpecialVariable(ABC):
     def __init__(self, value: float, partial: float = 0.):
         self.value = value
         self.partial = partial
 
+    @abstractmethod
     def _wrapper(self, other):
-        return other if isinstance(other, self.__class__) else self.__class__(other)
+        pass
+
+    @abstractmethod
+    def __repr__(self):
+        pass
 
     @abstractmethod
     def __add__(self, other):
@@ -124,17 +129,17 @@ class AbstractOperation(ABC):
         self.epsilon = 1e-7
 
     @abstractmethod
-    def __call__(self, *args, **kwargs) -> AbstractVariable:
+    def __call__(self, *args, **kwargs) -> AbstractSpecialVariable:
         pass
 
 
 class UniOperation(AbstractOperation):
     @abstractmethod
-    def __call__(self, x: AbstractVariable) -> AbstractVariable:
+    def __call__(self, x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         pass
 
 
 class BiOperation(AbstractOperation):
     @abstractmethod
-    def __call__(self, x1: AbstractVariable, x2: AbstractVariable) -> AbstractVariable:
+    def __call__(self, x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         pass

@@ -1,15 +1,16 @@
-from nnlibrary.auto_diff.backward_mode import AbstractNode
+from nnlibrary.auto_diff import AbstractSpecialVariable
 from nnlibrary.auto_diff.backward_mode import math_ops
 
 
-class Node(AbstractNode):
+class Variable(AbstractSpecialVariable):
     def __init__(self, value: float, partial: float = 0.):
-        self.value = value
-        self.partial = partial
+        super(Variable, self).__init__(value=value, partial=partial)
 
-    @staticmethod
-    def _wrapper(other):
-        return other if isinstance(other, Operator) else Operator(other)
+    def _wrapper(self, other):
+        return other if isinstance(other, AbstractSpecialVariable) else Operator(other)
+
+    def __repr__(self):
+        return self.value, self.partial
 
     def __add__(self, other):
         return math_ops.Addition().__call__(x1=self, x2=self._wrapper(other=other))
@@ -93,12 +94,7 @@ class Node(AbstractNode):
         return math_ops.Tanh().__call__(x=self)
 
 
-class Variable(Node):
-    def __init__(self, value: float, partial: float = 0.):
-        super(Variable, self).__init__(value=value, partial=partial)
-
-
-class Operator(Node):
+class Operator(Variable):
     def __init__(self, value: float, partial: float = 0.):
         super(Operator, self).__init__(value=value, partial=partial)
         self.inputs = tuple()
