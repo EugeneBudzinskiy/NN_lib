@@ -126,39 +126,10 @@ class AbstractSpecialVariable(ABC):
         pass
 
 
-class AbstractOperation(ABC):
+class AbstractSpecialOperation(ABC):
     epsilon = 1e-7
 
     @staticmethod
     @abstractmethod
-    def partial(*args, **kwargs) -> float:
-        pass
-
-    @staticmethod
-    @abstractmethod
     def call(*args, **kwargs) -> AbstractSpecialVariable:
-        pass
-
-
-class UniOperation(AbstractOperation):
-    @staticmethod
-    @abstractmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
-        pass
-
-
-class BiOperation(AbstractOperation):
-    @staticmethod
-    @abstractmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         pass

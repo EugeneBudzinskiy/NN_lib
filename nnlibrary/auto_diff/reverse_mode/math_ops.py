@@ -1,16 +1,15 @@
 import numpy as np
 
 from nnlibrary.auto_diff import AbstractSpecialVariable
-from nnlibrary.auto_diff import UniOperation
-from nnlibrary.auto_diff import BiOperation
-
+from nnlibrary.auto_diff.reverse_mode import ReverseUniOperation
+from nnlibrary.auto_diff.reverse_mode import ReverseBiOperation
 from nnlibrary.auto_diff.reverse_mode import special_vars
 
 
-class Addition(BiOperation):
+class Addition(ReverseBiOperation):
     @staticmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
-        return x1.partial + x2.partial
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
+        return 1, 1
 
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -18,10 +17,10 @@ class Addition(BiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
-class Subtraction(BiOperation):
+class Subtraction(ReverseBiOperation):
     @staticmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
-        return x1.partial - x2.partial
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
+        return 1, -1
 
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -29,10 +28,10 @@ class Subtraction(BiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
-class Negative(UniOperation):
+class Negative(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        return -1 * x.partial
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+        return tuple([-1.])
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -40,10 +39,10 @@ class Negative(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Positive(UniOperation):
+class Positive(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        return +1 * x.partial
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+        return tuple([1.])
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -51,10 +50,10 @@ class Positive(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Multiplication(BiOperation):
+class Multiplication(ReverseBiOperation):
     @staticmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
-        return x1.partial * x2.value + x1.value * x2.partial
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
+        return x2.value, x1.value
 
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -62,10 +61,10 @@ class Multiplication(BiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
-class Division(BiOperation):
+class Division(ReverseBiOperation):
     @staticmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
-        return (x1.partial * x2.value - x1.value * x2.partial) / x2.value ** 2
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
+        return 1. / x2.value, - x1.value / x2.value ** 2
 
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -73,11 +72,11 @@ class Division(BiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
-class Power(BiOperation):
+class Power(ReverseBiOperation):
     @staticmethod
-    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
         log_x1 = np.log(Power.epsilon) if abs(x1.value) < Power.epsilon else np.log(x1.value)
-        return x1.value ** (x2.value - 1) * (x1.partial * x2.value + x1.value * x2.partial * log_x1)
+        return x1.value ** (x2.value - 1) * x2.value, x1.value ** x2.value * log_x1
 
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -85,10 +84,10 @@ class Power(BiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
-class SquareRoot(UniOperation):
+class SquareRoot(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        return x.partial / (2 * np.sqrt(x.value))
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+        return 1 / (2 * np.sqrt(x.value))  # TODO fix typing issues
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -96,10 +95,10 @@ class SquareRoot(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Exponent(UniOperation):
+class Exponent(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        return x.partial * np.exp(x.value)
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+        return np.sqrt(x.value)
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -107,10 +106,10 @@ class Exponent(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Logarithm(UniOperation):
+class Logarithm(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
-        return x.partial / x.value
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+        return tuple([1. / x.value])
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
@@ -118,9 +117,9 @@ class Logarithm(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Logarithm2(UniOperation):
+class Logarithm2(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial / (x.value * np.log(2))
 
     @staticmethod
@@ -129,9 +128,9 @@ class Logarithm2(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Logarithm10(UniOperation):
+class Logarithm10(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial / (x.value * np.log(10))
 
     @staticmethod
@@ -140,9 +139,9 @@ class Logarithm10(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Sin(UniOperation):
+class Sin(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial * np.cos(x.value)
 
     @staticmethod
@@ -151,9 +150,9 @@ class Sin(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Cos(UniOperation):
+class Cos(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return - x.partial * np.sin(x.value)
 
     @staticmethod
@@ -162,9 +161,9 @@ class Cos(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Tan(UniOperation):
+class Tan(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial / np.cos(x.value) ** 2
 
     @staticmethod
@@ -173,9 +172,9 @@ class Tan(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Arcsin(UniOperation):
+class Arcsin(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial / np.sqrt(1 - x.value ** 2)
 
     @staticmethod
@@ -184,9 +183,9 @@ class Arcsin(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Arccos(UniOperation):
+class Arccos(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return - x.partial / np.sqrt(1 - x.value ** 2)
 
     @staticmethod
@@ -195,9 +194,9 @@ class Arccos(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Arctan(UniOperation):
+class Arctan(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial / (1 + x.value ** 2)
 
     @staticmethod
@@ -206,9 +205,9 @@ class Arctan(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Sinh(UniOperation):
+class Sinh(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial * np.cosh(x.value)
 
     @staticmethod
@@ -217,9 +216,9 @@ class Sinh(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Cosh(UniOperation):
+class Cosh(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial * np.sinh(x.value)
 
     @staticmethod
@@ -228,9 +227,9 @@ class Cosh(UniOperation):
         return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
-class Tanh(UniOperation):
+class Tanh(ReverseUniOperation):
     @staticmethod
-    def partial(x: AbstractSpecialVariable) -> float:
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
         return x.partial * (1 - np.tanh(x.value) ** 2)
 
     @staticmethod
