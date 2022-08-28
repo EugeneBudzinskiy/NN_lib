@@ -1,2 +1,0 @@
-class BackwardMode:
-    pass

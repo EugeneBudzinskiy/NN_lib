@@ -1,6 +1,8 @@
 from abc import ABC
 from abc import abstractmethod
 
+from typing import Any
+
 
 class AbstractSpecialVariable(ABC):
     def __init__(self, value: float, partial: float = 0.):
@@ -125,21 +127,38 @@ class AbstractSpecialVariable(ABC):
 
 
 class AbstractOperation(ABC):
-    def __init__(self):
-        self.epsilon = 1e-7
+    epsilon = 1e-7
 
+    @staticmethod
     @abstractmethod
-    def __call__(self, *args, **kwargs) -> AbstractSpecialVariable:
+    def partial(*args, **kwargs) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def call(*args, **kwargs) -> AbstractSpecialVariable:
         pass
 
 
 class UniOperation(AbstractOperation):
+    @staticmethod
     @abstractmethod
-    def __call__(self, x: AbstractSpecialVariable) -> AbstractSpecialVariable:
+    def partial(x: AbstractSpecialVariable) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         pass
 
 
 class BiOperation(AbstractOperation):
+    @staticmethod
     @abstractmethod
-    def __call__(self, x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
+    def partial(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         pass

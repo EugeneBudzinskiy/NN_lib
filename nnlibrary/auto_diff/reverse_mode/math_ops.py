@@ -4,7 +4,7 @@ from nnlibrary.auto_diff import AbstractSpecialVariable
 from nnlibrary.auto_diff import UniOperation
 from nnlibrary.auto_diff import BiOperation
 
-from nnlibrary.auto_diff.forward_mode import special_vars
+from nnlibrary.auto_diff.reverse_mode import special_vars
 
 
 class Addition(BiOperation):
@@ -15,8 +15,7 @@ class Addition(BiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value + x2.value
-        partial = Addition.partial(x1=x1, x2=x2)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
 class Subtraction(BiOperation):
@@ -27,8 +26,7 @@ class Subtraction(BiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value - x2.value
-        partial = Subtraction.partial(x1=x1, x2=x2)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
 class Negative(UniOperation):
@@ -39,8 +37,7 @@ class Negative(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = -1 * x.value
-        partial = Negative.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Positive(UniOperation):
@@ -51,8 +48,7 @@ class Positive(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = +1 * x.value
-        partial = Positive.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Multiplication(BiOperation):
@@ -63,8 +59,7 @@ class Multiplication(BiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value * x2.value
-        partial = Multiplication.partial(x1=x1, x2=x2)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
 class Division(BiOperation):
@@ -75,8 +70,7 @@ class Division(BiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value / x2.value
-        partial = Division.partial(x1=x1, x2=x2)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
 class Power(BiOperation):
@@ -88,8 +82,7 @@ class Power(BiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value ** x2.value
-        partial = Power.partial(x1=x1, x2=x2)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=(x1, x2))
 
 
 class SquareRoot(UniOperation):
@@ -100,8 +93,7 @@ class SquareRoot(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.sqrt(x.value)
-        partial = SquareRoot.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Exponent(UniOperation):
@@ -112,8 +104,7 @@ class Exponent(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.exp(x.value)
-        partial = Exponent.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Logarithm(UniOperation):
@@ -124,8 +115,7 @@ class Logarithm(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.log(x.value)
-        partial = Logarithm.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Logarithm2(UniOperation):
@@ -136,8 +126,7 @@ class Logarithm2(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.log2(x.value)
-        partial = Logarithm2.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Logarithm10(UniOperation):
@@ -148,8 +137,7 @@ class Logarithm10(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.log10(x.value)
-        partial = Logarithm10.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Sin(UniOperation):
@@ -160,8 +148,7 @@ class Sin(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.sin(x.value)
-        partial = Sin.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Cos(UniOperation):
@@ -172,8 +159,7 @@ class Cos(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.cos(x.value)
-        partial = Cos.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Tan(UniOperation):
@@ -184,8 +170,7 @@ class Tan(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.tan(x.value)
-        partial = Tan.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Arcsin(UniOperation):
@@ -196,8 +181,7 @@ class Arcsin(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.arcsin(x.value)
-        partial = Arcsin.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Arccos(UniOperation):
@@ -208,8 +192,7 @@ class Arccos(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.arccos(x.value)
-        partial = Arccos.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Arctan(UniOperation):
@@ -220,8 +203,7 @@ class Arctan(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.arctan(x.value)
-        partial = Arctan.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Sinh(UniOperation):
@@ -232,8 +214,7 @@ class Sinh(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.sinh(x.value)
-        partial = Sinh.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Cosh(UniOperation):
@@ -244,8 +225,7 @@ class Cosh(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.cosh(x.value)
-        partial = Cosh.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
 
 
 class Tanh(UniOperation):
@@ -256,5 +236,5 @@ class Tanh(UniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = np.tanh(x.value)
-        partial = Tanh.partial(x=x)
-        return special_vars.Variable(value=value, partial=partial)
+        return special_vars.Operator(value=value, inputs=tuple([x]))
+
