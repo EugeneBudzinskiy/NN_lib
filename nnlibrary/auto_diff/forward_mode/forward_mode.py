@@ -16,7 +16,7 @@ class ForwardMode:
 
     @staticmethod
     def partial_to_numpy(x: np.ndarray) -> np.ndarray:
-        return np.vectorize(lambda v: v.get_inputs_partials)(x)
+        return np.vectorize(lambda v: v.partial)(x)
 
     @staticmethod
     def value_to_numpy(x: np.ndarray) -> np.ndarray:
@@ -25,7 +25,7 @@ class ForwardMode:
     @staticmethod
     def set_partial(var_x: np.ndarray, value: float):
         for i in range(var_x.shape[-1]):
-            var_x[i].get_inputs_partials = value
+            var_x[i].partial = value
 
     def derivative(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
         var_x = self.to_variable_direction(x=x, vector=np.ones_like(x))

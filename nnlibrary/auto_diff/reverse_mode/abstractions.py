@@ -4,10 +4,22 @@ from nnlibrary.auto_diff import AbstractSpecialVariable
 from nnlibrary.auto_diff import AbstractSpecialOperation
 
 
-class ReverseUniOperation(AbstractSpecialOperation):
+class AbstractReverseOperation(AbstractSpecialOperation):
     @staticmethod
     @abstractmethod
-    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple[float]:
+    def get_inputs_partials(*args, **kwargs) -> tuple:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def call(*args, **kwargs) -> AbstractSpecialVariable:
+        pass
+
+
+class ReverseUniOperation(AbstractReverseOperation):
+    @staticmethod
+    @abstractmethod
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple:
         pass
 
     @staticmethod
@@ -16,10 +28,10 @@ class ReverseUniOperation(AbstractSpecialOperation):
         pass
 
 
-class ReverseBiOperation(AbstractSpecialOperation):
+class ReverseBiOperation(AbstractReverseOperation):
     @staticmethod
     @abstractmethod
-    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple[float, float]:
+    def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple:
         pass
 
     @staticmethod

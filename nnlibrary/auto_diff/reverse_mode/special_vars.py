@@ -95,6 +95,11 @@ class Variable(AbstractSpecialVariable):
 
 
 class Operator(Variable):
-    def __init__(self, value: float, partial: float = 0., inputs: tuple = tuple()):
+    def __init__(self,
+                 value: float,
+                 partial: float = 0.,
+                 inputs: tuple = tuple(),
+                 inputs_partials: tuple = tuple()):
         super(Operator, self).__init__(value=value, partial=partial)
         self.inputs = inputs
+        self.inputs_partials = inputs_partials

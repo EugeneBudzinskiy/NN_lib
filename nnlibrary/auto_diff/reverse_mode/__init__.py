@@ -1,3 +1,4 @@
+from nnlibrary.auto_diff.reverse_mode.abstractions import AbstractReverseOperation
 from nnlibrary.auto_diff.reverse_mode.abstractions import ReverseUniOperation
 from nnlibrary.auto_diff.reverse_mode.abstractions import ReverseBiOperation
 from nnlibrary.auto_diff.reverse_mode.reverse_mode import ReverseMode
