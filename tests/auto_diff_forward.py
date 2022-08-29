@@ -1,4 +1,4 @@
-def test_derivative_forward():
+def test_derivative():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
@@ -40,7 +40,7 @@ def test_derivative_forward():
     multi_point_and_func_der()
 
 
-def test_gradient_forward():
+def test_gradient():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
@@ -70,7 +70,7 @@ def test_gradient_forward():
     multi_point_grad()
 
 
-def test_jacobian_forward():
+def test_jacobian():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 
@@ -157,7 +157,7 @@ def test_jacobian_forward():
     jac_non_square()
 
 
-def test_jacobian_vector_product_forward():
+def test_jacobian_vector_product():
     import numpy as np
     from nnlibrary.auto_diff import AutoDiff
 

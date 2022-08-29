@@ -1,5 +1,7 @@
 import numpy as np
 
+from typing import Callable
+
 from nnlibrary.auto_diff import AbstractMode
 from nnlibrary.auto_diff import AbstractSpecialVariable
 from nnlibrary.auto_diff.reverse_mode import special_vars
@@ -16,15 +18,16 @@ class ReverseMode(AbstractMode):
         vec_f = np.vectorize(lambda val, grad: special_vars.Variable(value=val, partial=grad))
         return vec_f(val=x, grad=vector)
 
-    def apply_partials_backwards(self, inputs: tuple, partials: tuple, multiplier: float):
+    @staticmethod
+    def apply_partials_backwards(inputs: tuple, partials: tuple, multiplier: float):
         for inp, par in zip(inputs, partials):
-            self.set_partial(var_x=inp, value=multiplier * par)
+            inp.partial += multiplier * par
 
-    def backward_pass(self, final_node: AbstractSpecialVariable):
+    def backward_pass(self, final_node: AbstractSpecialVariable, var_x: np.ndarray) -> np.ndarray:
         current_node = final_node
         current_node.partial = 1.
 
-        lifo_queue = list()
+        lifo_queue = []
         flag = True
         while flag:
             if isinstance(current_node, special_vars.Variable):
@@ -37,8 +40,17 @@ class ReverseMode(AbstractMode):
                 self.apply_partials_backwards(inputs=current_node.inputs,
                                               partials=current_node.inputs_partials,
                                               multiplier=current_node.partial)
-                current_node = current_node.inputs[0]
+
+                current_node.partial = 0.  # Reset partial values
                 lifo_queue.extend(current_node.inputs[1:])
+                current_node = current_node.inputs[0]
 
             else:
                 raise Exception()  # TODO Custom Exception
+
+        return self.partial_to_numpy(x=var_x)
+
+    def gradient(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray) -> np.ndarray:
+        var_x = self.to_variable(x=x)
+        output = func(var_x)[0]
+        return self.backward_pass(final_node=output, var_x=var_x)

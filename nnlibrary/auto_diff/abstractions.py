@@ -10,7 +10,7 @@ class AbstractSpecialVariable(ABC):
         self.partial = partial
 
     def __repr__(self):
-        return self.value, self.partial
+        return f'{self.value, self.partial}'
 
     @staticmethod
     @abstractmethod

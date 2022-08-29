@@ -17,11 +17,11 @@ class ForwardMode(AbstractMode):
         vec_f = np.vectorize(lambda val, grad: special_vars.Variable(value=val, partial=grad))
         return vec_f(val=x, grad=vector)
 
-    def derivative(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
+    def derivative(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray) -> np.ndarray:
         var_x = self.to_variable_direction(x=x, vector=np.ones_like(x))
         return self.partial_to_numpy(x=func(var_x))
 
-    def gradient(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
+    def gradient(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray) -> np.ndarray:
         var_x = self.to_variable(x=x)
         result = np.empty_like(x)
         for i in range(result.shape[-1]):
@@ -31,7 +31,7 @@ class ForwardMode(AbstractMode):
 
         return result
 
-    def jacobian(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
+    def jacobian(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray) -> np.ndarray:
         var_x = self.to_variable(x=x)
 
         # First iteration
@@ -50,6 +50,6 @@ class ForwardMode(AbstractMode):
 
         return result
 
-    def jvp(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray, vector: np.ndarray):
+    def jvp(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray, vector: np.ndarray) -> np.ndarray:
         var_x = self.to_variable_direction(x=x, vector=vector)
         return self.partial_to_numpy(x=func(var_x))
