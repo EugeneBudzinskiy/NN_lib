@@ -2,30 +2,20 @@ import numpy as np
 
 from typing import Callable
 
+from nnlibrary.auto_diff import AbstractMode
 from nnlibrary.auto_diff.forward_mode import special_vars
 
 
-class ForwardMode:
+class ForwardMode(AbstractMode):
     @staticmethod
     def to_variable(x: np.ndarray) -> np.ndarray:
-        return np.vectorize(lambda val: special_vars.Variable(value=val))(val=x)
+        vec_f = np.vectorize(lambda val: special_vars.Variable(value=val))
+        return vec_f(val=x)
 
     @staticmethod
     def to_variable_direction(x: np.ndarray, vector: np.ndarray) -> np.ndarray:
-        return np.vectorize(lambda val, grad: special_vars.Variable(value=val, partial=grad))(val=x, grad=vector)
-
-    @staticmethod
-    def partial_to_numpy(x: np.ndarray) -> np.ndarray:
-        return np.vectorize(lambda v: v.partial)(x)
-
-    @staticmethod
-    def value_to_numpy(x: np.ndarray) -> np.ndarray:
-        return np.vectorize(lambda v: v.value)(x)
-
-    @staticmethod
-    def set_partial(var_x: np.ndarray, value: float):
-        for i in range(var_x.shape[-1]):
-            var_x[i].partial = value
+        vec_f = np.vectorize(lambda val, grad: special_vars.Variable(value=val, partial=grad))
+        return vec_f(val=x, grad=vector)
 
     def derivative(self, func: Callable[[np.ndarray], np.ndarray], x: np.ndarray):
         var_x = self.to_variable_direction(x=x, vector=np.ones_like(x))

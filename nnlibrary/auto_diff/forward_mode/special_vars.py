@@ -7,11 +7,9 @@ class Variable(AbstractSpecialVariable):
     def __init__(self, value: float, partial: float = 0.):
         super(Variable, self).__init__(value=value, partial=partial)
 
-    def _wrapper(self, other):
-        return other if isinstance(other, AbstractSpecialVariable) else Variable(value=other)
-
-    def __repr__(self):
-        return self.value, self.partial
+    @staticmethod
+    def _wrapper(other):
+        return other if isinstance(other, AbstractSpecialVariable) else Variable(other)
 
     def __add__(self, other):
         return math_ops.Addition.call(x1=self, x2=self._wrapper(other=other))

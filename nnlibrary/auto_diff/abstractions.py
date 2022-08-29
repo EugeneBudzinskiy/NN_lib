@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-from typing import Any
+import numpy as np
 
 
 class AbstractSpecialVariable(ABC):
@@ -9,12 +9,12 @@ class AbstractSpecialVariable(ABC):
         self.value = value
         self.partial = partial
 
-    @abstractmethod
-    def _wrapper(self, other):
-        pass
-
-    @abstractmethod
     def __repr__(self):
+        return self.value, self.partial
+
+    @staticmethod
+    @abstractmethod
+    def _wrapper(other):
         pass
 
     @abstractmethod
@@ -132,4 +132,29 @@ class AbstractSpecialOperation(ABC):
     @staticmethod
     @abstractmethod
     def call(*args, **kwargs) -> AbstractSpecialVariable:
+        pass
+
+
+class AbstractMode(ABC):
+    @staticmethod
+    def partial_to_numpy(x: np.ndarray) -> np.ndarray:
+        return np.vectorize(lambda v: v.partial)(x)
+
+    @staticmethod
+    def value_to_numpy(x: np.ndarray) -> np.ndarray:
+        return np.vectorize(lambda v: v.value)(x)
+
+    @staticmethod
+    def set_partial(var_x: np.ndarray, value: float):
+        for i in range(var_x.shape[-1]):
+            var_x[i].partial = value
+
+    @staticmethod
+    @abstractmethod
+    def to_variable(x: np.ndarray) -> np.ndarray:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def to_variable_direction(x: np.ndarray, vector: np.ndarray) -> np.ndarray:
         pass
