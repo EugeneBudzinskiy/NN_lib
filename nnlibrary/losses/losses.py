@@ -35,5 +35,5 @@ class CategoricalCrossentropy(AbstractLoss):
         y_predicted = np.maximum(y_predicted, self.epsilon)
         y_predicted = np.minimum(y_predicted, 1. - self.epsilon)
 
-        value = - np.sum(np.log(y_predicted) * y_target, axis=-1).reshape(1, -1)
+        value = - np.sum(y_target * np.log(y_predicted), axis=-1).reshape(1, -1)
         return reduction(values=value)

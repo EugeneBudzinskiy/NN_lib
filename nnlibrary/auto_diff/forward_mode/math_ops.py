@@ -58,7 +58,7 @@ class Power(ForwardBiOperation):
     @staticmethod
     def call(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> AbstractSpecialVariable:
         value = x1.value ** x2.value
-        log_x1 = np.log(Power.epsilon) if abs(x1.value) < Power.epsilon else np.log(x1.value)
+        log_x1 = np.log(Power.epsilon) if abs(x1.value) < Power.epsilon else np.log(abs(x1.value))
         partial = x1.value ** (x2.value - 1) * (x1.partial * x2.value + x1.value * x2.partial * log_x1)
         return special_vars.Variable(value=value, partial=partial)
 

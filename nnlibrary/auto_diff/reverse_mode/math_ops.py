@@ -57,7 +57,7 @@ class Division(ReverseBiOperation):
 class Power(ReverseBiOperation):
     @staticmethod
     def get_inputs_partials(x1: AbstractSpecialVariable, x2: AbstractSpecialVariable) -> tuple:
-        log_x1 = np.log(Power.epsilon) if abs(x1.value) < Power.epsilon else np.log(x1.value)
+        log_x1 = np.log(Power.epsilon) if abs(x1.value) < Power.epsilon else np.log(abs(x1.value))
         return x1.value ** (x2.value - 1) * x2.value, x1.value ** x2.value * log_x1
 
     @staticmethod
@@ -106,7 +106,7 @@ class SquareRoot(ReverseUniOperation):
 class Exponent(ReverseUniOperation):
     @staticmethod
     def get_inputs_partials(x: AbstractSpecialVariable) -> tuple:
-        return np.sqrt(x.value),
+        return np.exp(x.value),
 
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:

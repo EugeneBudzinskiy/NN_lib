@@ -13,17 +13,32 @@ class Node(AbstractSpecialVariable):
     def __add__(self, other):
         return math_ops.Addition.call(x1=self, x2=self._wrapper(other=other))
 
+    def __radd__(self, other):
+        return math_ops.Addition.call(x1=self._wrapper(other=other), x2=self)
+
     def __sub__(self, other):
         return math_ops.Subtraction.call(x1=self, x2=self._wrapper(other=other))
+
+    def __rsub__(self, other):
+        return math_ops.Subtraction.call(x1=self._wrapper(other=other), x2=self)
 
     def __mul__(self, other):
         return math_ops.Multiplication.call(x1=self, x2=self._wrapper(other=other))
 
+    def __rmul__(self, other):
+        return math_ops.Multiplication.call(x1=self._wrapper(other=other), x2=self)
+
     def __truediv__(self, other):
         return math_ops.Division.call(x1=self, x2=self._wrapper(other=other))
 
+    def __rtruediv__(self, other):
+        return math_ops.Division.call(x1=self._wrapper(other=other), x2=self)
+
     def __pow__(self, power, modulo=None):
         return math_ops.Power.call(x1=self, x2=self._wrapper(other=power))
+
+    def __rpow__(self, power, modulo=None):
+        return math_ops.Power.call(x1=self._wrapper(other=power), x2=self)
 
     def __eq__(self, other):
         return self.value == self._wrapper(other=other).value
