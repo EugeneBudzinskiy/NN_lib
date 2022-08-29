@@ -19,15 +19,6 @@ class AbstractModel(ABC):
                 loss: AbstractLoss = None):
         pass
 
-    @property
-    @abstractmethod
-    def is_compiled(self) -> bool:
-        pass
-
-    @abstractmethod
-    def get_variables(self) -> np.ndarray:
-        pass
-
     @abstractmethod
     def predict(self, x: np.ndarray) -> np.ndarray:
         pass

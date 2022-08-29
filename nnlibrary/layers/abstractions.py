@@ -22,7 +22,7 @@ class AbstractActivationLayer(AbstractLayer):
         self._trainable = trainable
 
     @property
-    def activation(self) -> Callable[[np.ndarray], np.ndarray]:
+    def activation(self) -> Callable:
         return self._activation
 
     @property
