@@ -9,6 +9,11 @@ def test_all():
     tests.auto_diff_forward.test_jacobian()
     tests.auto_diff_forward.test_jacobian_vector_product()
 
+    tests.auto_diff_fast_forward.test_derivative()
+    tests.auto_diff_fast_forward.test_gradient()
+    tests.auto_diff_fast_forward.test_jacobian()
+    tests.auto_diff_fast_forward.test_jacobian_vector_product()
+
     tests.auto_diff_reverse.test_gradient()
 
     tests.sequential.test_predict()
