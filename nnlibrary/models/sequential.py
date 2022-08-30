@@ -59,7 +59,7 @@ class Sequential(AbstractModel):
         current_vars = self.trainable_variables.get_single(layer_number=layer_number)
 
         current_node_count = current_layer.node_count
-        previous_node_count = len(current_vars) // (current_node_count + 1)
+        previous_node_count = (len(current_vars) // current_node_count) - 1
         w_size = previous_node_count * current_node_count
 
         current_weight = current_vars[:w_size].reshape((previous_node_count, current_node_count))

@@ -22,6 +22,14 @@ class Subtraction(ForwardBiOperation):
         return special_vars.Variable(value=value, partial=partial)
 
 
+class Absolute(FrowardUniOperation):
+    @staticmethod
+    def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
+        value = np.abs(x.value)
+        partial = (-1 * x.partial) if x.value < 0 else (+1 * x.partial)
+        return special_vars.Variable(value=value, partial=partial)
+
+
 class Negative(FrowardUniOperation):
     @staticmethod
     def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:

@@ -82,6 +82,10 @@ class AbstractSpecialVariable(ABC):
         pass
 
     @abstractmethod
+    def __abs__(self):
+        pass
+
+    @abstractmethod
     def __neg__(self):
         pass
 

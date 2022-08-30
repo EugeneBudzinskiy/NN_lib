@@ -67,6 +67,18 @@ class Power(ReverseBiOperation):
         return special_vars.Operator(value=value, inputs=(x1, x2), inputs_partials=inputs_partials)
 
 
+class Absolute(ReverseUniOperation):
+    @staticmethod
+    def get_inputs_partials(x: AbstractSpecialVariable) -> tuple:
+        return -1 if x.value < 0 else 1,
+
+    @staticmethod
+    def call(x: AbstractSpecialVariable) -> AbstractSpecialVariable:
+        value = np.abs(x.value)
+        inputs_partials = Negative.get_inputs_partials(x=x)
+        return special_vars.Operator(value=value, inputs=(x, ), inputs_partials=inputs_partials)
+
+
 class Negative(ReverseUniOperation):
     @staticmethod
     def get_inputs_partials(x: AbstractSpecialVariable) -> tuple:

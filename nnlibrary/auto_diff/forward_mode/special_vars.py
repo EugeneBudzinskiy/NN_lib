@@ -59,6 +59,9 @@ class Variable(AbstractSpecialVariable):
     def __gt__(self, other):
         return self.value > self._wrapper(other=other).value
 
+    def __abs__(self):
+        return math_ops.Absolute.call(x=self)
+
     def __neg__(self):
         return math_ops.Negative.call(x=self)
 
