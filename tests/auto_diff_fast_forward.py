@@ -131,13 +131,23 @@ def test_gradient():
 
         assert np.allclose(target, value), error_prompt
 
-    single_point_grad()
+    # single_point_grad()
     # multi_point_grad()
     # matrix_multiplication_grad()
     # for_loop_reassign()
     # sigmoid_grad()
     # power_grad()
     # exponentiation_grad()
+
+    from nnlibrary.auto_diff_fast.auto_diff import AutoDiff
+
+    def func(t: np.ndarray):
+        a = np.array([[-2, 1, 3]])
+        return t * t + a
+
+    x = np.array([[-2, 5, 3]], dtype='float64')
+    res = AutoDiff.forward_mode.gradient(func=func, x=x)
+    print(res)
 
 
 def test_jacobian():
