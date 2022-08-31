@@ -142,11 +142,11 @@ def test_gradient():
     from nnlibrary.auto_diff_fast.auto_diff import AutoDiff
 
     def func(t: np.ndarray):
-        a = np.array([[-2, 1, 3]])
-        return t * t + a
+        a = np.array([[-2, 1, 3, 3], [-1, -4, 5, 1], [8, 1, 1, 2]], dtype='float64')
+        return t @ a
 
     x = np.array([[-2, 5, 3]], dtype='float64')
-    res = AutoDiff.forward_mode.gradient(func=func, x=x)
+    res = AutoDiff.forward_mode.jacobian(func=func, x=x)
     print(res)
 
 

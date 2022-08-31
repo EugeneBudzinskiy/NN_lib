@@ -7,7 +7,7 @@ from nnlibrary.auto_diff_fast import AbstractNode
 
 class Node(AbstractNode):
     def __repr__(self):
-        return f'Node: {self.values, self.partials}'
+        return f'{self.values, self.partials}'
 
     @staticmethod
     def _wrapper(other):
@@ -24,5 +24,14 @@ class Node(AbstractNode):
 
     def __rmul__(self, other):
         return math_ops.Multiplication.call(x1=self._wrapper(other=other), x2=self)
+
+    def __matmul__(self, other):
+        return math_ops.MatrixMultiplication.call(x1=self, x2=self._wrapper(other=other))
+
+    def __rmatmul__(self, other):
+        return math_ops.MatrixMultiplication.call(x1=self._wrapper(other=other), x2=self)
+
+    def sum(self, *args, **kwargs):
+        return math_ops.Summation.call(x=self)
 
 

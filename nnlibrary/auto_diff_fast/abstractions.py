@@ -32,6 +32,7 @@ class AbstractNode(ABC):
     def __rmul__(self, other):
         pass
 
+
 class AbstractSpecialOperation(ABC):
     epsilon = 1e-7
 
