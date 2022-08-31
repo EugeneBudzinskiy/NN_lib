@@ -227,8 +227,6 @@ def test_jacobian():
     # jac_non_square()
 
     def jac_add():
-        from nnlibrary.auto_diff_fast.auto_diff import AutoDiff
-
         x = np.array([[-2, 1, 3, 3]], dtype='float64')
         a = np.array([[1, 5, 7, 1]], dtype='float64')
         target = np.diag(np.ones(x.shape[-1]))
@@ -241,8 +239,6 @@ def test_jacobian():
         assert np.allclose(target, value), error_prompt
 
     def jac_mul():
-        from nnlibrary.auto_diff_fast.auto_diff import AutoDiff
-
         x = np.array([[-2, 1, 3, 3]], dtype='float64')
         a = np.array([[1, 5, 7, 1]], dtype='float64')
         target = np.diag(a.flatten())
@@ -255,8 +251,6 @@ def test_jacobian():
         assert np.allclose(target, value), error_prompt
 
     def jac_matmul():
-        from nnlibrary.auto_diff_fast.auto_diff import AutoDiff
-
         x = np.array([[-2, 5, 3]], dtype='float64')
         a = np.array([[-2, 1, 3, 3], [-1, -4, 5, 1], [8, 1, 1, 2]], dtype='float64')
         target = a.copy()
@@ -268,9 +262,20 @@ def test_jacobian():
 
         assert np.allclose(target, value), error_prompt
 
+    def jac_sum():
+        x = np.array([[-2, 5, 3]], dtype='float64')
+        target = np.ones_like(x).T
+        value = AutoDiff.forward_mode.jacobian(func=lambda t: np.sum(t, axis=-1), x=x)
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value :\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
     jac_add()
     jac_mul()
     jac_matmul()
+    jac_sum()
 
 
 def test_jacobian_vector_product():

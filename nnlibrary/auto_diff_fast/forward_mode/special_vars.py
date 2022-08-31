@@ -32,6 +32,6 @@ class Node(AbstractNode):
         return math_ops.MatrixMultiplication.call(x1=self._wrapper(other=other), x2=self)
 
     def sum(self, *args, **kwargs):
-        return math_ops.Summation.call(x=self)
+        return math_ops.Summation.call(x=self, *args, **kwargs)
 
 
