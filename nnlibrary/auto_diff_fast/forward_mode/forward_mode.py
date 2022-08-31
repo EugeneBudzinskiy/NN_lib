@@ -23,6 +23,5 @@ class ForwardMode(AbstractMode):
             for j in range(par.shape[-2]):
                 result[j * (par.shape[-1] - offset) + i, j * par.shape[-1]:(j + 1) * par.shape[-1]] = par[j]
             var_x.partials[:, i] = 0.
-
         return result
 
