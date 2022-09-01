@@ -25,8 +25,9 @@ class Multiplication(ForwardBiOperation):
 class MatrixMultiplication(ForwardBiOperation):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.dot(x1.values, x2.values)
-        partials = np.dot(x1.partials, x2.values) + np.dot(x1.values, x2.partials)
+        values = np.matmul(x1.values, x2.values, *args, **kwargs)
+        partials = np.matmul(x1.partials, x2.values, *args, **kwargs) + \
+            np.matmul(x1.values, x2.partials, *args, **kwargs)
         return special_vars.Node(values=values, partials=partials)
 
 

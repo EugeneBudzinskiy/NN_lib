@@ -1,3 +1,6 @@
+import nnlibrary.auto_diff_fast
+
+
 def test_derivative():
     import numpy as np
     from nnlibrary.auto_diff_fast import AutoDiff
@@ -272,10 +275,26 @@ def test_jacobian():
 
         assert np.allclose(target, value), error_prompt
 
-    jac_add()
-    jac_mul()
-    jac_matmul()
-    jac_sum()
+    def jac_dot():
+        x = np.array([[-2, 5, 3]], dtype='float64')
+        a = np.array([[-2, 1, 3, 3], [-1, -4, 5, 1], [8, 1, 1, 2]], dtype='float64')
+        target = a.copy()
+
+        value = AutoDiff.forward_mode.jacobian(func=lambda t: np.dot(t, a), x=x)
+
+        error_prompt = f'\n  Target and Value are not the same: \n' \
+                       f'    Target:\n{target}\n' \
+                       f'    Value :\n{value}'
+
+        assert np.allclose(target, value), error_prompt
+
+    # jac_add()
+    # jac_mul()
+    # jac_matmul()
+    # jac_sum()
+    jac_dot()
+
+
 
 
 def test_jacobian_vector_product():
