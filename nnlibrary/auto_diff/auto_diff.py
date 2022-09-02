@@ -1,5 +1,5 @@
-from nnlibrary.auto_diff.forward_mode import ForwardMode
-from nnlibrary.auto_diff.reverse_mode import ReverseMode
+from .forward_mode import ForwardMode
+from .reverse_mode import ReverseMode
 
 
 class AutoDiff:

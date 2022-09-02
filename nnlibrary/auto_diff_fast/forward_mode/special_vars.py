@@ -1,17 +1,36 @@
+import logging
+from typing import Union
+
 import numpy as np
 
-from nnlibrary.auto_diff_fast.forward_mode import math_ops
+from . import math_ops
 
-from nnlibrary.auto_diff_fast import AbstractNode
+from .abstractions import AbstractNode
 
 
 class Node(AbstractNode):
-    def __repr__(self):
-        return f'{self.values, self.partials}'
-
     @staticmethod
     def _wrapper(other):
         return other if isinstance(other, AbstractNode) else Node(other)
+
+    @staticmethod
+    def unwrap_if_needed(array: Union[np.ndarray, AbstractNode], verbose: bool = True) -> AbstractNode:
+
+        if isinstance(array, np.ndarray):
+            if verbose:
+                logging.warning(msg='Inefficient operation was used!')
+
+            flat, ln = array.flatten(), array.size
+            values, partials = np.zeros(ln), np.zeros(ln)
+            for i in range(ln):
+                values[i] = flat[i].values
+                partials[i] = flat[i].partials
+            return Node(values=values.reshape(array.shape), partials=partials.reshape(array.shape))
+
+        return array
+
+    def __repr__(self):
+        return f'{self.values, self.partials}'
 
     def __getitem__(self, item):
         return Node(values=self.values[item], partials=self.partials[item])

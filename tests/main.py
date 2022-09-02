@@ -1,13 +1,6 @@
 def test_all():
     import tests
 
-    tests.numpy_wrap.test_array_creation()
-    tests.numpy_wrap.test_array_manipulation()
-    tests.numpy_wrap.test_linalg()
-    tests.numpy_wrap.test_math_funcs()
-    tests.numpy_wrap.test_random()
-    tests.numpy_wrap.test_typing()
-
     tests.differentiators.test_derivative()
     tests.differentiators.test_gradient()
 

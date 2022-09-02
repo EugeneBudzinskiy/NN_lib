@@ -1,5 +1,5 @@
 from nnlibrary.auto_diff import AbstractSpecialVariable
-from nnlibrary.auto_diff.reverse_mode import math_ops
+from . import math_ops
 
 
 class Node(AbstractSpecialVariable):

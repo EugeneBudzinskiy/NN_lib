@@ -1,5 +1,5 @@
-from nnlibrary.auto_diff.abstractions import AbstractSpecialVariable
-from nnlibrary.auto_diff.abstractions import AbstractSpecialOperation
-from nnlibrary.auto_diff.abstractions import AbstractMode
+from .abstractions import AbstractSpecialVariable
+from .abstractions import AbstractSpecialOperation
+from .abstractions import AbstractMode
 
-from nnlibrary.auto_diff.auto_diff import AutoDiff
+from .auto_diff import AutoDiff

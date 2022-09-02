@@ -1,9 +1,9 @@
 import numpy as np
 
 from nnlibrary.auto_diff_fast import AbstractNode
-from nnlibrary.auto_diff_fast.forward_mode import FrowardUniOperation
-from nnlibrary.auto_diff_fast.forward_mode import ForwardBiOperation
-from nnlibrary.auto_diff_fast.forward_mode import special_vars
+from .abstractions import FrowardUniOperation
+from .abstractions import ForwardBiOperation
+from . import special_vars
 
 
 class Addition(ForwardBiOperation):

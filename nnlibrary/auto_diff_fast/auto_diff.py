@@ -1,4 +1,4 @@
-from nnlibrary.auto_diff_fast.forward_mode import ForwardMode
+from .forward_mode import ForwardMode
 
 
 class AutoDiff:

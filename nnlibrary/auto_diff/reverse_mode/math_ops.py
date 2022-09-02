@@ -1,9 +1,9 @@
 import numpy as np
 
 from nnlibrary.auto_diff import AbstractSpecialVariable
-from nnlibrary.auto_diff.reverse_mode import ReverseUniOperation
-from nnlibrary.auto_diff.reverse_mode import ReverseBiOperation
-from nnlibrary.auto_diff.reverse_mode import special_vars
+from .abstractions import ReverseUniOperation
+from .abstractions import ReverseBiOperation
+from . import special_vars
 
 
 class Addition(ReverseBiOperation):

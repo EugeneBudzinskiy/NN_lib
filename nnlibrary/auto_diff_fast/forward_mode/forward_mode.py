@@ -4,9 +4,9 @@ from typing import Any
 from typing import Callable
 from typing import Union
 
-from nnlibrary.auto_diff_fast import AbstractNode
 from nnlibrary.auto_diff_fast import AbstractMode
-from nnlibrary.auto_diff_fast.forward_mode import special_vars
+from .abstractions import AbstractNode
+from . import special_vars
 
 
 class ForwardMode(AbstractMode):

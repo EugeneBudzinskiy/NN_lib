@@ -2,7 +2,7 @@ import numpy as np
 
 from typing import Callable
 
-from nnlibrary.differentiators import AbstractDifferentiator
+from .abstractions import AbstractDifferentiator
 
 
 class Derivative(AbstractDifferentiator):
