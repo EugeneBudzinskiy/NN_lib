@@ -12,4 +12,4 @@ from nnlibrary import optimizers
 from nnlibrary import progress_bars
 from nnlibrary import reductions
 from nnlibrary import variables
-from nnlibrary import wrapped_numpy
+from nnlibrary import numpy_wrap

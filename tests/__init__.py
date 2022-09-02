@@ -1,10 +1,11 @@
-import tests.main
-
-import tests.auto_diff_forward
-import tests.auto_diff_reverse
-import tests.auto_diff_fast_forward
-import tests.ad_fast_forward_node
-import tests.differentiators
-import tests.sequential
-import tests.losses
-import tests.optimizers
+from . import ad_fast_forward_node
+from . import auto_diff_fast_forward
+from . import auto_diff_forward
+from . import auto_diff_reverse
+from . import differentiators
+from . import losses
+from . import main
+from . import nodes
+from . import numpy_wrap
+from . import optimizers
+from . import sequential

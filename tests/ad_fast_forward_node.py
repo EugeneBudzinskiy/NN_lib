@@ -15,7 +15,7 @@ def test_variable_features():
                        f'    Target:\n{target}\n' \
                        f'    Value :\n{value}'
 
-        assert np.allclose(value, value), error_prompt
+        assert np.allclose(target, value), error_prompt
 
     # def multiplication():
     #     x = np.array([[-2, 1, 3, 3]], dtype='float64')

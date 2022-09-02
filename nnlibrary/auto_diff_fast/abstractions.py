@@ -2,13 +2,13 @@ from abc import ABC
 from abc import abstractmethod
 
 import numpy as np
-from nnlibrary import wrapped_numpy as wnp
+from nnlibrary import numpy_wrap as npw
 
 
 class AbstractNode(ABC):
     __slots__ = ['values', 'partials']
 
-    def __init__(self, values: wnp.typing.NDArray, partials: wnp.typing.NDArray = None):
+    def __init__(self, values: npw.typing.NDArray, partials: npw.typing.NDArray = None):
         self.values = values
         self.partials = partials if partials is not None else np.zeros_like(values)
 
