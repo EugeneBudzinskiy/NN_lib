@@ -16,6 +16,8 @@ def test_all():
 
     tests.auto_diff_reverse.test_gradient()
 
+    tests.ad_fast_forward_node.test_variable_features()
+
     tests.sequential.test_predict()
     tests.sequential.test_backpropagation()
     tests.sequential.test_fit()
