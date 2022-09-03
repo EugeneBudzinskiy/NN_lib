@@ -1,2 +1,2 @@
-from nnlibrary.errors.abstractions import *
-from nnlibrary.errors.errors import *
+from .abstractions import *
+from .errors import *

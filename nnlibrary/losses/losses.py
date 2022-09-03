@@ -2,7 +2,7 @@ import numpy as np
 
 from nnlibrary import activations
 from nnlibrary import reductions
-from nnlibrary.losses import AbstractLoss
+from .abstractions import AbstractLoss
 
 
 class MeanSquaredError(AbstractLoss):

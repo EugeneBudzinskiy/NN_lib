@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.initializers import AbstractInitializer
+from .abstractions import AbstractInitializer
 
 
 class Zeros(AbstractInitializer):

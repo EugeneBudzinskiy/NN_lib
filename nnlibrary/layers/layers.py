@@ -1,13 +1,14 @@
-from nnlibrary import layers
 from nnlibrary.activations import AbstractActivation
+from .abstractions import AbstractActivationLayer
+from .abstractions import AbstractLayer
 
 
-class Input(layers.AbstractLayer):
+class Input(AbstractLayer):
     def __init__(self, node_count: int):
         super(Input, self).__init__(node_count=node_count)
 
 
-class Dense(layers.AbstractActivationLayer):
+class Dense(AbstractActivationLayer):
     def __init__(self,
                  node_count: int,
                  activation: AbstractActivation,

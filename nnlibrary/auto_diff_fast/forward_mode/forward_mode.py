@@ -1,12 +1,12 @@
-import numpy as np
-
 from typing import Any
 from typing import Callable
 from typing import Union
 
+import numpy as np
+
 from nnlibrary.auto_diff_fast import AbstractMode
 from .abstractions import AbstractNode
-from . import special_vars
+from .special_vars import Node
 
 
 class ForwardMode(AbstractMode):
@@ -20,7 +20,7 @@ class ForwardMode(AbstractMode):
                     values[i, j] = t[i, j].values
                     partials[i, j] = t[i, j].partials
 
-            return special_vars.Node(values=values, partials=partials)
+            return Node(values=values, partials=partials)
 
         if isinstance(func_output, AbstractNode):
             return lambda t: t
@@ -31,20 +31,17 @@ class ForwardMode(AbstractMode):
     def jacobian(func: Callable[[Union[np.ndarray, AbstractNode]], Union[np.ndarray, AbstractNode]],
                  x: np.ndarray) -> np.ndarray:
         input_shape, output_shape = x.shape, func(x).shape
-        var_x = special_vars.Node(values=x)
-
-        func_output = func(var_x)
-        wrapper = ForwardMode.wrapper(func_output=func_output)
+        var_x = Node(values=x)
 
         result = np.zeros((np.prod(input_shape), np.prod(output_shape)))
         offset = output_shape[-1] - input_shape[-1]
         for i in range(x.shape[-1]):
             var_x.partials[:, i] = 1.
 
-            p = wrapper(func(var_x)).partials
+            p = Node.unwrap_if_needed(func(var_x)).partials
             for j in range(p.shape[-2]):
                 result[j * (p.shape[-1] - offset) + i, j * p.shape[-1]:(j + 1) * p.shape[-1]] = p[j]
 
             var_x.partials[:, i] = 0.
-        return result
+        return result.T
 

@@ -1,6 +1,6 @@
-import numpy as np
-
 from typing import Callable
+
+import numpy as np
 
 from nnlibrary import activations
 from nnlibrary import differentiators
@@ -10,8 +10,8 @@ from nnlibrary import layers
 from nnlibrary import losses
 from nnlibrary import optimizers
 from nnlibrary import variables
-from nnlibrary.models import AbstractModel
 from nnlibrary.reductions import ReductionNone
+from .abstractions import AbstractModel
 
 
 class Sequential(AbstractModel):

@@ -1,2 +1,3 @@
-from nnlibrary.losses.abstractions import *
-from nnlibrary.losses.losses import *
+from .abstractions import AbstractLoss
+from .losses import CategoricalCrossentropy
+from .losses import MeanSquaredError

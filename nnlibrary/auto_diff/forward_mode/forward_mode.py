@@ -1,6 +1,6 @@
-import numpy as np
-
 from typing import Callable
+
+import numpy as np
 
 from nnlibrary.auto_diff import AbstractMode
 from . import special_vars

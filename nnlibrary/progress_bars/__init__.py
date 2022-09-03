@@ -1,2 +1,2 @@
-from nnlibrary.progress_bars.abstractions import AbstractProgressBar
-from nnlibrary.progress_bars.progress_bars import SimpleProgressBar
+from .abstractions import AbstractProgressBar
+from .progress_bars import SimpleProgressBar

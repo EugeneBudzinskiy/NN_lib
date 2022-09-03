@@ -1,5 +1,5 @@
-from nnlibrary.layer_structures import AbstractLayerStructure
 from nnlibrary.layers import AbstractLayer
+from .abstractions import AbstractLayerStructure
 
 
 class LayerStructure(AbstractLayerStructure):

@@ -1,6 +1,3 @@
-import nnlibrary.auto_diff_fast
-
-
 def test_derivative():
     import numpy as np
     from nnlibrary.auto_diff_fast import AutoDiff
@@ -224,75 +221,10 @@ def test_jacobian():
 
         assert np.allclose(target, value), error_prompt
 
-    # jac_simple_func()
-    # jac_polar_transform()
-    # jac_sphere_transform()
-    # jac_non_square()
-
-    # def jac_add():
-    #     x = np.array([[-2, 1, 3, 3]], dtype='float64')
-    #     a = np.array([[1, 5, 7, 1]], dtype='float64')
-    #     target = np.diag(np.ones(x.shape[-1]))
-    #     value = AutoDiff.forward_mode.jacobian(func=lambda t: t + a, x=x)
-    #
-    #     error_prompt = f'\n  Target and Value are not the same: \n' \
-    #                    f'    Target:\n{target}\n' \
-    #                    f'    Value :\n{value}'
-    #
-    #     assert np.allclose(target, value), error_prompt
-    #
-    # def jac_mul():
-    #     x = np.array([[-2, 1, 3, 3]], dtype='float64')
-    #     a = np.array([[1, 5, 7, 1]], dtype='float64')
-    #     target = np.diag(a.flatten())
-    #     value = AutoDiff.forward_mode.jacobian(func=lambda t: t * a, x=x)
-    #
-    #     error_prompt = f'\n  Target and Value are not the same: \n' \
-    #                    f'    Target:\n{target}\n' \
-    #                    f'    Value :\n{value}'
-    #
-    #     assert np.allclose(target, value), error_prompt
-    #
-    # def jac_matmul():
-    #     x = np.array([[-2, 5, 3]], dtype='float64')
-    #     a = np.array([[-2, 1, 3, 3], [-1, -4, 5, 1], [8, 1, 1, 2]], dtype='float64')
-    #     target = a.copy()
-    #     value = AutoDiff.forward_mode.jacobian(func=lambda t: t @ a, x=x)
-    #
-    #     error_prompt = f'\n  Target and Value are not the same: \n' \
-    #                    f'    Target:\n{target}\n' \
-    #                    f'    Value :\n{value}'
-    #
-    #     assert np.allclose(target, value), error_prompt
-    #
-    # def jac_sum():
-    #     x = np.array([[-2, 5, 3]], dtype='float64')
-    #     target = np.ones_like(x).T
-    #     value = AutoDiff.forward_mode.jacobian(func=lambda t: np.sum(t, axis=-1), x=x)
-    #     error_prompt = f'\n  Target and Value are not the same: \n' \
-    #                    f'    Target:\n{target}\n' \
-    #                    f'    Value :\n{value}'
-    #
-    #     assert np.allclose(target, value), error_prompt
-    #
-    # def jac_dot():
-    #     x = np.array([[-2, 5, 3]], dtype='float64')
-    #     a = np.array([[-2, 1, 3, 3], [-1, -4, 5, 1], [8, 1, 1, 2]], dtype='float64')
-    #     target = a.copy()
-    #
-    #     value = AutoDiff.forward_mode.jacobian(func=lambda t: np.dot(t, a), x=x)
-    #
-    #     error_prompt = f'\n  Target and Value are not the same: \n' \
-    #                    f'    Target:\n{target}\n' \
-    #                    f'    Value :\n{value}'
-    #
-    #     assert np.allclose(target, value), error_prompt
-    #
-    # # jac_add()
-    # # jac_mul()
-    # # jac_matmul()
-    # # jac_sum()
-    # # jac_dot()
+    jac_simple_func()
+    jac_polar_transform()
+    jac_sphere_transform()
+    jac_non_square()
 
     # import timeit
     #

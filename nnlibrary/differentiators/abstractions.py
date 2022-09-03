@@ -1,6 +1,5 @@
 from abc import ABC
 from abc import abstractmethod
-
 from typing import Callable
 
 import numpy as np

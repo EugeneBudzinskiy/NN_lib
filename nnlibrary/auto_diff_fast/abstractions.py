@@ -9,7 +9,7 @@ class AbstractNode(ABC):
 
     def __init__(self, values: np.ndarray, partials: np.ndarray = None):
         self.values = values
-        self.partials = partials if partials is not None else np.zeros_like(values)
+        self.partials = np.zeros_like(values) if partials is None else  partials
 
     @staticmethod
     @abstractmethod

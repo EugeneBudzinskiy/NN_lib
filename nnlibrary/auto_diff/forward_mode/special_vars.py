@@ -1,6 +1,5 @@
-from . import math_ops
-
 from nnlibrary.auto_diff import AbstractSpecialVariable
+from . import math_ops
 
 
 class Variable(AbstractSpecialVariable):

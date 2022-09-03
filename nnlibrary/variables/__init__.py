@@ -1,2 +1,2 @@
-from nnlibrary.variables.abstractions import AbstractVariables
-from nnlibrary.variables.variables import TrainableVariables
+from .abstractions import AbstractVariables
+from .variables import TrainableVariables
