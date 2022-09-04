@@ -8,6 +8,7 @@ from . import layer_structures
 from . import layers
 from . import losses
 from . import models
+from . import numpy_wrap
 from . import optimizers
 from . import progress_bars
 from . import reductions
