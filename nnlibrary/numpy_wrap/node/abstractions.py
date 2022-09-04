@@ -31,26 +31,3 @@ class AbstractNode(ABC):
     @abstractmethod
     def __rmul__(self, other):
         pass
-
-
-class AbstractMathOperation(ABC):
-    epsilon = 1e-7
-
-    @staticmethod
-    @abstractmethod
-    def call(*args, **kwargs) -> AbstractNode:
-        pass
-
-
-class AbstractMathOperationUni(AbstractMathOperation):
-    @staticmethod
-    @abstractmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        pass
-
-
-class AbstractMathOperationBi(AbstractMathOperation):
-    @staticmethod
-    @abstractmethod
-    def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
-        pass

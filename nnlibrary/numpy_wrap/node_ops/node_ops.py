@@ -1,12 +1,12 @@
-import numpy as np
+from nnlibrary.numpy_wrap import numpy as np
 
-from .abstractions import AbstractNode
-from .abstractions import AbstractMathOperationUni
-from .abstractions import AbstractMathOperationBi
-from .node import Node
+from nnlibrary.numpy_wrap.node import AbstractNode
+from nnlibrary.numpy_wrap.node import Node
+from .abstractions import AbstractOperationUni
+from .abstractions import AbstractOperationBi
 
 
-class Addition(AbstractMathOperationBi):
+class Addition(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = x1.values + x2.values
@@ -14,7 +14,7 @@ class Addition(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class Subtraction(AbstractMathOperationBi):
+class Subtraction(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = x1.values - x2.values
@@ -22,7 +22,7 @@ class Subtraction(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class Multiplication(AbstractMathOperationBi):
+class Multiplication(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = x1.values * x2.values
@@ -30,7 +30,7 @@ class Multiplication(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class Division(AbstractMathOperationBi):
+class Division(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = x1.values / x2.values
@@ -38,7 +38,7 @@ class Division(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class Power(AbstractMathOperationBi):
+class Power(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = x1.values ** x2.values
@@ -47,119 +47,7 @@ class Power(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class SquareRoot(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.sqrt(x.values)
-        partials = x.partials / (2 * values)
-        return Node(values=values, partials=partials)
-
-
-class Exponent(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.exp(x.values)
-        partials = x.partials * values
-        return Node(values=values, partials=partials)
-
-
-class Logarithm(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.log(x.values)
-        partials = x.partials / x.values
-        return Node(values=values, partials=partials)
-
-
-class Logarithm2(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.log2(x.values)
-        partials = x.partials / (x.values * np.log(2))
-        return Node(values=values, partials=partials)
-
-
-class Logarithm10(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.log10(x.values)
-        partials = x.partials / (x.values * np.log(10))
-        return Node(values=values, partials=partials)
-
-
-class Sin(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.sin(x.values)
-        partials = x.partials * np.cos(x.values)
-        return Node(values=values, partials=partials)
-
-
-class Cos(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.cos(x.values)
-        partials = - x.partials * np.sin(x.values)
-        return Node(values=values, partials=partials)
-
-
-class Tan(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.tan(x.values)
-        partials = x.partials / np.cos(x.values) ** 2
-        return Node(values=values, partials=partials)
-
-
-class Arcsin(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.arcsin(x.values)
-        partials = x.partials / np.sqrt(1 - x.values ** 2)
-        return Node(values=values, partials=partials)
-
-
-class Arccos(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.arccos(x.values)
-        partials = - x.partials / np.sqrt(1 - x.values ** 2)
-        return Node(values=values, partials=partials)
-
-
-class Arctan(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.arctan(x.values)
-        partials = x.partials / (1 + x.values ** 2)
-        return Node(values=values, partials=partials)
-
-
-class Sinh(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.sinh(x.values)
-        partials = x.partials * np.cosh(x.values)
-        return Node(values=values, partials=partials)
-
-
-class Cosh(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.cosh(x.values)
-        partials = x.partials * np.sinh(x.values)
-        return Node(values=values, partials=partials)
-
-
-class Tanh(AbstractMathOperationUni):
-    @staticmethod
-    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
-        values = np.tanh(x.values)
-        partials = x.partials * (1 - values ** 2)
-        return Node(values=values, partials=partials)
-
-
-class MatrixMultiplication(AbstractMathOperationBi):
+class MatrixMultiplication(AbstractOperationBi):
     @staticmethod
     def call(x1: AbstractNode, x2: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = np.matmul(x1.values, x2.values, *args, **kwargs)
@@ -168,7 +56,7 @@ class MatrixMultiplication(AbstractMathOperationBi):
         return Node(values=values, partials=partials)
 
 
-class Summation(AbstractMathOperationUni):
+class Summation(AbstractOperationUni):
     @staticmethod
     def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = np.sum(x.values, *args, **kwargs)
@@ -178,7 +66,119 @@ class Summation(AbstractMathOperationUni):
         return Node(values=values, partials=partials)
 
 
-class Absolute(AbstractMathOperationUni):
+class SquareRoot(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.sqrt(x.values)
+        partials = x.partials / (2 * values)
+        return Node(values=values, partials=partials)
+
+
+class Exponent(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.exp(x.values)
+        partials = x.partials * values
+        return Node(values=values, partials=partials)
+
+
+class Logarithm(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.log(x.values)
+        partials = x.partials / x.values
+        return Node(values=values, partials=partials)
+
+
+class Logarithm2(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.log2(x.values)
+        partials = x.partials / (x.values * np.log(2))
+        return Node(values=values, partials=partials)
+
+
+class Logarithm10(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.log10(x.values)
+        partials = x.partials / (x.values * np.log(10))
+        return Node(values=values, partials=partials)
+
+
+class Sin(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.sin(x.values)
+        partials = x.partials * np.cos(x.values)
+        return Node(values=values, partials=partials)
+
+
+class Cos(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.cos(x.values)
+        partials = - x.partials * np.sin(x.values)
+        return Node(values=values, partials=partials)
+
+
+class Tan(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.tan(x.values)
+        partials = x.partials / np.cos(x.values) ** 2
+        return Node(values=values, partials=partials)
+
+
+class Arcsin(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.arcsin(x.values)
+        partials = x.partials / np.sqrt(1 - x.values ** 2)
+        return Node(values=values, partials=partials)
+
+
+class Arccos(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.arccos(x.values)
+        partials = - x.partials / np.sqrt(1 - x.values ** 2)
+        return Node(values=values, partials=partials)
+
+
+class Arctan(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.arctan(x.values)
+        partials = x.partials / (1 + x.values ** 2)
+        return Node(values=values, partials=partials)
+
+
+class Sinh(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.sinh(x.values)
+        partials = x.partials * np.cosh(x.values)
+        return Node(values=values, partials=partials)
+
+
+class Cosh(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.cosh(x.values)
+        partials = x.partials * np.sinh(x.values)
+        return Node(values=values, partials=partials)
+
+
+class Tanh(AbstractOperationUni):
+    @staticmethod
+    def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
+        values = np.tanh(x.values)
+        partials = x.partials * (1 - values ** 2)
+        return Node(values=values, partials=partials)
+
+
+class Absolute(AbstractOperationUni):
     @staticmethod
     def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = np.abs(x.values)
@@ -187,7 +187,7 @@ class Absolute(AbstractMathOperationUni):
         return Node(values=values, partials=partials)
 
 
-class Negative(AbstractMathOperationUni):
+class Negative(AbstractOperationUni):
     @staticmethod
     def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = -1 * x.values
@@ -195,7 +195,7 @@ class Negative(AbstractMathOperationUni):
         return Node(values=values, partials=partials)
 
 
-class Positive(AbstractMathOperationUni):
+class Positive(AbstractOperationUni):
     @staticmethod
     def call(x: AbstractNode, *args, **kwargs) -> AbstractNode:
         values = +1 * x.values
