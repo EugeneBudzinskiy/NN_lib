@@ -4,13 +4,10 @@ from typing import Union
 from nnlibrary import numpy_wrap as npw
 from nnlibrary.numpy_wrap import node_ops
 from .abstractions import AbstractNode
+from .node_utils import convert_to_node_if_needed
 
 
 class Node(AbstractNode):
-    @staticmethod
-    def _wrapper(other):
-        return other if isinstance(other, AbstractNode) else Node(other)
-
     @staticmethod
     def unwrap_if_needed(array: Union[npw.ndarray, AbstractNode], verbose: bool = True) -> AbstractNode:
         if isinstance(array, npw.ndarray):
@@ -36,34 +33,34 @@ class Node(AbstractNode):
         return len(self.values)
 
     def __add__(self, other):
-        return node_ops.Addition.call(x1=self, x2=self._wrapper(other=other))
+        return node_ops.Addition.call(x1=self, x2=convert_to_node_if_needed(other))
 
     def __radd__(self, other):
-        return node_ops.Addition.call(x1=self._wrapper(other=other), x2=self)
+        return node_ops.Addition.call(x1=convert_to_node_if_needed(other), x2=self)
 
     def __sub__(self, other):
-        return node_ops.Subtraction.call(x1=self, x2=self._wrapper(other=other))
+        return node_ops.Subtraction.call(x1=self, x2=convert_to_node_if_needed(other))
 
     def __rsub__(self, other):
-        return node_ops.Subtraction.call(x1=self._wrapper(other=other), x2=self)
+        return node_ops.Subtraction.call(x1=convert_to_node_if_needed(other), x2=self)
 
     def __mul__(self, other):
-        return node_ops.Multiplication.call(x1=self, x2=self._wrapper(other=other))
+        return node_ops.Multiplication.call(x1=self, x2=convert_to_node_if_needed(other))
 
     def __rmul__(self, other):
-        return node_ops.Multiplication.call(x1=self._wrapper(other=other), x2=self)
+        return node_ops.Multiplication.call(x1=convert_to_node_if_needed(other), x2=self)
 
     def __truediv__(self, other):
-        return node_ops.Division.call(x1=self, x2=self._wrapper(other=other))
+        return node_ops.Division.call(x1=self, x2=convert_to_node_if_needed(other))
 
     def __rtruediv__(self, other):
-        return node_ops.Division.call(x1=self._wrapper(other=other), x2=self)
+        return node_ops.Division.call(x1=convert_to_node_if_needed(other), x2=self)
 
     def __pow__(self, power, modulo=None):
-        return node_ops.Power.call(x1=self, x2=self._wrapper(other=power))
+        return node_ops.Power.call(x1=self, x2=convert_to_node_if_needed(power))
 
     def __rpow__(self, power, modulo=None):
-        return node_ops.Power.call(x1=self._wrapper(other=power), x2=self)
+        return node_ops.Power.call(x1=convert_to_node_if_needed(power), x2=self)
 
     def sqrt(self):
         return node_ops.SquareRoot.call(x=self)
@@ -108,10 +105,10 @@ class Node(AbstractNode):
         return node_ops.Tanh.call(x=self)
 
     def __matmul__(self, other):
-        return node_ops.MatrixMultiplication.call(x1=self, x2=self._wrapper(other=other))
+        return node_ops.MatrixMultiplication.call(x1=self, x2=convert_to_node_if_needed(other))
 
     def __rmatmul__(self, other):
-        return node_ops.MatrixMultiplication.call(x1=self._wrapper(other=other), x2=self)
+        return node_ops.MatrixMultiplication.call(x1=convert_to_node_if_needed(other), x2=self)
 
     def sum(self, *args, **kwargs):
         return node_ops.Summation.call(x=self, *args, **kwargs)
@@ -126,20 +123,20 @@ class Node(AbstractNode):
         return node_ops.Positive.call(x=self)
 
     def __eq__(self, other):
-        return self.values == self._wrapper(other=other).values
+        return self.values == convert_to_node_if_needed(other).values
 
     def __ne__(self, other):
-        return self.values != self._wrapper(other=other).values
+        return self.values != convert_to_node_if_needed(other).values
 
     def __le__(self, other):
-        return self.values <= self._wrapper(other=other).values
+        return self.values <= convert_to_node_if_needed(other).values
 
     def __ge__(self, other):
-        return self.values >= self._wrapper(other=other).values
+        return self.values >= convert_to_node_if_needed(other).values
 
     def __lt__(self, other):
-        return self.values < self._wrapper(other=other).values
+        return self.values < convert_to_node_if_needed(other).values
 
     def __gt__(self, other):
-        return self.values > self._wrapper(other=other).values
+        return self.values > convert_to_node_if_needed(other).values
 

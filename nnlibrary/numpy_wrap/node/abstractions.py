@@ -11,11 +11,6 @@ class AbstractNode(ABC):
         self.values = values
         self.partials = npw.numpy.zeros_like(values) if partials is None else partials
 
-    @staticmethod
-    @abstractmethod
-    def _wrapper(other):
-        pass
-
     @abstractmethod
     def __add__(self, other):
         pass
