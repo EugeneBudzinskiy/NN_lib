@@ -1,4 +1,5 @@
 import numpy  # Access to unwrapped numpy package
+from numpy import ndarray
 
 from .array_creation import empty
 from .array_creation import empty_like
@@ -25,5 +26,24 @@ from .array_creation import triu
 from .array_creation import tril
 from .array_creation import vander
 
-
-ndarray = numpy.ndarray  # Variable for typing numpy arrays
+from .array_manipulation import copyto
+from .array_manipulation import shape
+from .array_manipulation import reshape
+from .array_manipulation import ravel
+from .array_manipulation import moveaxis
+from .array_manipulation import swapaxes
+from .array_manipulation import transpose
+from .array_manipulation import concatenate
+from .array_manipulation import stack
+from .array_manipulation import block
+from .array_manipulation import vstack
+from .array_manipulation import hstack
+from .array_manipulation import dstack
+from .array_manipulation import column_stack
+from .array_manipulation import row_stack
+from .array_manipulation import split
+from .array_manipulation import dsplit
+from .array_manipulation import hsplit
+from .array_manipulation import vsplit
+from .array_manipulation import tile
+from .array_manipulation import repeat

@@ -1,7 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
 
-from nnlibrary import numpy_wrap as npw
 from nnlibrary.numpy_wrap.node import AbstractNode
 
 

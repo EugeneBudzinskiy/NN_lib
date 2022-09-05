@@ -139,4 +139,3 @@ class Node(AbstractNode):
 
     def __gt__(self, other):
         return self.values > convert_to_node_if_needed(other).values
-

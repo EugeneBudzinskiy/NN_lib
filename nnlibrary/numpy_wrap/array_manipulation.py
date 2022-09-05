@@ -111,3 +111,190 @@ def concatenate(arrays: Any,
             partials.append(npw.numpy.zeros_like(el))
 
     return Node(values=wrap(values), partials=wrap(partials))
+
+
+def block(arrays: Union[list[AbstractNode], Any]) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.block(arrays=x)
+
+    values, partials = [], []
+    for el in arrays:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def stack(arrays: Union[Iterable[npw.ndarray], Iterable, int, float, AbstractNode],
+          axis: Optional[int] = 0,
+          out: Optional[npw.ndarray] = None) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.stack(arrays=x, axis=axis, out=out)
+
+    values, partials = [], []
+    for el in arrays:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def vstack(tup: Iterable) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.vstack(tup=x)
+
+    values, partials = [], []
+    for el in tup:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def hstack(tup: Iterable) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.hstack(tup=x)
+
+    values, partials = [], []
+    for el in tup:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def dstack(tup: Iterable) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.dstack(tup=x)
+
+    values, partials = [], []
+    for el in tup:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def column_stack(tup: Iterable) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.column_stack(tup=x)
+
+    values, partials = [], []
+    for el in tup:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def row_stack(tup: Iterable) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.row_stack(tup=x)
+
+    values, partials = [], []
+    for el in tup:
+        if isinstance(el, AbstractNode):
+            values.append(el.values)
+            partials.append(el.partials)
+        else:
+            values.append(el)
+            partials.append(npw.numpy.zeros_like(el))
+
+    return Node(values=wrap(values), partials=wrap(partials))
+
+
+def split(ary: Union[npw.ndarray, AbstractNode],
+          indices_or_sections: Any,
+          axis: Optional[int] = 0) -> list[AbstractNode]:
+    def wrap(x):
+        return npw.numpy.split(ary=x, indices_or_sections=indices_or_sections, axis=axis)
+
+    if isinstance(ary, AbstractNode):
+        return [Node(values=v, partials=p) for v, p in zip(wrap(x=ary.values), wrap(x=ary.partials))]
+
+    return [Node(values=v) for v in wrap(x=ary)]
+
+
+def dsplit(ary: Union[AbstractNode, Any],
+           indices_or_sections: Any) -> list[AbstractNode]:
+    def wrap(x):
+        return npw.numpy.dsplit(ary=x, indices_or_sections=indices_or_sections)
+
+    if isinstance(ary, AbstractNode):
+        return [Node(values=v, partials=p) for v, p in zip(wrap(x=ary.values), wrap(x=ary.partials))]
+
+    return [Node(values=v) for v in wrap(x=ary)]
+
+
+def hsplit(ary: Union[AbstractNode, Any],
+           indices_or_sections: Any) -> list[AbstractNode]:
+    def wrap(x):
+        return npw.numpy.hsplit(ary=x, indices_or_sections=indices_or_sections)
+
+    if isinstance(ary, AbstractNode):
+        return [Node(values=v, partials=p) for v, p in zip(wrap(x=ary.values), wrap(x=ary.partials))]
+
+    return [Node(values=v) for v in wrap(x=ary)]
+
+
+def vsplit(ary: Union[AbstractNode, Any],
+           indices_or_sections: Any) -> list[AbstractNode]:
+    def wrap(x):
+        return npw.numpy.vsplit(ary=x, indices_or_sections=indices_or_sections)
+
+    if isinstance(ary, AbstractNode):
+        return [Node(values=v, partials=p) for v, p in zip(wrap(x=ary.values), wrap(x=ary.partials))]
+
+    return [Node(values=v) for v in wrap(x=ary)]
+
+
+# noinspection PyPep8Naming
+def tile(A: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+         reps: Union[npw.ndarray, Iterable, int, float, AbstractNode]) -> AbstractNode:
+    reps = node_utils.get_values_if_needed(x=reps)
+
+    def wrap(x):
+        return npw.numpy.tile(A=x, reps=reps)
+
+    if isinstance(A, AbstractNode):
+        return Node(values=wrap(x=A.values), partials=wrap(x=A.partials))
+
+    return Node(values=wrap(x=A))
+
+
+def repeat(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           repeats: Union[int, npw.ndarray, Iterable, float, AbstractNode],
+           axis: Optional[int] = None) -> AbstractNode:
+    repeats = node_utils.get_values_if_needed(x=repeats)
+
+    def wrap(x):
+        return npw.numpy.repeat(a=x, repeats=repeats, axis=axis)
+
+    if isinstance(a, AbstractNode):
+        return Node(values=wrap(x=a.values), partials=wrap(x=a.partials))
+
+    return Node(values=wrap(x=a))

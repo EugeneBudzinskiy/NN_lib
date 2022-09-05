@@ -26,5 +26,3 @@ from .node_ops import Summation
 from .node_ops import Absolute
 from .node_ops import Negative
 from .node_ops import Positive
-
-
