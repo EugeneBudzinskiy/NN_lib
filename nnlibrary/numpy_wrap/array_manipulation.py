@@ -298,3 +298,142 @@ def repeat(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
         return Node(values=wrap(x=a.values), partials=wrap(x=a.partials))
 
     return Node(values=wrap(x=a))
+
+
+def delete(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           obj: Union[slice, int, npw.ndarray, Iterable, float, AbstractNode],
+           axis: Optional[int] = None) -> AbstractNode:
+    obj = node_utils.get_values_if_needed(x=obj)
+
+    def wrap(x):
+        return npw.numpy.delete(arr=x, obj=obj, axis=axis)
+
+    if isinstance(arr, AbstractNode):
+        return Node(values=wrap(x=arr.values), partials=wrap(x=arr.partials))
+
+    return Node(values=wrap(x=arr))
+
+
+def insert(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           obj: Union[int, slice, Iterable[int], AbstractNode],
+           values: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           axis: Optional[int] = None) -> AbstractNode:
+    obj = node_utils.get_values_if_needed(x=obj)
+
+    def wrap(x, v):
+        return npw.numpy.insert(arr=x, obj=obj, values=v, axis=axis)
+
+    if isinstance(arr, AbstractNode):
+        if isinstance(values, AbstractNode):
+            return Node(values=wrap(x=arr.values, v=values.values),
+                        partials=wrap(x=arr.partials, v=values.partials))
+        else:
+            return Node(values=wrap(x=arr.values, v=values),
+                        partials=wrap(x=arr.partials, v=npw.numpy.zeros_like(values)))
+
+    else:
+        if isinstance(values, AbstractNode):
+            return Node(values=wrap(x=arr, v=values.values),
+                        partials=wrap(x=npw.numpy.zeros_like(arr), v=values.partials))
+        else:
+            return Node(values=wrap(x=arr, v=values),
+                        partials=wrap(x=npw.numpy.zeros_like(arr), v=npw.numpy.zeros_like(values)))
+
+
+def append(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           values: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           axis: Optional[int] = None) -> AbstractNode:
+
+    def wrap(x, v):
+        return npw.numpy.append(arr=x, values=v, axis=axis)
+
+    if isinstance(arr, AbstractNode):
+        if isinstance(values, AbstractNode):
+            return Node(values=wrap(x=arr.values, v=values.values),
+                        partials=wrap(x=arr.partials, v=values.partials))
+        else:
+            return Node(values=wrap(x=arr.values, v=values),
+                        partials=wrap(x=arr.partials, v=npw.numpy.zeros_like(values)))
+
+    else:
+        if isinstance(values, AbstractNode):
+            return Node(values=wrap(x=arr, v=values.values),
+                        partials=wrap(x=npw.numpy.zeros_like(arr), v=values.partials))
+        else:
+            return Node(values=wrap(x=arr, v=values),
+                        partials=wrap(x=npw.numpy.zeros_like(arr), v=npw.numpy.zeros_like(values)))
+
+
+def resize(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           new_shape: Union[int, Iterable, tuple[int]]) -> AbstractNode:
+
+    def wrap(x):
+        return npw.numpy.resize(a=x, new_shape=new_shape)
+
+    if isinstance(a, AbstractNode):
+        return Node(values=wrap(x=a.values), partials=wrap(x=a.partials))
+
+    return Node(values=wrap(x=a))
+
+
+def flip(m: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+         axis: Union[None, int, Iterable, tuple[int]] = None) -> AbstractNode:
+
+    def wrap(x):
+        return npw.numpy.flip(m=x, axis=axis)
+
+    if isinstance(m, AbstractNode):
+        m.values, m.partials = wrap(x=m.values), wrap(x=m.partials)
+        return m
+
+    return Node(values=wrap(x=m))
+
+
+def fliplr(m: Union[npw.ndarray, Iterable, int, float, AbstractNode]) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.fliplr(m=x)
+
+    if isinstance(m, AbstractNode):
+        m.values, m.partials = wrap(x=m.values), wrap(x=m.partials)
+        return m
+
+    return Node(values=wrap(x=m))
+
+
+def flipud(m: Union[npw.ndarray, Iterable, int, float, AbstractNode]) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.flipud(m=x)
+
+    if isinstance(m, AbstractNode):
+        m.values, m.partials = wrap(x=m.values), wrap(x=m.partials)
+        return m
+
+    return Node(values=wrap(x=m))
+
+
+def roll(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+         shift: Union[int, Iterable, tuple[int]],
+         axis: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.roll(a=x, shift=shift, axis=axis)
+
+    if isinstance(a, AbstractNode):
+        a.values, a.partials = wrap(x=a.values), wrap(x=a.partials)
+        return a
+
+    return Node(values=wrap(x=a))
+
+
+def rot90(m: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+          k: int = 1,
+          axes: Any = (0, 1)) -> AbstractNode:
+    def wrap(x):
+        return npw.numpy.rot90(m=x, k=k, axes=axes)
+
+    if isinstance(m, AbstractNode):
+        m.values, m.partials = wrap(x=m.values), wrap(x=m.partials)
+        return m
+
+    return Node(values=wrap(x=m))
+
+
