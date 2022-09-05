@@ -323,21 +323,11 @@ def insert(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
     def wrap(x, v):
         return npw.numpy.insert(arr=x, obj=obj, values=v, axis=axis)
 
-    if isinstance(arr, AbstractNode):
-        if isinstance(values, AbstractNode):
-            return Node(values=wrap(x=arr.values, v=values.values),
-                        partials=wrap(x=arr.partials, v=values.partials))
-        else:
-            return Node(values=wrap(x=arr.values, v=values),
-                        partials=wrap(x=arr.partials, v=npw.numpy.zeros_like(values)))
+    arr = node_utils.convert_to_node_if_needed(x=arr)
+    values = node_utils.convert_to_node_if_needed(x=values)
 
-    else:
-        if isinstance(values, AbstractNode):
-            return Node(values=wrap(x=arr, v=values.values),
-                        partials=wrap(x=npw.numpy.zeros_like(arr), v=values.partials))
-        else:
-            return Node(values=wrap(x=arr, v=values),
-                        partials=wrap(x=npw.numpy.zeros_like(arr), v=npw.numpy.zeros_like(values)))
+    return Node(values=wrap(x=arr.values, v=values.values),
+                partials=wrap(x=arr.partials, v=values.partials))
 
 
 def append(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
@@ -347,21 +337,11 @@ def append(arr: Union[npw.ndarray, Iterable, int, float, AbstractNode],
     def wrap(x, v):
         return npw.numpy.append(arr=x, values=v, axis=axis)
 
-    if isinstance(arr, AbstractNode):
-        if isinstance(values, AbstractNode):
-            return Node(values=wrap(x=arr.values, v=values.values),
-                        partials=wrap(x=arr.partials, v=values.partials))
-        else:
-            return Node(values=wrap(x=arr.values, v=values),
-                        partials=wrap(x=arr.partials, v=npw.numpy.zeros_like(values)))
+    arr = node_utils.convert_to_node_if_needed(x=arr)
+    values = node_utils.convert_to_node_if_needed(x=values)
 
-    else:
-        if isinstance(values, AbstractNode):
-            return Node(values=wrap(x=arr, v=values.values),
-                        partials=wrap(x=npw.numpy.zeros_like(arr), v=values.partials))
-        else:
-            return Node(values=wrap(x=arr, v=values),
-                        partials=wrap(x=npw.numpy.zeros_like(arr), v=npw.numpy.zeros_like(values)))
+    return Node(values=wrap(x=arr.values, v=values.values),
+                partials=wrap(x=arr.partials, v=values.partials))
 
 
 def resize(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],

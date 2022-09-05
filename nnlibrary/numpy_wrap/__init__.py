@@ -47,3 +47,13 @@ from .array_manipulation import hsplit
 from .array_manipulation import vsplit
 from .array_manipulation import tile
 from .array_manipulation import repeat
+from .array_manipulation import delete
+from .array_manipulation import insert
+from .array_manipulation import append
+from .array_manipulation import resize
+from .array_manipulation import flip
+from .array_manipulation import fliplr
+from .array_manipulation import flipud
+from .array_manipulation import reshape
+from .array_manipulation import roll
+from .array_manipulation import rot90
