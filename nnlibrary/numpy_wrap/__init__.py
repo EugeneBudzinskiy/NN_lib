@@ -59,4 +59,7 @@ from .array_manipulation import roll
 from .array_manipulation import rot90
 
 from .linalg import dot
+from .linalg import inner
+from .linalg import outer
+from .linalg import matmul
 from . import linalg
