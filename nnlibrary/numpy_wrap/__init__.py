@@ -57,3 +57,6 @@ from .array_manipulation import flipud
 from .array_manipulation import reshape
 from .array_manipulation import roll
 from .array_manipulation import rot90
+
+from .linalg import dot
+from . import linalg

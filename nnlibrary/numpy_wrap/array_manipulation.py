@@ -93,13 +93,13 @@ def transpose(a: Union[npw.ndarray, Iterable, int, float],
 
 def concatenate(arrays: Any,
                 axis: Optional[int] = None,
-                out: Optional[npw.ndarray] = None,
+                out: Optional[Union[npw.ndarray]] = None,
                 dtype: Union[str, object] = None,
                 casting: Optional[str] = None,
                 *args: Any,
                 **kwargs: Any) -> AbstractNode:
-    def wrap(x):
-        return npw.numpy.concatenate(arrays=x, axis=axis, out=out, dtype=dtype, casting=casting, *args, **kwargs)
+    def wrap(x, o):
+        return npw.numpy.concatenate(arrays=x, axis=axis, out=o, dtype=dtype, casting=casting, *args, **kwargs)
 
     values, partials = [], []
     for el in arrays:
@@ -110,7 +110,12 @@ def concatenate(arrays: Any,
             values.append(el)
             partials.append(npw.numpy.zeros_like(el))
 
-    return Node(values=wrap(values), partials=wrap(partials))
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=values, o=out.values), wrap(x=partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=values, o=out), partials=wrap(x=partials, o=out))
 
 
 def block(arrays: Union[list[AbstractNode], Any]) -> AbstractNode:
@@ -129,11 +134,11 @@ def block(arrays: Union[list[AbstractNode], Any]) -> AbstractNode:
     return Node(values=wrap(values), partials=wrap(partials))
 
 
-def stack(arrays: Union[Iterable[npw.ndarray], Iterable, int, float, AbstractNode],
+def stack(arrays: Union[Iterable[npw.ndarray], Iterable, int, float, Iterable[AbstractNode]],
           axis: Optional[int] = 0,
-          out: Optional[npw.ndarray] = None) -> AbstractNode:
-    def wrap(x):
-        return npw.numpy.stack(arrays=x, axis=axis, out=out)
+          out: Optional[Union[npw.ndarray, AbstractNode]] = None) -> AbstractNode:
+    def wrap(x, o):
+        return npw.numpy.stack(arrays=x, axis=axis, out=o)
 
     values, partials = [], []
     for el in arrays:
@@ -144,7 +149,12 @@ def stack(arrays: Union[Iterable[npw.ndarray], Iterable, int, float, AbstractNod
             values.append(el)
             partials.append(npw.numpy.zeros_like(el))
 
-    return Node(values=wrap(values), partials=wrap(partials))
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=values, o=out.values), wrap(x=partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=values, o=out), partials=wrap(x=partials, o=out))
 
 
 def vstack(tup: Iterable) -> AbstractNode:
