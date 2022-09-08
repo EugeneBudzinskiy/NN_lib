@@ -123,9 +123,9 @@ def prod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
          axis: Union[None, int, Iterable, tuple[int]] = None,
          dtype: Optional[object] = None,
          out: Optional[Union[npw.ndarray, AbstractNode]] = None,
-         keepdims: Optional[bool] = npw._NoValue,
-         initial: Union[int, float, complex, None] = npw._NoValue,
-         where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+         keepdims: Optional[bool] = npw.numpy._NoValue,
+         initial: Union[int, float, complex, None] = npw.numpy._NoValue,
+         where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw.numpy._NoValue) -> AbstractNode:
     where = node_utils.get_values_if_needed(x=where)
 
     def wrap(x, o):
@@ -146,9 +146,9 @@ def sum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
         axis: Union[None, int, Iterable, tuple[int]] = None,
         dtype: Optional[object] = None,
         out: Optional[Union[npw.ndarray, AbstractNode]] = None,
-        keepdims: Optional[bool] = npw._NoValue,
-        initial: Union[int, float, complex, None] = npw._NoValue,
-        where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+        keepdims: Optional[bool] = npw.numpy._NoValue,
+        initial: Union[int, float, complex, None] = npw.numpy._NoValue,
+        where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw.numpy._NoValue) -> AbstractNode:
     where = node_utils.get_values_if_needed(x=where)
 
     def wrap(x, o):
@@ -169,9 +169,9 @@ def nanprod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
             axis: Union[None, int, Iterable, tuple[int]] = None,
             dtype: Optional[object] = None,
             out: Optional[Union[npw.ndarray, AbstractNode]] = None,
-            keepdims: Optional[bool] = npw._NoValue,
-            initial: Union[int, float, complex, None] = npw._NoValue,
-            where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+            keepdims: Optional[bool] = npw.numpy._NoValue,
+            initial: Union[int, float, complex, None] = npw.numpy._NoValue,
+            where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw.numpy._NoValue) -> AbstractNode:
     where = node_utils.get_values_if_needed(x=where)
 
     def wrap(x, o):
@@ -192,9 +192,9 @@ def nansum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
            axis: Union[None, int, Iterable, tuple[int]] = None,
            dtype: Optional[object] = None,
            out: Optional[Union[npw.ndarray, AbstractNode]] = None,
-           keepdims: Optional[bool] = npw._NoValue,
-           initial: Union[int, float, complex, None] = npw._NoValue,
-           where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+           keepdims: Optional[bool] = npw.numpy._NoValue,
+           initial: Union[int, float, complex, None] = npw.numpy._NoValue,
+           where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw.numpy._NoValue) -> AbstractNode:
     where = node_utils.get_values_if_needed(x=where)
 
     def wrap(x, o):
@@ -289,7 +289,7 @@ def cross(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
 
     values = npw.numpy.cross(a=a.values, b=b.values, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis)
     partials = npw.numpy.cross(a=a.partials, b=b.values, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis) + \
-        npw.numpy.cross(a=a.values, b=b.partials, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis)
+               npw.numpy.cross(a=a.values, b=b.partials, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis)
 
     return Node(values=values, partials=partials)
 
@@ -381,3 +381,90 @@ def logaddexp2(x1: Union[npw.ndarray, Iterable, AbstractNode],
     e2_x1, e2_x2 = npw.numpy.exp2(x=x1), npw.numpy.exp2(x=x2)
     partials = (x1.partials * e2_x1 + x2.partials * e2_x2) / (e2_x1 + e2_x2)
     return Node(values=values, partials=partials)
+
+
+def add(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+        x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+        *args: Any,
+        **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.add(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = x1.partials + x2.partials
+    return Node(values=values, partials=partials)
+
+
+def positive(x: Union[npw.ndarray, Iterable, int, float, complex, AbstractNode],
+             *args: Any,
+             **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.positive(x=x.values, *args, **kwargs)
+    partials = + x.partials
+    return Node(values=values, partials=partials)
+
+
+def negative(x: Union[npw.ndarray, Iterable, int, float, complex, AbstractNode],
+             *args: Any,
+             **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.negative(x=x.values, *args, **kwargs)
+    partials = - x.partials
+    return Node(values=values, partials=partials)
+
+
+def multiply(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+             x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+             *args: Any,
+             **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.multiply(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = x1.partials * x2.values + x1.values * x2.partials
+    return Node(values=values, partials=partials)
+
+
+def divide(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+           x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+           *args: Any,
+           **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.divide(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = (x1.partials * x2.values - x1.values * x2.partials) / x2.values ** 2
+    return Node(values=values, partials=partials)
+
+
+def power(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+          x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+          *args: Any,
+          **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.power(x1=x1.values, x2=x2.values, *args, **kwargs)
+    par_x1 = x1.partials * x2.values * npw.numpy.power(x1.values, x2.values - 1)
+    par_x2 = x2.partials * values * npw.numpy.log(npw.numpy.abs(x1.values))
+    partials = par_x1 + par_x2  # TODO: Add offset when x near 0 (replace it with some epsilon)
+    return Node(values=values, partials=partials)
+
+
+def subtract(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+             x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+             *args: Any,
+             **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.subtract(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = x1.partials - x2.partials
+    return Node(values=values, partials=partials)
+
+
+def true_divide(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+                x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+                *args: Any,
+                **kwargs: Any) -> AbstractNode:
+    return npw.divide(x1=x1, x2=x2, *args, **kwargs)  # TODO: Rewrite it as actual implementation

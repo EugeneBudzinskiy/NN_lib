@@ -1,8 +1,8 @@
+# noinspection PyUnresolvedReferences
 import numpy  # Access to unwrapped numpy package
-from numpy import ndarray  # For typing numpy arrays
 
-# noinspection PyProtectedMember
-from numpy import _NoValue
+# noinspection PyUnresolvedReferences
+from numpy import ndarray  # For typing numpy arrays
 
 from .array_creation import empty
 from .array_creation import empty_like
@@ -66,3 +66,42 @@ from .linalg import inner
 from .linalg import outer
 from .linalg import matmul
 from . import linalg
+
+from .math_functions import sin
+from .math_functions import cos
+from .math_functions import tan
+from .math_functions import arcsin
+from .math_functions import arccos
+from .math_functions import arctan
+from .math_functions import sinh
+from .math_functions import cosh
+from .math_functions import tanh
+from .math_functions import arcsinh
+from .math_functions import arccosh
+from .math_functions import arctanh
+from .math_functions import prod
+from .math_functions import sum
+from .math_functions import nanprod
+from .math_functions import nansum
+from .math_functions import cumprod
+from .math_functions import cumsum
+from .math_functions import nancumprod
+from .math_functions import nancumsum
+from .math_functions import cross
+from .math_functions import exp
+from .math_functions import expm1
+from .math_functions import exp2
+from .math_functions import log
+from .math_functions import log2
+from .math_functions import log10
+from .math_functions import log1p
+from .math_functions import logaddexp
+from .math_functions import logaddexp2
+from .math_functions import add
+from .math_functions import positive
+from .math_functions import negative
+from .math_functions import multiply
+from .math_functions import divide
+from .math_functions import power
+from .math_functions import subtract
+from .math_functions import true_divide
