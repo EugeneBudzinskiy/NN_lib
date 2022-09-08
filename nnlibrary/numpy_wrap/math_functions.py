@@ -116,3 +116,268 @@ def arctanh(x: Union[npw.ndarray, Iterable, AbstractNode],
     values = npw.numpy.arctanh(x=x.values, *args, **kwargs)
     partials = x.partials * (1 - x.values ** 2)
     return Node(values=values, partials=partials)
+
+
+# noinspection PyProtectedMember
+def prod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+         axis: Union[None, int, Iterable, tuple[int]] = None,
+         dtype: Optional[object] = None,
+         out: Optional[Union[npw.ndarray, AbstractNode]] = None,
+         keepdims: Optional[bool] = npw._NoValue,
+         initial: Union[int, float, complex, None] = npw._NoValue,
+         where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+    where = node_utils.get_values_if_needed(x=where)
+
+    def wrap(x, o):
+        return npw.numpy.prod(a=x, axis=axis, dtype=dtype, out=o, keepdims=keepdims, initial=initial, where=where)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+# noinspection PyProtectedMember, PyShadowingBuiltins
+def sum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+        axis: Union[None, int, Iterable, tuple[int]] = None,
+        dtype: Optional[object] = None,
+        out: Optional[Union[npw.ndarray, AbstractNode]] = None,
+        keepdims: Optional[bool] = npw._NoValue,
+        initial: Union[int, float, complex, None] = npw._NoValue,
+        where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+    where = node_utils.get_values_if_needed(x=where)
+
+    def wrap(x, o):
+        return npw.numpy.sum(a=x, axis=axis, dtype=dtype, out=o, keepdims=keepdims, initial=initial, where=where)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+# noinspection PyProtectedMember
+def nanprod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+            axis: Union[None, int, Iterable, tuple[int]] = None,
+            dtype: Optional[object] = None,
+            out: Optional[Union[npw.ndarray, AbstractNode]] = None,
+            keepdims: Optional[bool] = npw._NoValue,
+            initial: Union[int, float, complex, None] = npw._NoValue,
+            where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+    where = node_utils.get_values_if_needed(x=where)
+
+    def wrap(x, o):
+        return npw.numpy.nanprod(a=x, axis=axis, dtype=dtype, out=o, keepdims=keepdims, initial=initial, where=where)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+# noinspection PyProtectedMember
+def nansum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           axis: Union[None, int, Iterable, tuple[int]] = None,
+           dtype: Optional[object] = None,
+           out: Optional[Union[npw.ndarray, AbstractNode]] = None,
+           keepdims: Optional[bool] = npw._NoValue,
+           initial: Union[int, float, complex, None] = npw._NoValue,
+           where: Union[npw.ndarray, Iterable, int, float, None, AbstractNode] = npw._NoValue) -> AbstractNode:
+    where = node_utils.get_values_if_needed(x=where)
+
+    def wrap(x, o):
+        return npw.numpy.nansum(a=x, axis=axis, dtype=dtype, out=o, keepdims=keepdims, initial=initial, where=where)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+def cumprod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+            axis: Optional[int] = None,
+            dtype: Optional[object] = None,
+            out: Optional[Union[npw.ndarray, AbstractNode]] = None) -> AbstractNode:
+    def wrap(x, o):
+        return npw.numpy.cumprod(a=x, axis=axis, dtype=dtype, out=o)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+def cumsum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+           axis: Optional[int] = None,
+           dtype: Optional[object] = None,
+           out: Optional[Union[npw.ndarray, AbstractNode]] = None) -> AbstractNode:
+    def wrap(x, o):
+        return npw.numpy.cumsum(a=x, axis=axis, dtype=dtype, out=o)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+def nancumprod(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+               axis: Optional[int] = None,
+               dtype: Optional[object] = None,
+               out: Optional[Union[npw.ndarray, AbstractNode]] = None) -> AbstractNode:
+    def wrap(x, o):
+        return npw.numpy.nancumprod(a=x, axis=axis, dtype=dtype, out=o)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+def nancumsum(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+              axis: Optional[int] = None,
+              dtype: Optional[object] = None,
+              out: Optional[Union[npw.ndarray, AbstractNode]] = None) -> AbstractNode:
+    def wrap(x, o):
+        return npw.numpy.nancumsum(a=x, axis=axis, dtype=dtype, out=o)
+
+    a = node_utils.convert_to_node_if_needed(x=a)
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), wrap(x=a.partials, o=out.partials)
+        return out
+
+    return Node(values=wrap(x=a.values, o=out), partials=wrap(x=a.partials, o=out))
+
+
+def cross(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+          b: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+          axisa: Optional[int] = -1,
+          axisb: Optional[int] = -1,
+          axisc: Optional[int] = -1,
+          axis: Optional[int] = None) -> AbstractNode:
+    a = node_utils.convert_to_node_if_needed(x=a)
+    b = node_utils.convert_to_node_if_needed(x=b)
+
+    values = npw.numpy.cross(a=a.values, b=b.values, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis)
+    partials = npw.numpy.cross(a=a.partials, b=b.values, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis) + \
+        npw.numpy.cross(a=a.values, b=b.partials, axisa=axisa, axisb=axisb, axisc=axisc, axis=axis)
+
+    return Node(values=values, partials=partials)
+
+
+def exp(x: Union[npw.ndarray, Iterable, AbstractNode],
+        *args: Any,
+        **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.exp(x=x.values, *args, **kwargs)
+    partials = x.partials * values
+    return Node(values=values, partials=partials)
+
+
+def expm1(x: Union[npw.ndarray, Iterable, AbstractNode],
+          *args: Any,
+          **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.expm1(x=x.values, *args, **kwargs)
+    partials = x.partials * npw.numpy.exp(x=x.values, *args, **kwargs)
+    return Node(values=values, partials=partials)
+
+
+def exp2(x: Union[npw.ndarray, Iterable, AbstractNode],
+         *args: Any,
+         **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.exp2(x=x.values, *args, **kwargs)
+    partials = x.partials * values * npw.numpy.log(2)
+    return Node(values=values, partials=partials)
+
+
+def log(x: Union[npw.ndarray, Iterable, AbstractNode],
+        *args: Any,
+        **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.log(x=x.values, *args, **kwargs)
+    partials = x.partials / x.values
+    return Node(values=values, partials=partials)
+
+
+def log2(x: Union[npw.ndarray, Iterable, AbstractNode],
+         *args: Any,
+         **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.log2(x=x.values, *args, **kwargs)
+    partials = x.partials / (x.values * npw.numpy.log(2))
+    return Node(values=values, partials=partials)
+
+
+def log10(x: Union[npw.ndarray, Iterable, AbstractNode],
+          *args: Any,
+          **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.log10(x=x.values, *args, **kwargs)
+    partials = x.partials / (x.values * npw.numpy.log(10))
+    return Node(values=values, partials=partials)
+
+
+def log1p(x: Union[npw.ndarray, Iterable, AbstractNode],
+          *args: Any,
+          **kwargs: Any) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    values = npw.numpy.log1p(x=x.values, *args, **kwargs)
+    partials = x.partials / (1 + x.values)
+    return Node(values=values, partials=partials)
+
+
+def logaddexp(x1: Union[npw.ndarray, Iterable, AbstractNode],
+              x2: Union[npw.ndarray, Iterable, AbstractNode],
+              *args: Any,
+              **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.logaddexp(x1=x1.values, x2=x2.values, *args, **kwargs)
+    e_x1, e_x2 = npw.numpy.exp(x=x1), npw.numpy.exp(x=x2)
+    partials = (x1.partials * e_x1 + x2.partials * e_x2) / (e_x1 + e_x2)
+    return Node(values=values, partials=partials)
+
+
+def logaddexp2(x1: Union[npw.ndarray, Iterable, AbstractNode],
+               x2: Union[npw.ndarray, Iterable, AbstractNode],
+               *args: Any,
+               **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.logaddexp2(x1=x1.values, x2=x2.values, *args, **kwargs)
+    e2_x1, e2_x2 = npw.numpy.exp2(x=x1), npw.numpy.exp2(x=x2)
+    partials = (x1.partials * e2_x1 + x2.partials * e2_x2) / (e2_x1 + e2_x2)
+    return Node(values=values, partials=partials)

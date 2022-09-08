@@ -1,6 +1,9 @@
 import numpy  # Access to unwrapped numpy package
 from numpy import ndarray  # For typing numpy arrays
 
+# noinspection PyProtectedMember
+from numpy import _NoValue
+
 from .array_creation import empty
 from .array_creation import empty_like
 from .array_creation import eye
