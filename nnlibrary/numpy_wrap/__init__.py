@@ -105,3 +105,18 @@ from .math_functions import divide
 from .math_functions import power
 from .math_functions import subtract
 from .math_functions import true_divide
+from .math_functions import maximum
+from .math_functions import fmax
+from .math_functions import minimum
+from .math_functions import fmin
+from .math_functions import clip
+from .math_functions import sqrt
+from .math_functions import cbrt
+from .math_functions import square
+from .math_functions import absolute
+from .math_functions import abs
+from .math_functions import fabs
+from .math_functions import sign
+from .math_functions import heaviside
+
+from . import random
