@@ -10,6 +10,9 @@ from nnlibrary.numpy_wrap.node import Node
 from nnlibrary.numpy_wrap.node import node_utils
 
 
+# TODO: Implement support for `args` and `kwargs` for most functions bellow (ignored for now)
+
+
 def sin(x: Union[npw.ndarray, Iterable, AbstractNode],
         *args: Any,
         **kwargs: Any) -> AbstractNode:
@@ -468,3 +471,82 @@ def true_divide(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode]
                 *args: Any,
                 **kwargs: Any) -> AbstractNode:
     return npw.divide(x1=x1, x2=x2, *args, **kwargs)  # TODO: Rewrite it as actual implementation
+
+
+def maximum(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+            x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+            *args: Any,
+            **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.maximum(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = npw.numpy.where(condition=x1.values >= x2.values, x=x1.partials, y=x2.partials)
+    return Node(values=values, partials=partials)
+
+
+def fmax(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+         x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+         *args: Any,
+         **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.fmax(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = npw.numpy.where(condition=x1.values >= x2.values, x=x1.partials, y=x2.partials)
+    return Node(values=values, partials=partials)
+
+
+def minimum(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+            x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+            *args: Any,
+            **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.minimum(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = npw.numpy.where(condition=x1.values <= x2.values, x=x1.partials, y=x2.partials)
+    return Node(values=values, partials=partials)
+
+
+def fmin(x1: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+         x2: Union[npw.numpy.Number, npw.ndarray, Iterable, AbstractNode],
+         *args: Any,
+         **kwargs: Any) -> AbstractNode:
+    x1 = node_utils.convert_to_node_if_needed(x=x1)
+    x2 = node_utils.convert_to_node_if_needed(x=x2)
+
+    values = npw.numpy.fmin(x1=x1.values, x2=x2.values, *args, **kwargs)
+    partials = npw.numpy.where(condition=x1.values <= x2.values, x=x1.partials, y=x2.partials)
+    return Node(values=values, partials=partials)
+
+
+def clip(a: Union[npw.ndarray, Iterable, int, float, AbstractNode],
+         a_min: Union[npw.ndarray, Iterable, int, float, None, AbstractNode],
+         a_max: Union[npw.ndarray, Iterable, int, float, None, AbstractNode],
+         out: Optional[Union[npw.ndarray, AbstractNode]] = None,
+         **kwargs: Any) -> AbstractNode:
+    a = node_utils.convert_to_node_if_needed(x=a)
+    partials = a.partials
+    a_min_, a_max_ = a_min, a_max
+
+    def wrap(x, o):
+        return npw.numpy.clip(a=x, a_max=a_max_, a_min=a_min_, out=o, **kwargs)
+
+    if a_min:
+        a_min = node_utils.convert_to_node_if_needed(x=a_min)
+        partials = npw.numpy.where(condition=a.values >= a_min, x=partials, y=a_min.partials)
+        a_min_ = a_min.values
+
+    if a_max:
+        a_max = node_utils.convert_to_node_if_needed(x=a_max)
+        partials = npw.numpy.where(condition=a.values <= a_max, x=partials, y=a_max.partials)
+        a_max_ = a_max.values
+
+    if out:
+        out = node_utils.convert_to_node_if_needed(x=out)
+        out.values, out.partials = wrap(x=a.values, o=out.values), partials
+        return out
+
+    values = wrap(x=a.values, o=out)
+    return Node(values=values, partials=partials)
