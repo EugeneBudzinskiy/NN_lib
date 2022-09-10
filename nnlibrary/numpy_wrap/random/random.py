@@ -10,6 +10,80 @@ from nnlibrary.numpy_wrap.node import Node
 from nnlibrary.numpy_wrap.node import node_utils
 
 
+def rand(*dn: Any) -> AbstractNode:
+    dn = [node_utils.get_values_if_needed(el) for el in dn]
+    values = npw.numpy.random.rand(*dn)
+    return Node(values=values)  # partials would be zeros
+
+
+def randint(low: Union[int, npw.ndarray, Iterable, float, AbstractNode],
+            high: Union[int, npw.ndarray, Iterable, float, None, AbstractNode] = None,
+            size: Union[int, Iterable, tuple[int], None] = None,
+            dtype: Optional[object] = None) -> AbstractNode:
+    low = node_utils.get_values_if_needed(x=low)
+    high = node_utils.get_values_if_needed(x=high)
+    values = npw.numpy.random.randint(low=low, high=high, size=size, dtype=dtype)
+    return Node(values=values)  # partials would be zeros
+
+
+def randn(*dn: Any) -> AbstractNode:
+    dn = [node_utils.get_values_if_needed(el) for el in dn]
+    values = npw.numpy.random.randn(*dn)
+    return Node(values=values)  # partials would be zeros
+
+
+def random(size: Any = None) -> AbstractNode:
+    values = npw.numpy.random.random(size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def random_integers(low: Union[int, AbstractNode],
+                    high: Optional[Union[int, AbstractNode]] = None,
+                    size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    low = node_utils.get_values_if_needed(x=low)
+    high = node_utils.get_values_if_needed(x=high)
+    values = npw.numpy.random.random_integers(low=low, high=high, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def random_sample(size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    values = npw.numpy.random.random_sample(size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def sample(*args: Any, **kwargs: Any) -> AbstractNode:
+    values = npw.numpy.random.sample(*args, **kwargs)
+    return Node(values=values)  # partials would be zeros
+
+
+def ranf(*args: Any, **kwargs: Any) -> AbstractNode:
+    values = npw.numpy.random.ranf(*args, **kwargs)
+    return Node(values=values)  # partials would be zeros
+
+
+def choice(a: Union[Any, AbstractNode],
+           size: Union[int, Iterable, tuple[int], None] = None,
+           replace: Optional[bool] = True,
+           p: Union[Any, AbstractNode] = None) -> AbstractNode:
+    p = node_utils.get_values_if_needed(x=p)
+    a = node_utils.get_values_if_needed(x=a)
+    idx = npw.numpy.random.choice(a=a.size, size=size, replace=replace, p=p)
+    return Node(values=a[idx], partials=a.partials[idx])
+
+
+def permutation(x: Union[int, npw.ndarray, Iterable, float, AbstractNode]) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    idx = npw.numpy.random.permutation(x.values.shape[0])
+    return Node(values=x.values[idx], partials=x.partials[idx])
+
+
+def shuffle(x: Union[int, npw.ndarray, Iterable, float, AbstractNode]) -> AbstractNode:
+    x = node_utils.convert_to_node_if_needed(x=x)
+    idx = npw.numpy.random.permutation(x.values.shape[0])
+    x.values, x.partials = x.values[idx], x.partials[idx]
+    return x
+
+
 def beta(a: Union[float, npw.ndarray, Iterable, int, AbstractNode],
          b: Union[float, npw.ndarray, Iterable, int, AbstractNode],
          size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
@@ -33,16 +107,6 @@ def chisquare(df: Union[float, npw.ndarray, Iterable, int, AbstractNode],
     df = node_utils.get_values_if_needed(x=df)
     values = npw.numpy.random.chisquare(df=df, size=size)
     return Node(values=values)  # partials would be zeros
-
-
-def choice(a: Union[Any, AbstractNode],
-           size: Union[int, Iterable, tuple[int], None] = None,
-           replace: Optional[bool] = True,
-           p: Union[Any, AbstractNode] = None) -> AbstractNode:
-    p = node_utils.get_values_if_needed(x=p)
-    a = node_utils.get_values_if_needed(x=a)
-    idx = npw.numpy.random.choice(a=a.size, size=size, replace=replace, p=p)
-    return Node(values=a[idx], partials=a.partials[idx])
 
 
 def dirichlet(alpha: Union[Iterable, AbstractNode],
@@ -204,4 +268,106 @@ def pareto(a: Union[float, npw.ndarray, Iterable, int, AbstractNode],
            size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
     a = node_utils.get_values_if_needed(x=a)
     values = npw.numpy.random.pareto(a=a, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def poisson(lam: Union[float, npw.ndarray, Iterable, int, AbstractNode] = 1.0,
+            size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    lam = node_utils.get_values_if_needed(x=lam)
+    values = npw.numpy.random.poisson(lam=lam, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def power(a: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+          size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    a = node_utils.get_values_if_needed(x=a)
+    values = npw.numpy.random.power(a=a, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def rayleigh(scale: Union[float, npw.ndarray, Iterable, int, None, AbstractNode] = 1.0,
+             size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    scale = node_utils.get_values_if_needed(x=scale)
+    values = npw.numpy.random.rayleigh(scale=scale, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def standard_cauchy(size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    values = npw.numpy.random.standard_cauchy(size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def standard_exponential(size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    values = npw.numpy.random.standard_exponential(size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def standard_gamma(shape: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+                   size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    shape = node_utils.get_values_if_needed(x=shape)
+    values = npw.numpy.random.standard_gamma(shape=shape, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def standard_normal(size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    values = npw.numpy.random.standard_normal(size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def standard_t(df: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+               size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    df = node_utils.get_values_if_needed(x=df)
+    values = npw.numpy.random.standard_t(df=df, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def triangular(left: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+               mode: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+               right: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+               size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    left = node_utils.get_values_if_needed(x=left)
+    mode = node_utils.get_values_if_needed(x=mode)
+    right = node_utils.get_values_if_needed(x=right)
+    values = npw.numpy.random.triangular(left=left, mode=mode, right=right, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def uniform(low: Union[float, npw.ndarray, Iterable, int, None, AbstractNode] = 0.0,
+            high: Union[float, npw.ndarray, Iterable, int, AbstractNode] = 1.0,
+            size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    low = node_utils.get_values_if_needed(x=low)
+    high = node_utils.get_values_if_needed(x=high)
+    values = npw.numpy.random.uniform(low=low, high=high, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def vonmises(mu: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+             kappa: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+             size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    mu = node_utils.get_values_if_needed(x=mu)
+    kappa = node_utils.get_values_if_needed(x=kappa)
+    values = npw.numpy.random.vonmises(mu=mu, kappa=kappa, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def wald(mean: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+         scale: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+         size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    mean = node_utils.get_values_if_needed(x=mean)
+    scale = node_utils.get_values_if_needed(x=scale)
+    values = npw.numpy.random.wald(mean=mean, scale=scale, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def weibull(a: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+            size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    a = node_utils.get_values_if_needed(x=a)
+    values = npw.numpy.random.weibull(a=a, size=size)
+    return Node(values=values)  # partials would be zeros
+
+
+def zipf(a: Union[float, npw.ndarray, Iterable, int, AbstractNode],
+         size: Union[int, Iterable, tuple[int], None] = None) -> AbstractNode:
+    a = node_utils.get_values_if_needed(x=a)
+    values = npw.numpy.random.zipf(a=a, size=size)
     return Node(values=values)  # partials would be zeros

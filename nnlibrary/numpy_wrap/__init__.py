@@ -4,6 +4,9 @@ import numpy  # Access to unwrapped numpy package
 # noinspection PyUnresolvedReferences
 from numpy import ndarray  # For typing numpy arrays
 
+# noinspection PyUnresolvedReferences
+from numpy.random import seed  # For setting seed
+
 from .array_creation import empty
 from .array_creation import empty_like
 from .array_creation import eye
