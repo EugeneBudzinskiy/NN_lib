@@ -6,11 +6,11 @@ import nnlibrary.numpy_wrap as npw
 from . import node
 
 
-def get_values_if_needed(x: Union[node.AbstractNode, Any]) -> Union[npw.ndarray, Any]:
+def get_values_if_needed(x: Any) -> Any:
     return x.values if isinstance(x, node.AbstractNode) else x
 
 
-def convert_to_node_if_needed(x: Union[node.AbstractNode, Any]) -> node.AbstractNode:
+def convert_to_node_if_needed(x: Any) -> node.AbstractNode:
     return x if isinstance(x, node.AbstractNode) else node.Node(values=x)
 
 
