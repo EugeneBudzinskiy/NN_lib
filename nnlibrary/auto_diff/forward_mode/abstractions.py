@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from nnlibrary.auto_diff import AbstractSpecialVariable
 from nnlibrary.auto_diff import AbstractSpecialOperation
+from nnlibrary.auto_diff import AbstractSpecialVariable
 
 
 class FrowardUniOperation(AbstractSpecialOperation):

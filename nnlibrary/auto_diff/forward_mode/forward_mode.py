@@ -1,9 +1,9 @@
-import numpy as np
-
 from typing import Callable
 
+import numpy as np
+
 from nnlibrary.auto_diff import AbstractMode
-from nnlibrary.auto_diff.forward_mode import special_vars
+from . import special_vars
 
 
 class ForwardMode(AbstractMode):

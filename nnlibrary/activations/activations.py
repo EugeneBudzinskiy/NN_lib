@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.activations import AbstractActivation
+from .abstractions import AbstractActivation
 
 
 class Linear(AbstractActivation):

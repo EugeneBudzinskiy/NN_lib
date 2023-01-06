@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.reductions import AbstractReduction
+from .abstractions import AbstractReduction
 
 
 class ReductionNone(AbstractReduction):

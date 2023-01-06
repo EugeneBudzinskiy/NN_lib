@@ -1,4 +1,4 @@
 from nnlibrary.models.abstractions import AbstractModel
-from nnlibrary.models.models import Sequential
-from nnlibrary.models.models import SequentialOld
+from .sequential import Sequential
+from .sequential_old import Sequential as SequentialOld
 

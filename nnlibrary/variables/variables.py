@@ -2,7 +2,7 @@ import numpy as np
 
 from nnlibrary import initializers
 from nnlibrary.layer_structures import AbstractLayerStructure
-from nnlibrary.variables import AbstractVariables
+from .abstractions import AbstractVariables
 
 
 class TrainableVariables(AbstractVariables):

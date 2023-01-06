@@ -1,3 +1,5 @@
-from nnlibrary.layers.abstractions import *
-from nnlibrary.layers.layers import *
+from .abstractions import AbstractActivationLayer
+from .abstractions import AbstractLayer
+from .layers import Dense
+from .layers import Input
 

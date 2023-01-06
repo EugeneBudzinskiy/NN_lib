@@ -1,6 +1,6 @@
 import numpy as np
 
-from nnlibrary.optimizers import AbstractOptimizer
+from .abstractions import AbstractOptimizer
 
 
 class SGD(AbstractOptimizer):

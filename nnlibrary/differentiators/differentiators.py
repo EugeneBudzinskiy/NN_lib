@@ -1,8 +1,8 @@
-import numpy as np
-
 from typing import Callable
 
-from nnlibrary.differentiators import AbstractDifferentiator
+import numpy as np
+
+from .abstractions import AbstractDifferentiator
 
 
 class Derivative(AbstractDifferentiator):

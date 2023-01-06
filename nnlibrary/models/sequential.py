@@ -6,9 +6,8 @@ from nnlibrary import layers
 from nnlibrary import losses
 from nnlibrary import optimizers
 from nnlibrary import variables
-
 from nnlibrary.auto_diff import AutoDiff
-from nnlibrary.models import AbstractModel
+from .abstractions import AbstractModel
 
 
 class Sequential(AbstractModel):
